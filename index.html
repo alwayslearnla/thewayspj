@@ -12,15 +12,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Ways</title>
-<meta name="theme-color" content="#10231f">
-<meta name="application-name" content="The Ways">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="The Ways">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -775,9 +766,20 @@
   .pc-aniv { color: var(--pendente); background: var(--pendente-bg); }
   /* painel */
   /* ---------- Boas-vindas (3.6.5) ---------- */
-  .boas-vindas { max-width: 760px; margin: 6vh auto 0; padding: 0 4px; }
+  .boas-vindas { max-width: 760px; margin: 4vh auto 0; padding: 0 4px; }
+  .bv-hoje-tit { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); margin: 0 0 10px; font-weight: 600; }
+  .bv-hoje { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .bv-stat { align-items: center; text-align: center; gap: 4px; }
+  .bv-stat .bv-ic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: var(--hover); color: var(--brass); }
+  .bv-stat .bv-ic .ico { width: 19px; height: 19px; }
+  .bv-stat .bv-num { font-size: 22px; font-weight: 700; color: var(--ink); line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .bv-stat .bv-num.alerta { color: var(--despesa); }
+  .bv-stat .bv-rot { font-size: 12.5px; color: var(--ink-soft); }
+  .bv-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 22px; }
+  .bv-acoes .bv-ajuda { margin: 0; }
+  @media (max-width: 640px) { .bv-hoje { grid-template-columns: 1fr; } }
   .bv-data { font-size: 13px; color: var(--ink-soft); }
-  .bv-saudacao { font-family: var(--serif); font-size: clamp(30px, 5vw, 44px); line-height: 1.1; margin: 6px 0 8px; letter-spacing: -.01em; }
+  .bv-saudacao { font-family: var(--serif); font-size: clamp(30px, 5vw, 44px); line-height: 1.1; margin: 6px 0 26px; letter-spacing: -.01em; }
   .bv-sub { color: var(--ink-soft); margin: 0 0 26px; font-size: 15px; }
   .bv-nome { margin: 0 0 26px; max-width: 420px; }
   .bv-nome label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
@@ -899,7 +901,43 @@
   .cfg-topico-btn:hover { color: var(--ink); }
   .cfg-topico-btn[aria-pressed="true"] { background: var(--brass); border-color: var(--brass); color: var(--brand-ink); font-weight: 600; }
   .cfg-topico[hidden] { display: none; }
-  .cfg-topico > .sub-note:first-child { margin-top: 14px; }
+  .cfg-topico > .sub-note:first-child { margin-top: 14px; font-size: 13px; color: var(--ink-soft); }
+  /* 3.6.11: cada assunto num cartão, título forte; sub-listas com título menor e marcador */
+  .drawer { width: min(620px, 100%); }
+  .drawer-body, .cfg-topicos { background: var(--paper); }
+  .drawer-body { padding-top: 0; }
+  .cfg-topico-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--paper-raised); }
+  .cfg-topico > .settings-group, .cfg-topico > div > .settings-group {
+    background: var(--paper-raised); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px 16px; margin-top: 14px;
+  }
+  .cfg-topico > .settings-group > h3, .cfg-topico > div > .settings-group > h3 {
+    font-size: 15px; font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--ink);
+    margin: 0 0 4px; padding-left: 10px; border-left: 3px solid var(--brass); line-height: 1.25;
+  }
+  .settings-group .settings-group { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); background: none; border-radius: 0; }
+  .settings-group .settings-group:first-child { border-top: 0; padding-top: 0; margin-top: 8px; }
+  .settings-group .settings-group > h3, .cfg-subtitulo {
+    font-size: 12.5px; font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--brass-deep);
+    margin: 0 0 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .settings-group .settings-group > h3::before, .cfg-subtitulo::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--brass); flex: none; }
+  .cfg-topico .settings-group.danger-zone { border-color: var(--despesa-bg); border-width: 2px; }
+  .cfg-topico .settings-group.danger-zone > h3 { color: var(--despesa); border-left-color: var(--despesa); }
+  /* seleção para excluir vários */
+  .chip { padding: 4px 11px 4px 7px; }
+  .chip-sel { margin: 0; width: 14px; height: 14px; accent-color: var(--despesa); cursor: pointer; }
+  .chip.selecionado { background: var(--despesa-bg); border-color: var(--despesa); }
+  .chip-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 10px; padding: 8px 10px; border-radius: 8px; background: var(--despesa-bg); font-size: 12.5px; }
+  .chip-acoes[hidden] { display: none; }
+  .chip-acoes .chip-qtd { font-weight: 700; margin-right: auto; }
+  .btn-excluir { background: var(--despesa); border-color: var(--despesa); color: #fff; }
+  .btn-excluir:hover { filter: brightness(.95); }
+  .cfg-desfazer { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 8px 12px; border-radius: 8px; background: var(--ink); color: var(--paper); font-size: 12.5px; }
+  .cfg-desfazer[hidden] { display: none; }
+  .cfg-desfazer span { margin-right: auto; }
+  .cfg-desfazer .ico { width: 14px; height: 14px; flex: none; }
+  .cfg-desfazer button { background: none; border: 0; color: inherit; font: inherit; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; text-decoration: underline; text-underline-offset: 3px; }
 
   /* ---------- Clientes / pacientes (3.6.6) ---------- */
   .rotulo-linha { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
@@ -1107,6 +1145,27 @@
   .side-foot button:hover { color: var(--side-ink); }
 
   .topbar .page-title { margin: 0; font-size: 24px; letter-spacing: -.02em; }
+  /* 3.6.11: no Início a saudação já é o título */
+  .topbar.sem-titulo .page-title, .topbar.sem-titulo .page-desc { display: none; }
+  /* 3.6.11: ícones nos botões */
+  .btn-ic, .novo-menu button { display: inline-flex; align-items: center; gap: 7px; }
+  .btn-ic .ico, .novo-menu .ico, .cfg-topico-btn .ico { width: 15px; height: 15px; flex: none; }
+  .novo-menu .ico { color: var(--brass); }
+  /* 3.6.11: menu lateral recolhível */
+  .app { transition: grid-template-columns .18s ease; }
+  .side-toggle .ico { transition: transform .18s ease; }
+  .app.menu-recolhido { grid-template-columns: 64px minmax(0, 1fr); }
+  .menu-recolhido .brand { padding: 0 0 18px; justify-content: center; }
+  .menu-recolhido .brand-text, .menu-recolhido .nav-txt, .menu-recolhido .side-foot { display: none; }
+  .menu-recolhido .nav { padding: 0 8px; gap: 10px; }
+  .menu-recolhido .nav-group-title { font-size: 0; height: 1px; padding: 0; margin: 0 6px 6px; background: var(--side-active); }
+  .menu-recolhido .nav .tab, .menu-recolhido .nav .nav-btn { justify-content: center; padding: 9px 0; position: relative; }
+  .menu-recolhido .nav .ico { width: 18px; height: 18px; }
+  .menu-recolhido .nav .tab-badge { position: absolute; top: 1px; right: 3px; margin: 0; font-size: 9.5px; min-width: 16px; padding: 0 4px; }
+  .menu-recolhido .side-toggle .ico { transform: rotate(180deg); }
+  .side-toggle-wrap { padding: 8px 10px 0; flex: none; overflow: visible; }
+  .menu-recolhido .side-toggle-wrap { padding: 8px 8px 0; }
+  .nav .side-toggle, .side-toggle { color: var(--side-soft); }
   .btn-voltar {
     display: inline-flex; align-items: center; gap: 4px; border: none; background: none; padding: 0; margin: 0 0 2px;
     font: inherit; font-size: 12.5px; font-weight: 600; color: var(--brass-deep); cursor: pointer;
@@ -1153,13 +1212,87 @@
     color: var(--ink-soft); margin: 20px 0 10px; padding-top: 14px; border-top: 1px solid var(--line);
   }
   .tipo-toggle { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  /* 3.6.12: tipo e condição como seletor compacto, da altura dos campos */
+  .tipo-toggle, .cond-toggle {
+    display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--paper); width: max-content; max-width: 100%;
+  }
+  .tipo-toggle .tipo-btn, .cond-btn {
+    border: 0; border-radius: 7px; padding: 7px 14px; font-size: 13.5px; font-weight: 600; background: none;
+    color: var(--ink-soft); white-space: nowrap; font-family: var(--sans); cursor: pointer; line-height: 1.3;
+  }
+  .cond-btn:hover { color: var(--ink); }
+  .cond-btn[aria-pressed="true"] { background: var(--paper-raised); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+  /* títulos de cada parte do formulário */
+  .form-secao { display: flex; align-items: center; gap: 10px; margin: 24px 0 14px; font-size: 13.5px; font-weight: 700; color: var(--brass-deep); }
+  .form-secao::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+  .form-secao .num { width: 22px; height: 22px; border-radius: 50%; background: var(--brass); color: var(--brand-ink, #fff); display: grid; place-items: center; font-size: 12px; }
+  #lancForm .field > label, #lancForm .field .rotulo-linha > label { color: var(--ink); }
+  #campoNatureza { display: none; }
+  /* parcelas uma a uma */
+  .parc-lista { display: grid; grid-template-columns: 52px minmax(140px, 180px) minmax(120px, 160px); gap: 6px 10px; align-items: center; font-size: 13px; }
+  .parc-lista .cab { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .04em; }
+  .parc-lista input { padding: 6px 8px; }
+  .parc-lista .valor { text-align: right; }
+  .parc-soma { margin-top: 10px; font-size: 13px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .parc-soma.erro { color: var(--despesa); font-weight: 600; }
+  .parc-ajuda { font-size: 12px; color: var(--ink-soft); margin: 0 0 8px; }
+  /* 3.7.0: taxa do cartão e convênio */
+  .pag-info { grid-column: 1 / -1; font-size: 13px; padding: 10px 12px; border-radius: 8px; background: var(--hover); border: 1px solid var(--line); }
+  .pag-info[hidden] { display: none; }
+  .pag-info strong { font-variant-numeric: tabular-nums; }
+  .pag-info .fica { color: var(--receita); }
+  .pag-info.aviso { background: var(--paper); color: var(--ink-soft); }
+  .cfg-tabela-wrap { overflow-x: auto; margin: 4px 0 10px; }
+  .cfg-tabela { display: grid; gap: 6px 8px; align-items: center; font-size: 12.5px; min-width: 520px; }
+  .cfg-tabela.taxas { grid-template-columns: minmax(120px, 1.4fr) minmax(120px, 1.3fr) 54px 54px 70px 62px 30px; }
+  .cfg-tabela.convenios { grid-template-columns: minmax(140px, 2fr) 110px 80px 30px; min-width: 380px; }
+  .cfg-tabela .cab { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .04em; }
+  .cfg-tabela input, .cfg-tabela select { padding: 5px 7px; font-size: 12.5px; min-width: 0; width: 100%; }
+  .cfg-tabela .del { border: 0; background: none; color: var(--ink-soft); cursor: pointer; padding: 4px; display: grid; place-items: center; }
+  .cfg-tabela .del:hover { color: var(--despesa); }
+  .cfg-tabela .del .ico { width: 15px; height: 15px; }
+  /* 3.7.1: tela Caixa */
+  .caixa-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 14px 16px 12px; }
+  .caixa-nav select, .caixa-nav input[type=date] { width: auto; }
+  .caixa-nav .seta { min-width: 34px; font-size: 16px; line-height: 1; }
+  .caixa-nav #caixaRotulo { font-size: 15px; min-width: 150px; text-align: center; }
+  .caixa-atrasados { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px; margin: 0 16px 12px; border-radius: 8px; background: var(--vencido-bg, #fdecea); color: var(--despesa); font-size: 13px; border: 1px solid var(--line); }
+  .caixa-atrasados[hidden] { display: none; }
+  .caixa-atrasados .ico { width: 16px; height: 16px; vertical-align: -3px; margin-right: 6px; }
+  .caixa-resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 0 16px 14px; }
+  .caixa-resumo[hidden] { display: none; }
+  .caixa-resumo .cx { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--paper); }
+  .caixa-resumo .cx .rot { font-size: 11.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .04em; }
+  .caixa-resumo .cx .val { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 2px 0; }
+  .caixa-resumo .cx .sub { font-size: 12px; color: var(--ink-soft); }
+  .caixa-ok { font-size: 12.5px; color: var(--ink-soft); display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+  tr.cx-confirmado td { background: var(--hover); }
+  .hist-parcial { color: var(--ink-soft); font-size: 11.5px; margin-top: 2px; }
+  .hist-parcial strong { color: var(--ink); font-weight: 600; }
+  /* 3.7.2: prestadores */
+  #viewPrestadores tfoot td { font-weight: 700; border-top: 2px solid var(--line); }
+  .pr-pct { font-variant-numeric: tabular-nums; }
+  .campo-erro { font-size: 12px; color: var(--despesa); margin-top: 4px; }
+  .campo-erro[hidden] { display: none; }
+  input.invalido { border-color: var(--despesa) !important; }
+  /* 3.7.2: aniversariantes no Início */
+  .bv-hoje { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 1100px) { .bv-hoje { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .bv-hoje { grid-template-columns: 1fr; } }
+  .bv-aniv { margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); padding: 10px 14px; }
+  .bv-aniv[hidden] { display: none; }
+  .bv-aniv-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; font-size: 13.5px; }
+  .bv-aniv-item + .bv-aniv-item { border-top: 1px solid var(--line); }
+  .bv-aniv-item .ico { width: 16px; height: 16px; vertical-align: -3px; color: var(--brass); }
+  .bv-aniv-item .muted { font-size: 12.5px; }
   @media (max-width: 640px) {
-    .tipo-toggle { gap: 6px; }
-    .tipo-toggle .tipo-btn { padding: 9px 4px; font-size: 13px; white-space: nowrap; }
+    .tipo-toggle { gap: 2px; }
+    .tipo-toggle .tipo-btn, .cond-btn { padding: 7px 9px; font-size: 12.5px; }
     #blocoTransf .form-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
     #blocoTransf .form-grid .span-2 { grid-column: 1 / -1; }
   }
-  .tipo-btn.transf:hover { border-color: var(--brass); color: var(--brass); }
+  .tipo-btn.transf:hover { color: var(--brass); }
   .tipo-btn.transf[aria-pressed="true"] { background: var(--brass); border-color: var(--brass); color: var(--brand-ink, #fff); }
   #blocoTransf { display: none; }
   #lancForm[data-modo="transf"] #blocoTransf { display: block; }
@@ -1169,12 +1302,9 @@
   .conta-saldo-cfg .cab { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .05em; }
   .settle-row input.settle-valor { width: 96px; padding: 5px 7px; font-size: 12px; text-align: right; }
   .tag-rec { color: var(--ink-soft); font-size: 11.5px; }
-  .tipo-btn {
-    font-family: var(--sans); font-size: 14px; font-weight: 700; padding: 9px 12px; border-radius: var(--radius);
-    border: 1.5px solid var(--line); background: var(--paper); color: var(--ink-soft); cursor: pointer;
-  }
-  .tipo-btn.receita:hover { border-color: var(--receita); color: var(--receita); }
-  .tipo-btn.despesa:hover { border-color: var(--despesa); color: var(--despesa); }
+  .tipo-btn { font-family: var(--sans); cursor: pointer; }
+  .tipo-btn.receita:hover { color: var(--receita); }
+  .tipo-btn.despesa:hover { color: var(--despesa); }
   .tipo-btn.receita[aria-pressed="true"] { background: var(--receita); border-color: var(--receita); color: var(--paper-raised); }
   .tipo-btn.despesa[aria-pressed="true"] { background: var(--despesa); border-color: var(--despesa); color: var(--paper-raised); }
   #lancForm[data-tipo="receita"] #fValor { color: var(--receita); font-weight: 600; }
@@ -1256,11 +1386,24 @@
     .nav .tab, .nav .nav-btn { width: auto; white-space: nowrap; padding: 7px 10px; }
     .nav .tab.active { box-shadow: inset 0 -3px 0 var(--brass); }
     .side-foot { display: none; }
+    .side-toggle-wrap { display: none; }
+    .app.menu-recolhido { grid-template-columns: minmax(0, 1fr); }
+    .menu-recolhido .nav-txt { display: inline; }
+    .menu-recolhido .brand-text { display: block; }
+    .menu-recolhido .nav-group-title { display: none; }
+    .menu-recolhido .nav .tab, .menu-recolhido .nav .nav-btn { padding: 7px 10px; }
     .topbar { position: static; padding: 12px 16px; }
     .shell { padding: 16px 16px 40px; }
     footer.legal { padding: 14px 16px 20px; }
   }
 </style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0e7c66">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="The Ways">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
 </head>
 <body>
 
@@ -1279,34 +1422,38 @@
     <nav class="nav" aria-label="Navegação principal">
       <div class="nav-group">
         <div class="nav-group-title">Visão geral</div>
-        <button class="tab" type="button" data-tab="inicio"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 7.5 8 3l5.5 4.5V13a1 1 0 0 1-1 1H10V10H6v4H3.5a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/></svg>Início</button>
-        <button class="tab" type="button" data-tab="painel"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>Painel</button>
+        <button class="tab" type="button" data-tab="inicio"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 7.5 8 3l5.5 4.5V13a1 1 0 0 1-1 1H10V10H6v4H3.5a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/></svg><span class="nav-txt">Início</span></button>
+        <button class="tab" type="button" data-tab="painel"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4" fill="none"/></svg><span class="nav-txt">Painel</span></button>
       </div>
       <div class="nav-group">
         <div class="nav-group-title">Financeiro</div>
-        <button class="tab" type="button" data-tab="cadastro"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" fill="none"/></svg>Novo Lançamento</button>
-        <button class="tab" type="button" data-tab="lancamentos"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>Lançamentos</button>
-        <button class="tab" type="button" data-tab="pendencias"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M8 4.5V8l2.5 1.5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>Pendências<span class="tab-badge" id="tabBadgePendencias" style="display:none"></span></button>
-        <button class="tab" type="button" data-tab="fluxocaixa"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 12 L6 7 L9 9 L14 3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>Fluxo de Caixa</button>
-        <button class="tab" type="button" data-tab="orcamento"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M8 2v6h6" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>Orçamento</button>
-        <button class="tab" type="button" data-tab="relatorios"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="8" width="3" height="6" fill="currentColor"/><rect x="6.5" y="4" width="3" height="10" fill="currentColor"/><rect x="11" y="6" width="3" height="8" fill="currentColor"/></svg>Relatórios Mensais</button>
+        <button class="tab" type="button" data-tab="cadastro"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" fill="none"/></svg><span class="nav-txt">Novo Lançamento</span></button>
+        <button class="tab" type="button" data-tab="lancamentos"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" stroke-width="1.6" fill="none"/></svg><span class="nav-txt">Lançamentos</span></button>
+        <button class="tab" type="button" data-tab="pendencias"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M8 4.5V8l2.5 1.5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg><span class="nav-txt">Caixa</span><span class="tab-badge" id="tabBadgePendencias" style="display:none"></span></button>
+        <button class="tab" type="button" data-tab="fluxocaixa"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 12 L6 7 L9 9 L14 3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg><span class="nav-txt">Fluxo de Caixa</span></button>
+        <button class="tab" type="button" data-tab="orcamento"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M8 2v6h6" stroke="currentColor" stroke-width="1.6" fill="none"/></svg><span class="nav-txt">Previsão orçamentária</span></button>
+        <button class="tab" type="button" data-tab="relatorios"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="8" width="3" height="6" fill="currentColor"/><rect x="6.5" y="4" width="3" height="10" fill="currentColor"/><rect x="11" y="6" width="3" height="8" fill="currentColor"/></svg><span class="nav-txt">Relatórios Mensais</span></button>
       </div>
       <div class="nav-group">
         <div class="nav-group-title">Negócio</div>
-        <button class="tab" type="button" data-tab="agenda"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12M5 1.5v3M11 1.5v3" stroke="currentColor" stroke-width="1.5"/></svg>Agenda<span class="tab-badge neutral" id="tabBadgeAgenda" style="display:none"></span></button>
-        <button class="tab" type="button" data-tab="tarefas"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>Tarefas<span class="tab-badge" id="tabBadgeTarefas" style="display:none"></span></button>
+        <button class="tab" type="button" data-tab="agenda"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12M5 1.5v3M11 1.5v3" stroke="currentColor" stroke-width="1.5"/></svg><span class="nav-txt">Agenda</span><span class="tab-badge neutral" id="tabBadgeAgenda" style="display:none"></span></button>
+        <button class="tab" type="button" data-tab="tarefas"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.8" fill="none"/></svg><span class="nav-txt">Tarefas</span><span class="tab-badge" id="tabBadgeTarefas" style="display:none"></span></button>
       </div>
       <div class="nav-group">
         <div class="nav-group-title">Cadastros</div>
-        <button class="tab" type="button" data-tab="clientes"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.2" r="2.7" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2.8 14c.4-2.9 2.6-4.6 5.2-4.6s4.8 1.7 5.2 4.6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><span id="tabClientesNome">Clientes</span></button>
-        <button class="tab" type="button" data-tab="fornecedores"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6.5 3.2 3h9.6L14 6.5M2 6.5h12M2 6.5V13h12V6.5M6 13V9.5h4V13" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg>Fornecedores</button>
+        <button class="tab" type="button" data-tab="clientes"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.2" r="2.7" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2.8 14c.4-2.9 2.6-4.6 5.2-4.6s4.8 1.7 5.2 4.6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><span class="nav-txt" id="tabClientesNome">Clientes</span></button>
+        <button class="tab" type="button" data-tab="fornecedores"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6.5 3.2 3h9.6L14 6.5M2 6.5h12M2 6.5V13h12V6.5M6 13V9.5h4V13" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg><span class="nav-txt">Fornecedores</span></button>
+        <button class="tab" type="button" data-tab="prestadores"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.5" cy="5" r="2.5"/><path d="M1.8 13.5c.4-2.7 2.3-4.2 4.7-4.2 1 0 1.9.3 2.6.7"/><path d="M11.5 9v5M9 11.5h5"/></svg><span class="nav-txt">Prestadores</span></button>
       </div>
       <div class="nav-group">
         <div class="nav-group-title">Sistema</div>
-        <button class="tab" type="button" data-tab="ajuda"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6.2 6.3a1.9 1.9 0 1 1 2.6 1.7c-.5.2-.8.6-.8 1.1v.4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="8" cy="11.6" r=".9" fill="currentColor"/></svg>Ajuda</button>
-        <button class="nav-btn" id="btnSettings" type="button"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.5" fill="currentColor"/><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/></svg>Configurações</button>
+        <button class="tab" type="button" data-tab="ajuda"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6.2 6.3a1.9 1.9 0 1 1 2.6 1.7c-.5.2-.8.6-.8 1.1v.4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="8" cy="11.6" r=".9" fill="currentColor"/></svg><span class="nav-txt">Ajuda</span></button>
+        <button class="nav-btn" id="btnSettings" type="button"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.5" fill="currentColor"/><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/></svg><span class="nav-txt">Configurações</span></button>
       </div>
     </nav>
+    <div class="nav side-toggle-wrap">
+      <button class="nav-btn side-toggle" id="btnRecolher" type="button" aria-expanded="true"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg><span class="nav-txt">Recolher menu</span></button>
+    </div>
     <div class="side-foot">
       <span class="powered" id="brandPowered" hidden>Desenvolvido por The Ways</span>
       <button type="button" data-open-licenca>Licença e direitos autorais</button>
@@ -1325,16 +1472,17 @@
           <span><span class="backup-dot"></span><span id="backupBannerText">Tudo salvo neste backup.</span></span>
           <span id="backupBannerTime" class="muted"></span>
         </div>
-        <button class="btn btn-ghost" id="btnRestore" type="button">↥ Restaurar backup</button>
-        <button class="btn btn-ghost" id="btnBackup" type="button">⬇ Baixar backup</button>
+        <button class="btn btn-ghost btn-ic" id="btnRestore" type="button"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11V3M4.8 6.2 8 3l3.2 3.2M3 13.5h10"/></svg>Restaurar backup</button>
+        <button class="btn btn-ghost btn-ic" id="btnBackup" type="button"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v8M4.8 7.8 8 11l3.2-3.2M3 13.5h10"/></svg>Baixar backup</button>
         <div class="novo-wrap">
           <button class="btn btn-brass" id="btnNovo" type="button" aria-haspopup="true" aria-expanded="false">+ Novo</button>
           <div class="novo-menu" id="novoMenu" hidden>
-            <button type="button" data-novo="lancamento">Lançamento</button>
-            <button type="button" data-novo="compromisso">Compromisso na agenda</button>
-            <button type="button" data-novo="cliente" id="novoMenuCliente">Cliente</button>
-            <button type="button" data-novo="fornecedor">Fornecedor</button>
-            <button type="button" data-novo="tarefa">Tarefa</button>
+            <button type="button" data-novo="lancamento"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v10M3 8h10"/></svg>Lançamento</button>
+            <button type="button" data-novo="compromisso"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.8v2.6M10.5 1.8v2.6"/></svg>Compromisso na agenda</button>
+            <button type="button" data-novo="cliente" id="novoMenuCliente"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5.2" r="2.7"/><path d="M2.8 14c.4-2.9 2.6-4.6 5.2-4.6s4.8 1.7 5.2 4.6"/></svg>Cliente</button>
+            <button type="button" data-novo="fornecedor"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 3.2 3h9.6L14 6.5M2 6.5h12M2 6.5V13h12V6.5M6 13V9.5h4V13"/></svg>Fornecedor</button>
+            <button type="button" data-novo="prestador"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.5" cy="5" r="2.5"/><path d="M1.8 13.5c.4-2.7 2.3-4.2 4.7-4.2 1 0 1.9.3 2.6.7"/><path d="M11.5 9v5M9 11.5h5"/></svg>Prestador</button>
+            <button type="button" data-novo="tarefa"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.2" y="2.2" width="11.6" height="11.6" rx="2"/><path d="M5 8.2l2 2 4-4.2"/></svg>Tarefa</button>
           </div>
         </div>
         <input type="file" id="fileRestore" accept=".dat,.json,application/json" style="display:none">
@@ -1348,8 +1496,8 @@
       <select id="ctxEmpresa" aria-label="Empresa"><option value="">Todas as empresas</option></select>
       <select id="ctxNatureza" aria-label="Natureza">
         <option value="">PF e PJ</option>
-        <option value="PJ">Só PJ</option>
-        <option value="PF">Só PF</option>
+        <option value="PJ">PJ</option>
+        <option value="PF">PF</option>
       </select>
       <span class="ctx-periodo" id="ctxPeriodoWrap">
         <select id="ctxPeriodoTipo" aria-label="Período">
@@ -1371,7 +1519,6 @@
       <section class="boas-vindas">
         <div class="bv-data" id="bvData"></div>
         <h2 class="bv-saudacao" id="bvSaudacao"></h2>
-        <p class="bv-sub" id="bvSub">Escolha por onde começar.</p>
         <form class="bv-nome" id="bvNomeForm" style="display:none">
           <label for="bvNome">Como podemos te chamar?</label>
           <div class="bv-nome-linha">
@@ -1379,8 +1526,13 @@
             <button class="btn btn-brass btn-sm" type="submit">Salvar</button>
           </div>
         </form>
-        <div class="bv-atalhos" id="bvAtalhos"></div>
-        <p class="bv-ajuda">Dúvidas sobre como usar? <button type="button" class="link-btn" id="bvAjuda">Veja a Ajuda</button></p>
+        <h3 class="bv-hoje-tit">Hoje</h3>
+        <div class="bv-hoje" id="bvAtalhos"></div>
+        <div class="bv-aniv" id="bvAniv" hidden></div>
+        <div class="bv-acoes">
+          <button type="button" class="btn btn-brass btn-ic" data-bv-tab="cadastro"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v10M3 8h10"/></svg>Novo lançamento</button>
+          <p class="bv-ajuda">Dúvidas sobre como usar? <button type="button" class="link-btn" id="bvAjuda">Veja a Ajuda</button></p>
+        </div>
       </section>
     </div>
 
@@ -1412,7 +1564,7 @@
         </div>
         <div>
           <div class="card">
-            <div class="card-head"><h2 id="pnOrcTitulo">Orçamento do mês</h2><button type="button" class="link-btn" data-pn-go="orcamento">abrir o orçamento</button></div>
+            <div class="card-head"><h2 id="pnOrcTitulo">Previsão do mês</h2><button type="button" class="link-btn" data-pn-go="orcamento">abrir a previsão</button></div>
             <div id="pnOrc"></div>
           </div>
           <div class="card">
@@ -1450,8 +1602,7 @@
 
             <div class="field" id="campoNatureza">
               <label for="fNatureza">Natureza</label>
-              <select id="fNatureza" required>
-                <option value="">— selecione —</option>
+              <select id="fNatureza">
                 <option value="PJ">PJ (pessoa jurídica)</option>
                 <option value="PF">PF (pessoa física)</option>
               </select>
@@ -1459,7 +1610,7 @@
           </div>
 
           <div id="blocoLancamento">
-          <div class="form-divisor" aria-hidden="true"></div>
+          <div class="form-secao"><span class="num">1</span>Categoria e valor</div>
           <div class="form-grid">
             <div class="field span-2">
               <label for="fCategoria">Categoria</label>
@@ -1479,27 +1630,22 @@
             </div>
           </div>
 
-          <div class="form-divisor" aria-hidden="true"></div>
+          <div class="form-secao"><span class="num">2</span>Vencimento</div>
           <div class="form-grid">
             <div class="field" id="campoData">
               <label for="fData">Vencimento</label>
               <input type="date" id="fData" required>
             </div>
 
-            <div class="field">
-              <label for="fParcelado">Parcelamento</label>
-              <div class="competencia-row">
-                <input type="checkbox" id="fParcelado" title="Lançamento parcelado">
-                <span class="muted" style="font-size:12.5px">É parcelado?</span>
+            <div class="field span-2" id="campoRecorrente">
+              <label id="fCondLabel">Como é</label>
+              <div class="cond-toggle" role="group" aria-labelledby="fCondLabel">
+                <button type="button" class="cond-btn" data-cond="unica" aria-pressed="true">Uma vez</button>
+                <button type="button" class="cond-btn" data-cond="parcelado" aria-pressed="false">Parcelado</button>
+                <button type="button" class="cond-btn" data-cond="recorrente" aria-pressed="false">Repete todo mês</button>
               </div>
-            </div>
-
-            <div class="field" id="campoRecorrente">
-              <label for="fRecorrente">Repetição</label>
-              <div class="competencia-row">
-                <input type="checkbox" id="fRecorrente" title="Repete todo mês">
-                <span class="muted" style="font-size:12.5px">Repete todo mês?</span>
-              </div>
+              <input type="checkbox" id="fParcelado" hidden>
+              <input type="checkbox" id="fRecorrente" hidden>
             </div>
 
             <div class="field" id="campoRecInicio" style="display:none">
@@ -1538,18 +1684,24 @@
               <input type="number" id="fParceladoQtd" min="2" step="1" placeholder="Ex.: 12">
             </div>
 
-            <div class="field span-2" id="campoParceladoPreview" style="display:none">
-              <label>Valor de cada parcela</label>
-              <div id="parceladoPreview" class="preview-box">—</div>
+            <div class="field" id="campoParceladoPreview" style="display:none; grid-column: 1 / -1">
+              <label>Parcelas</label>
+              <p class="parc-ajuda">Confira as datas e os valores. Para mudar, é só digitar em cima; se estiver tudo certo, siga em frente.</p>
+              <div id="parceladoPreview">—</div>
             </div>
           </div>
 
-          <div class="form-divisor" aria-hidden="true"></div>
+          <div class="form-secao"><span class="num">3</span><span id="fSecaoQuem">Quem e como paga</span></div>
           <div class="form-grid">
             <div class="field">
               <div class="rotulo-linha"><label for="fQuem" id="fQuemLabel">Cliente / fornecedor</label><button type="button" class="campo-novo" id="fQuemNovo" hidden>+ Novo</button></div>
               <input type="text" id="fQuem" list="fQuemLista" autocomplete="off" placeholder="Buscar ou cadastrar">
               <datalist id="fQuemLista"></datalist>
+            </div>
+
+            <div class="field" id="campoPrestador" hidden>
+              <label for="fPrestador">Quem atendeu</label>
+              <select id="fPrestador"></select>
             </div>
 
             <div class="field">
@@ -1561,6 +1713,18 @@
               <label for="fLocal">Conta / banco</label>
               <select id="fLocal"></select>
             </div>
+
+            <div class="field" id="campoConvenio" hidden>
+              <label for="fConvenio">Convênio</label>
+              <select id="fConvenio"></select>
+            </div>
+
+            <div class="field" id="campoChaves" hidden>
+              <label for="fChaves">Quantidade de chaves</label>
+              <input type="text" inputmode="decimal" id="fChaves" placeholder="Ex.: 120">
+            </div>
+
+            <div class="pag-info" id="pagInfo" hidden></div>
           </div>
 
           <details class="mais-detalhes" id="maisDetalhes">
@@ -1579,6 +1743,14 @@
                 <div class="competencia-row">
                   <input type="checkbox" id="fUsaCompetencia" title="Usar mês de competência diferente do vencimento">
                   <input type="month" id="fCompetencia" disabled>
+                </div>
+              </div>
+
+              <div class="field" id="campoPessoal">
+                <label for="fPessoal">Conta pessoal?</label>
+                <div class="competencia-row">
+                  <input type="checkbox" id="fPessoal">
+                  <span class="muted" style="font-size:12.5px">É do sócio, não da empresa (PF)</span>
                 </div>
               </div>
 
@@ -1663,8 +1835,8 @@
         </select>
         <select id="filtroTipo">
           <option value="">Receitas e despesas</option>
-          <option value="receita">Só receitas</option>
-          <option value="despesa">Só despesas</option>
+          <option value="receita">Receitas</option>
+          <option value="despesa">Despesas</option>
         </select>
         <input type="text" id="filtroBusca" class="search" placeholder="Buscar por descrição, categoria, cliente, fornecedor…">
         <span class="filter-count" id="filterCount"></span>
@@ -1682,8 +1854,7 @@
               <th style="width:32px"><input type="checkbox" id="checkAll"></th>
               <th>Vencimento</th>
               <th>Empresa</th>
-              <th>Nat.</th>
-              <th>Operação / Categoria</th>
+              <th>Categoria</th>
               <th>Descrição / Cliente ou fornecedor</th>
               <th class="num">Valor</th>
               <th>Status</th>
@@ -1704,17 +1875,34 @@
 
     <div id="viewPendencias" style="display:none">
       <div class="card">
+        <div class="caixa-nav">
+          <select id="caixaPeriodo" aria-label="Período do caixa">
+            <option value="dia">Dia</option>
+            <option value="semana">Semana</option>
+            <option value="mes">Mês</option>
+            <option value="aberto">Tudo em aberto</option>
+          </select>
+          <button type="button" class="btn btn-outline btn-sm seta" id="caixaAnt" aria-label="Período anterior">‹</button>
+          <strong id="caixaRotulo"></strong>
+          <button type="button" class="btn btn-outline btn-sm seta" id="caixaProx" aria-label="Próximo período">›</button>
+          <input type="date" id="caixaData" aria-label="Ir para a data">
+          <button type="button" class="btn btn-outline btn-sm" id="caixaHoje">Hoje</button>
+        </div>
+        <div class="caixa-atrasados" id="caixaAtrasados" hidden></div>
+        <div class="caixa-resumo" id="caixaResumo" hidden></div>
         <div class="filters">
           <select id="filtroPendStatus">
-            <option value="">Vencidos e a vencer</option>
-            <option value="VENCIDO">Só vencidos</option>
-            <option value="A VENCER">Só a vencer</option>
+            <option value="">Confirmados e a confirmar</option>
+            <option value="ABERTO">A confirmar</option>
+            <option value="LIQUIDADO">Confirmados</option>
+            <option value="VENCIDO">Vencidos</option>
             <option value="PAGAR/RECEBER">Vence hoje</option>
+            <option value="A VENCER">A vencer</option>
           </select>
           <select id="filtroPendTipo">
             <option value="">A pagar e a receber</option>
-            <option value="despesa">Só a pagar</option>
-            <option value="receita">Só a receber</option>
+            <option value="despesa">A pagar</option>
+            <option value="receita">A receber</option>
           </select>
           <input type="text" id="filtroPendBusca" class="search" placeholder="Buscar por descrição, categoria, cliente, fornecedor…">
           <span class="filter-count" id="filterCountPend"></span>
@@ -1722,7 +1910,7 @@
         <div class="bulkbar" id="bulkBarPend" style="display:none">
           <span id="bulkCountPend"></span>
           <span>em <input type="date" id="bulkPendData" style="width:auto; padding:4px 7px; font-size:12px"></span>
-          <button class="btn btn-brass btn-sm" id="btnBulkSettle" type="button">Marcar selecionados como pagos/recebidos</button>
+          <button class="btn btn-brass btn-sm" id="btnBulkSettle" type="button">Confirmar selecionados</button>
           <button class="link-btn" id="btnBulkPendClear" type="button">limpar seleção</button>
         </div>
         <div class="table-wrap">
@@ -1732,20 +1920,19 @@
                 <th style="width:32px"><input type="checkbox" id="checkAllPend" aria-label="Selecionar todos"></th>
                 <th>Vencimento</th>
                 <th>Empresa</th>
-                <th>Nat.</th>
-                <th>Operação / Categoria</th>
+                <th>Categoria</th>
                 <th>Descrição / Cliente ou fornecedor</th>
                 <th class="num">Valor</th>
                 <th>Status</th>
-                <th class="col-actions">Baixa</th>
+                <th class="col-actions">Confirmar</th>
               </tr>
             </thead>
             <tbody id="tbodyPend"></tbody>
           </table>
           <div class="totais-filtro" id="totaisPend"></div>
           <div class="empty-state" id="emptyStatePend" style="display:none">
-            <div class="big">Nenhuma pendência</div>
-            <div>Tudo que está cadastrado já foi marcado como pago ou recebido.</div>
+            <div class="big">Nada neste período</div>
+            <div id="emptyStatePendSub">Nenhuma entrada ou saída nesta data.</div>
           </div>
         </div>
       </div>
@@ -1816,16 +2003,16 @@
     <div id="viewOrcamento" style="display:none">
       <div class="card">
         <div class="filters">
-          <div class="seg" role="tablist" aria-label="Orçamento">
+          <div class="seg" role="tablist" aria-label="Previsão orçamentária">
             <button type="button" class="seg-btn active" data-orc-aba="comparar">Previsto x Realizado</button>
-            <button type="button" class="seg-btn" data-orc-aba="montar">Montar orçamento</button>
+            <button type="button" class="seg-btn" data-orc-aba="montar">Montar previsão</button>
           </div>
           <select id="orcRegime" aria-label="Regime do realizado">
             <option value="competencia">Realizado por competência</option>
             <option value="caixa">Realizado por caixa (pago ou recebido)</option>
           </select>
           <strong id="orcAnoLabel" style="margin-left:auto"></strong>
-          <button class="btn btn-outline btn-sm" id="btnXlOrc" type="button" title="Baixa o orçamento do ano como planilha do Excel">Exportar Excel</button>
+          <button class="btn btn-outline btn-sm" id="btnXlOrc" type="button" title="Baixa a previsão do ano como planilha do Excel">Exportar Excel</button>
         </div>
         <div class="card-body">
           <p class="fc-saldo-nota" id="orcAviso" style="margin:0 0 14px"></p>
@@ -1841,7 +2028,7 @@
           <div id="orcMontar" style="display:none">
             <div class="orc-acoes" id="orcAcoes">
               <span class="grupo">Copiar o realizado de <select id="orcAnoReal"></select> <button type="button" class="btn btn-outline btn-sm" id="orcCopiarReal">Copiar</button></span>
-              <span class="grupo">Copiar o orçamento de <select id="orcAnoOrc"></select> <button type="button" class="btn btn-outline btn-sm" id="orcCopiarOrc">Copiar</button></span>
+              <span class="grupo">Copiar a previsão de <select id="orcAnoOrc"></select> <button type="button" class="btn btn-outline btn-sm" id="orcCopiarOrc">Copiar</button></span>
               <span class="grupo">Reajuste de <input type="text" inputmode="decimal" id="orcPct" placeholder="5"> % em
                 <select id="orcPctAlvo"><option value="">tudo</option><option value="RECEITAS">receitas</option><option value="DESPESAS">despesas</option></select>
                 <button type="button" class="btn btn-outline btn-sm" id="orcAplicarPct">Aplicar</button></span>
@@ -1946,9 +2133,9 @@
               <p class="sub-note" id="agNotifStatus" style="margin-top:0"></p>
               <div style="display:flex; flex-wrap:wrap; gap:8px">
                 <button class="btn btn-outline btn-sm" id="agNotifBtn" type="button">Ativar notificações do navegador</button>
-                <button class="btn btn-outline btn-sm" id="agIcsAll" type="button">Exportar compromissos futuros (.ics)</button>
+                <button class="btn btn-outline btn-sm" id="agIcsAll" type="button">Exportar compromissos futuros para Google Agenda (.ics)</button>
               </div>
-              <p class="sub-note" style="margin-top:10px">O arquivo .ics pode ser aberto no celular (Google Agenda, Apple Calendário, Outlook): lá os lembretes tocam mesmo com este dashboard fechado.</p>
+              <p class="sub-note" style="margin-top:10px">O arquivo .ics entra no Google Agenda de uma vez: no computador, abra o Google Agenda › Configurações › Importar e exportar › Importar. Também abre no Apple Calendário e no Outlook. Lá os lembretes tocam mesmo com este dashboard fechado. Para um compromisso só, use o botão <strong>Google Agenda</strong> do próprio compromisso.</p>
             </div>
           </div>
         </div>
@@ -1992,6 +2179,24 @@
       </div>
       <p class="sub-note">É o mesmo cadastro de "Fornecedor" dos lançamentos de despesa. Nomes digitados lá entram aqui sozinhos; clique em Editar para completar a ficha. "Pago" soma as despesas já pagas a cada fornecedor.</p>
     </div><!-- /viewFornecedores -->
+
+    <div id="viewPrestadores" style="display:none">
+      <div class="card">
+        <div class="filters">
+          <input type="text" id="prBusca" class="search" placeholder="Buscar prestador por nome, especialidade ou telefone…">
+          <span class="filter-count" id="prCount"></span>
+          <button class="btn btn-brass btn-sm" id="prNovo" type="button">+ Novo prestador</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nome</th><th>Especialidade</th><th class="num">Repasse</th><th class="num">Atendido</th><th class="num">Recebido</th><th class="num">Repasse gerado</th><th class="num">Repasse pago</th><th class="num">A pagar</th><th class="col-actions">Ações</th></tr></thead>
+            <tbody id="prTbody"></tbody>
+            <tfoot id="prTfoot"></tfoot>
+          </table>
+        </div>
+      </div>
+      <p class="sub-note" id="prNota"></p>
+    </div><!-- /viewPrestadores -->
 
     <div id="viewTarefas" style="display:none">
       <div class="card">
@@ -2221,6 +2426,11 @@
               <label for="pcNome">Nome</label>
               <input type="text" id="pcNome" required>
             </div>
+            <div class="field">
+              <label for="pcCpf">CPF</label>
+              <input type="text" inputmode="numeric" id="pcCpf" placeholder="000.000.000-00" maxlength="14" required>
+              <span class="campo-erro" id="pcCpfErro" hidden>CPF inválido. Confira os números.</span>
+            </div>
             <div class="field span-2">
               <label for="pcEndereco">Endereço <span class="hint">(rua e número)</span></label>
               <input type="text" id="pcEndereco">
@@ -2244,10 +2454,6 @@
             <div class="field">
               <label for="pcUf">Estado</label>
               <select id="pcUf"></select>
-            </div>
-            <div class="field">
-              <label for="pcCpf">CPF</label>
-              <input type="text" inputmode="numeric" id="pcCpf" placeholder="000.000.000-00" maxlength="14">
             </div>
             <div class="field">
               <label for="pcNasc">Nascimento</label>
@@ -2281,6 +2487,62 @@
           <div class="form-actions">
             <button type="button" class="btn btn-outline" id="pcCancelar">Cancelar</button>
             <button type="submit" class="btn btn-brass" id="pcSalvar">Salvar cadastro</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="prModal">
+    <div class="modal pc-modal" role="dialog" aria-modal="true" aria-labelledby="prFormTitulo">
+      <div class="card-head">
+        <h2 id="prFormTitulo">Novo prestador</h2>
+        <button class="icon-btn" id="prModalFechar" type="button" aria-label="Fechar">✕</button>
+      </div>
+      <div class="card-body">
+        <form id="prForm" autocomplete="off">
+          <div class="form-grid">
+            <div class="field span-2">
+              <label for="prNome">Nome</label>
+              <input type="text" id="prNome" required>
+            </div>
+            <div class="field">
+              <label for="prRepasse">Repasse <span class="hint">(% que fica com o prestador)</span></label>
+              <input type="text" inputmode="decimal" id="prRepasse" placeholder="Ex.: 40">
+            </div>
+            <div class="field">
+              <label for="prEspecialidade">Especialidade</label>
+              <input type="text" id="prEspecialidade" placeholder="Ex.: Implantodontia">
+            </div>
+            <div class="field">
+              <label for="prDoc">CPF ou CNPJ</label>
+              <input type="text" inputmode="numeric" id="prDoc" maxlength="18">
+            </div>
+            <div class="field">
+              <label for="prFone">Telefone / WhatsApp</label>
+              <input type="text" inputmode="tel" id="prFone" placeholder="(11) 91234-5678">
+            </div>
+            <div class="field">
+              <label for="prEmail">E-mail</label>
+              <input type="email" id="prEmail">
+            </div>
+            <div class="field">
+              <label for="prPix">Chave Pix</label>
+              <input type="text" id="prPix">
+            </div>
+            <div class="field span-2">
+              <label for="prBanco">Banco, agência e conta <span class="hint">(opcional)</span></label>
+              <input type="text" id="prBanco">
+            </div>
+            <div class="field span-2">
+              <label for="prObs">Observação <span class="hint">(opcional)</span></label>
+              <input type="text" id="prObs">
+            </div>
+          </div>
+          <p class="sub-note" style="margin:6px 0 0">O repasse é calculado sobre o valor que sobra depois da taxa do cartão. Ele entra como conta a pagar quando o cliente paga.</p>
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" id="prCancelar">Cancelar</button>
+            <button type="submit" class="btn btn-brass" id="prSalvar">Cadastrar prestador</button>
           </div>
         </form>
       </div>
@@ -2387,6 +2649,27 @@
           <button type="button" class="link-btn" data-escopo="">Cancelar</button>
         </div>
         <p class="muted" id="serieNota" style="font-size:12px; margin:0">Parcelas já pagas ou recebidas nunca são alteradas.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="parcialModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="parcialTitulo" style="width:min(500px,100%)">
+      <div class="card-head">
+        <h2 id="parcialTitulo">Valor menor que o da conta</h2>
+      </div>
+      <div class="card-body">
+        <p id="parcialTexto" style="margin:0"></p>
+        <div class="field" style="margin-top:12px">
+          <label for="parcialForma" id="parcialFormaLabel">Forma de pagamento desta parte</label>
+          <select id="parcialForma"></select>
+        </div>
+        <div class="serie-opcoes">
+          <button type="button" class="btn btn-brass" data-parcial="parte" id="parcialBtnParte">Foi só uma parte</button>
+          <button type="button" class="btn btn-outline" data-parcial="desconto" id="parcialBtnDesc">Foi desconto, encerrar</button>
+          <button type="button" class="link-btn" data-parcial="">Cancelar</button>
+        </div>
+        <p class="muted" id="parcialNota" style="font-size:12px; margin:0"></p>
       </div>
     </div>
   </div>
@@ -2555,6 +2838,7 @@ function ensureDefaults(st) {
   if (!st.config.centroPorCategoria || typeof st.config.centroPorCategoria !== 'object') st.config.centroPorCategoria = centroPorCategoriaInicial(st.config);
   if (!Array.isArray(st.pacientes)) st.pacientes = [];
   if (!Array.isArray(st.fornecedores)) st.fornecedores = [];
+  if (!Array.isArray(st.prestadores)) st.prestadores = []; /* 3.7.2 */
   if (!Array.isArray(st.agendaRepeticoes)) st.agendaRepeticoes = [];
   if (!Array.isArray(st.config.profissionais)) st.config.profissionais = [];
   if (!st.config.tarefas || typeof st.config.tarefas !== 'object') st.config.tarefas = {};
@@ -2564,6 +2848,9 @@ function ensureDefaults(st) {
   if (!st.config.aberturaBoasVindas) { st.config.aberturaBoasVindas = true; if (st.config.telaInicial !== 'painel') st.config.telaInicial = 'inicio'; }
   if (!['inicio', 'cadastro', 'painel'].includes(st.config.telaInicial)) st.config.telaInicial = 'inicio';
   if (typeof st.config.usuarioNome !== 'string') st.config.usuarioNome = '';
+  /* 3.7.0: taxas do cartão por tipo de recebimento e convênios (valor da chave) */
+  if (!Array.isArray(st.config.taxasCartao)) st.config.taxasCartao = taxasCartaoIniciais(st.config.formaPagamento || []);
+  if (!Array.isArray(st.config.convenios)) st.config.convenios = [];
   /* 3.6.6: ramo de atividade (quem ainda não escolheu fica com Odontologia, o plano de origem) */
   if (!SEGMENTOS[st.config.segmento]) st.config.segmento = 'odontologia';
   /* 3.6.6b: quem nunca mudou a mensagem padrão passa a usar a nova (fala em cliente) */
@@ -2773,6 +3060,7 @@ function seedState() {
     tarefas: [],
     pacientes: [],
     fornecedores: [],
+    prestadores: [],
     agendaRepeticoes: [],
     dirtyCount: 0,
     lastBackupAt: null,
@@ -2872,7 +3160,11 @@ function persist() {
 
 function markDirty(n = 1) {
   state.dirtyCount += n;
+  try { sincronizarParciais(); } catch (e) { console.error(e); } /* 3.7.1 */
+  try { sincronizarTaxasCartao(); } catch (e) { console.error(e); } /* 3.7.0 */
+  try { if (sincronizarRepasses()) sincronizarParciais(); } catch (e) { console.error(e); } /* 3.7.2 */
   persist();
+  try { mostrarBarraDesfazer(); } catch (e) {} /* 3.6.11: outra alteração tira o Desfazer da tela */
 }
 
 /* =========================================================================
@@ -3020,7 +3312,7 @@ function fillSelect(sel, options, { placeholder, keepValue } = {}) {
 
 function refreshEmpresaSelect() {
   const sel = document.getElementById('fEmpresa');
-  fillSelect(sel, state.config.empresas, { placeholder: '— selecione —' });
+  fillSelect(sel, state.config.empresas, { placeholder: state.config.empresas.length === 1 ? null : '— selecione —' });
   // com uma única empresa cadastrada, ela já vem escolhida
   if (state.config.empresas.length === 1 && !sel.value) sel.value = state.config.empresas[0];
   refreshLocalSelect();
@@ -3177,6 +3469,14 @@ function refreshCentroCustoSelect() {
 }
 function refreshFormaPagamentoSelect() {
   fillSelect(document.getElementById('fFormaPagamento'), state.config.formaPagamento, { placeholder: '—' });
+  const sc = document.getElementById('fConvenio');
+  if (sc) {
+    const ant = sc.value;
+    const lista = state.config.convenios || [];
+    sc.innerHTML = (lista.length === 1 ? '' : '<option value="">— selecione —</option>') + lista.map(c => `<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join('');
+    if (lista.some(c => c.id === ant)) sc.value = ant;
+  }
+  try { atualizarInfoPagamento(); } catch (e) {}
 }
 function refreshLocalSelect() {
   const empresa = document.getElementById('fEmpresa').value;
@@ -3379,20 +3679,90 @@ function dividirEmParcelas(valorTotal, qtd) {
   return Array.from({ length: qtd }, (_, i) => (baseCents + (i === 0 ? resto : 0)) / 100);
 }
 
-function updateParceladoPreview() {
-  const box = document.getElementById('parceladoPreview');
+/* 3.6.12: natureza sai do formulário. Lançamento de empresa é PJ; PF só marcando "Conta pessoal". */
+function naturezaDoForm() {
+  return document.getElementById('fPessoal').checked ? 'PF' : 'PJ';
+}
+document.getElementById('fPessoal').addEventListener('change', (e) => {
+  document.getElementById('fNatureza').value = e.target.checked ? 'PF' : 'PJ';
+});
+
+/* 3.6.12: "Como é": uma vez, parcelado ou repete todo mês (um exclui o outro, e só aparece o que vale) */
+function syncCondicao() {
+  const parc = document.getElementById('fParcelado').checked, rec = document.getElementById('fRecorrente').checked;
+  const atual = parc ? 'parcelado' : rec ? 'recorrente' : 'unica';
+  document.querySelectorAll('.cond-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cond === atual)));
+}
+document.querySelectorAll('.cond-btn').forEach(b => b.addEventListener('click', () => {
+  const parc = document.getElementById('fParcelado'), rec = document.getElementById('fRecorrente');
+  const quer = b.dataset.cond;
+  const mudar = (cb, valor) => { if (cb.checked !== valor) { cb.checked = valor; cb.dispatchEvent(new Event('change')); } };
+  if (quer !== 'parcelado') mudar(parc, false);
+  if (quer !== 'recorrente') mudar(rec, false);
+  if (quer === 'parcelado') mudar(parc, true);
+  if (quer === 'recorrente') mudar(rec, true);
+  syncCondicao();
+}));
+
+/* 3.6.12: as parcelas aparecem uma a uma, com data e valor que podem ser mudados antes de salvar */
+let parcelasForm = [];
+function montarParcelasForm() {
   const qtd = parseInt(document.getElementById('fParceladoQtd').value, 10);
   const total = currencyDisplayToNumber(document.getElementById('fValor').value);
-  if (!qtd || qtd < 2 || !total) { box.textContent = '—'; return; }
-  const parcelas = dividirEmParcelas(total, qtd);
-  const primeira = parcelas[0], demais = parcelas[parcelas.length - 1];
-  box.innerHTML = primeira === demais
-    ? `<span>${qtd}× de <strong>${formatCurrency(primeira)}</strong></span>`
-    : `<span>1ª de <strong>${formatCurrency(primeira)}</strong> (com o ajuste dos centavos) + ${qtd - 1}× de <strong>${formatCurrency(demais)}</strong></span>`;
+  const dia = document.getElementById('fParceladoDia').value;
+  if (!qtd || qtd < 2 || qtd > 120 || !total || !dia) { parcelasForm = []; return; }
+  const valores = dividirEmParcelas(total, qtd);
+  parcelasForm = valores.map((v, i) => ({ data: addMonthsClamped(dia, i), valor: v }));
 }
+function somaParcelasForm() { return Math.round(parcelasForm.reduce((t, p) => t + (Number(p.valor) || 0), 0) * 100) / 100; }
+function renderSomaParcelas() {
+  const el = document.getElementById('parcSoma');
+  if (!el) return;
+  const total = currencyDisplayToNumber(document.getElementById('fValor').value);
+  const soma = somaParcelasForm();
+  const dif = Math.round((total - soma) * 100) / 100;
+  el.classList.toggle('erro', Math.abs(dif) >= 0.005);
+  el.innerHTML = Math.abs(dif) < 0.005
+    ? `Soma das parcelas: <strong>${formatCurrency(soma)}</strong>, igual ao total.`
+    : `Soma das parcelas: ${formatCurrency(soma)}. ${dif > 0 ? 'Faltam' : 'Sobram'} ${formatCurrency(Math.abs(dif))} para fechar ${formatCurrency(total)}. <button type="button" class="btn btn-outline btn-sm" id="parcAjustar">Ajustar na última parcela</button>`;
+  const aj = document.getElementById('parcAjustar');
+  if (aj) aj.addEventListener('click', () => {
+    const ult = parcelasForm[parcelasForm.length - 1];
+    ult.valor = Math.round((ult.valor + dif) * 100) / 100;
+    if (ult.valor <= 0) { toast('A última parcela ficaria zerada ou negativa. Ajuste os valores à mão.'); ult.valor = Math.round((ult.valor - dif) * 100) / 100; return; }
+    renderParcelasForm();
+  });
+}
+function renderParcelasForm() {
+  const box = document.getElementById('parceladoPreview');
+  if (!parcelasForm.length) { box.innerHTML = '<span class="muted">Informe o valor total, a 1ª data e o número de parcelas.</span>'; return; }
+  const n = parcelasForm.length;
+  box.innerHTML = `<div class="parc-lista"><span class="cab">Parcela</span><span class="cab">Vencimento</span><span class="cab" style="text-align:right">Valor (R$)</span>`
+    + parcelasForm.map((p, i) => `<span>${i + 1}/${n}</span>
+      <input type="date" data-parc-data="${i}" value="${p.data}" aria-label="Vencimento da parcela ${i + 1}">
+      <input type="text" inputmode="decimal" class="valor" data-parc-valor="${i}" value="${numberToCurrencyDisplay(p.valor)}" aria-label="Valor da parcela ${i + 1}">`).join('')
+    + `</div><div class="parc-soma" id="parcSoma"></div>`;
+  box.querySelectorAll('[data-parc-data]').forEach(inp => inp.addEventListener('change', () => { parcelasForm[Number(inp.dataset.parcData)].data = inp.value; }));
+  box.querySelectorAll('[data-parc-valor]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      inp.value = liveFormatCurrencyTyping(inp.value);
+      parcelasForm[Number(inp.dataset.parcValor)].valor = currencyDisplayToNumber(inp.value);
+      renderSomaParcelas();
+    });
+    inp.addEventListener('blur', () => { inp.value = finalizeCurrencyDisplay(inp.value); });
+  });
+  renderSomaParcelas();
+}
+function updateParceladoPreview() {
+  montarParcelasForm();
+  renderParcelasForm();
+}
+document.getElementById('fParceladoDia').addEventListener('change', updateParceladoPreview);
 document.getElementById('fParceladoQtd').addEventListener('input', updateParceladoPreview);
-document.getElementById('fValor').addEventListener('input', updateParceladoPreview);
-document.getElementById('fValor').addEventListener('blur', updateParceladoPreview);
+document.getElementById('fValor').addEventListener('input', () => { if (document.getElementById('fParcelado').checked) updateParceladoPreview(); });
+document.getElementById('fValor').addEventListener('blur', () => { if (document.getElementById('fParcelado').checked) updateParceladoPreview(); });
+document.getElementById('fParcelado').addEventListener('change', syncCondicao);
+document.getElementById('fRecorrente').addEventListener('change', syncCondicao);
 
 document.getElementById('fParcelado').addEventListener('change', (e) => {
   const on = e.target.checked;
@@ -3450,7 +3820,7 @@ function clearForm(opts) {
   const manterSelecao = !opts || opts.manterSelecao !== false;
   const manter = manterSelecao ? {
     empresa: document.getElementById('fEmpresa').value,
-    natureza: document.getElementById('fNatureza').value,
+    natureza: naturezaDoForm(),
     origem: document.getElementById('fOrigem').value,
     categoria: document.getElementById('fCategoria').value,
   } : null;
@@ -3466,6 +3836,7 @@ function clearForm(opts) {
   campoParceladoDia.style.display = 'none';
   campoParceladoQtd.style.display = 'none';
   campoParceladoPreview.style.display = 'none';
+  parcelasForm = [];
   document.getElementById('parceladoPreview').textContent = '—';
   document.getElementById('fRecorrente').checked = false;
   campoRecInicio.style.display = 'none';
@@ -3491,7 +3862,7 @@ function clearForm(opts) {
   if (manter) {
     if (manter.empresa) { document.getElementById('fEmpresa').value = manter.empresa; refreshLocalSelect(); }
     if (modoTransf) refreshContasTransf();
-    document.getElementById('fNatureza').value = manter.natureza || '';
+    document.getElementById('fNatureza').value = 'PJ'; /* 3.6.12: conta pessoal não passa para o próximo */
     if (manter.origem) {
       document.getElementById('fOrigem').value = manter.origem;
       refreshCategoriaSelectGrouped();
@@ -3503,6 +3874,12 @@ function clearForm(opts) {
       }
     }
   }
+  document.getElementById('fPessoal').checked = document.getElementById('fNatureza').value === 'PF';
+  syncCondicao();
+  document.getElementById('fChaves').value = '';
+  refreshPrestadorSelect();
+  document.getElementById('fPrestador').value = '';
+  atualizarInfoPagamento();
   syncMaisDetalhes();
 }
 
@@ -3535,7 +3912,7 @@ form.addEventListener('submit', async (e) => {
       id: novaSerieId(),
       base: {
         empresa: document.getElementById('fEmpresa').value,
-        natureza: document.getElementById('fNatureza').value,
+        natureza: naturezaDoForm(),
         origem: document.getElementById('fOrigem').value,
         operacao: document.getElementById('fOperacaoDisplay').value,
         categoria: document.getElementById('fCategoria').value,
@@ -3547,6 +3924,7 @@ form.addEventListener('submit', async (e) => {
         formaPagamento: document.getElementById('fFormaPagamento').value || null,
         observacao: document.getElementById('fObservacao').value || null,
         local: document.getElementById('fLocal').value || null,
+        prestadorId: prestadorDoForm(),
       },
       dia: Number(inicio.slice(8, 10)),
       inicio: inicio.slice(0, 7),
@@ -3574,10 +3952,16 @@ form.addEventListener('submit', async (e) => {
     if (!diaBase) { toast('Informe o dia da 1ª parcela.'); return; }
     if (!qtd || qtd < 2) { toast('Informe o número de parcelas (mínimo 2).'); return; }
     if (!fValorInput.value.trim()) { toast('Informe o valor.'); fValorInput.focus(); return; }
+    if (parcelasForm.length !== qtd) montarParcelasForm();
+    if (parcelasForm.some(p => !p.data)) { toast('Informe o vencimento de todas as parcelas.'); return; }
+    if (parcelasForm.some(p => !(p.valor > 0))) { toast('Toda parcela precisa ter valor.'); return; }
+    if (Math.abs(somaParcelasForm() - currencyDisplayToNumber(fValorInput.value)) >= 0.005) {
+      toast('A soma das parcelas está diferente do valor total. Ajuste antes de salvar.'); return;
+    }
 
     const base = {
       empresa: document.getElementById('fEmpresa').value,
-      natureza: document.getElementById('fNatureza').value,
+      natureza: naturezaDoForm(),
       origem: document.getElementById('fOrigem').value,
       operacao: document.getElementById('fOperacaoDisplay').value,
       categoria: document.getElementById('fCategoria').value,
@@ -3591,11 +3975,11 @@ form.addEventListener('submit', async (e) => {
       local: document.getElementById('fLocal').value || null,
     };
 
-    const valoresParcelas = dividirEmParcelas(base.valor, qtd);
+    const valoresParcelas = parcelasForm.map(p => p.valor);
     const serie = novaSerieId();
     const novos = [];
     for (let i = 0; i < qtd; i++) {
-      const dataParcela = addMonthsClamped(diaBase, i);
+      const dataParcela = parcelasForm[i].data;
       novos.push({
         id: uid(),
         serie,
@@ -3617,9 +4001,11 @@ form.addEventListener('submit', async (e) => {
         formaPagamento: base.formaPagamento,
         observacao: base.observacao,
         local: base.local,
+        prestadorId: prestadorDoForm(),
       });
     }
     state.lancamentos.push(...novos);
+    novos.forEach(n => aplicarTaxaCartao(n, qtd));
     registrarQuem(base.origem, base.quem);
     markDirty();
     clearForm();
@@ -3655,7 +4041,7 @@ form.addEventListener('submit', async (e) => {
     data,
     efetivado: efetivadoExistente || (jaPago ? data : null),
     empresa: document.getElementById('fEmpresa').value,
-    natureza: document.getElementById('fNatureza').value,
+    natureza: naturezaDoForm(),
     origem: document.getElementById('fOrigem').value,
     operacao: document.getElementById('fOperacaoDisplay').value,
     categoria: document.getElementById('fCategoria').value,
@@ -3669,6 +4055,8 @@ form.addEventListener('submit', async (e) => {
     formaPagamento: document.getElementById('fFormaPagamento').value || null,
     observacao: document.getElementById('fObservacao').value || null,
     local: document.getElementById('fLocal').value || null,
+    ...camposConvenioDoForm(),
+    prestadorId: prestadorDoForm(),
   };
 
   if (editingId) {
@@ -3684,6 +4072,9 @@ form.addEventListener('submit', async (e) => {
       }
       // mantém campos que o formulário não mostra (ex.: série das parcelas)
       state.lancamentos[idx] = { ...orig, ...record, id: editingId };
+      /* 3.7.1: numa conta com partes pagas, o valor do formulário é o que falta */
+      if (orig.valorTotal != null) state.lancamentos[idx].valorTotal = Math.round(((Number(record.valor) || 0) + valorPagoEmPartes(editingId)) * 100) / 100;
+      if (state.lancamentos.some(x => x.taxaDe === editingId) || (orig.formaPagamento || null) !== record.formaPagamento) aplicarTaxaCartao(state.lancamentos[idx]);
       marcarLancamentoTocado(editingId);
       toast(alteradasSerie ? `Lançamento atualizado, junto com mais ${alteradasSerie} parcela${alteradasSerie === 1 ? '' : 's'}.` : 'Lançamento atualizado.');
     }
@@ -3692,7 +4083,9 @@ form.addEventListener('submit', async (e) => {
     const ag = agendaLigacaoPendente && state.agenda.find(x => x.id === agendaLigacaoPendente);
     if (ag) { novo.agendaId = ag.id; ag.lancamentoId = novo.id; }
     state.lancamentos.push(novo);
-    toast(jaPago ? `Lançamento adicionado e marcado como ${tipoFluxo(record.origem) === 'receita' ? 'recebido' : 'pago'}.` : 'Lançamento adicionado.');
+    const tx = aplicarTaxaCartao(novo);
+    toast((jaPago ? `Lançamento adicionado e marcado como ${tipoFluxo(record.origem) === 'receita' ? 'recebido' : 'pago'}.` : 'Lançamento adicionado.')
+      + (tx ? ` Taxa do cartão: ${formatCurrency(tx.valor)}; fica ${formatCurrency(Math.round((novo.valor - tx.valor) * 100) / 100)}.` : ''));
   }
   registrarQuem(record.origem, record.quem);
   markDirty();
@@ -3707,6 +4100,9 @@ form.addEventListener('submit', async (e) => {
 function startEdit(id) {
   const l = state.lancamentos.find(x => x.id === id);
   if (!l) return;
+  if (l.taxaDe) { toast('Esta taxa acompanha a receita do cartão. Corrija a receita, ou a taxa em Configurações › Financeiro.'); return; }
+  if (l.repasseDe) { toast('Este repasse segue a receita. Para mudar o percentual, edite o prestador em Cadastros › Prestadores.'); return; }
+  if (l.parcialDe) { toast('Este é um pagamento parcial. Para corrigir, clique em "desfazer" na linha dele e confirme de novo no Caixa.'); return; }
   if (modoTransf) { clearForm({ manterSelecao: false }); }
   editingId = id;
   document.getElementById('formTitle').textContent = 'Editando lançamento';
@@ -3715,6 +4111,7 @@ function startEdit(id) {
 
   document.getElementById('fEmpresa').value = l.empresa || ''; refreshLocalSelect();
   document.getElementById('fNatureza').value = l.natureza || 'PJ';
+  document.getElementById('fPessoal').checked = l.natureza === 'PF';
   document.getElementById('fOrigem').value = l.origem || ''; refreshCategoriaSelectGrouped();
   document.getElementById('fCategoria').value = l.categoria || ''; updateOperacaoDisplay();
   document.getElementById('fData').value = l.data || '';
@@ -3728,7 +4125,7 @@ function startEdit(id) {
   const ehParcela = !!(l.parcela || l.totalParcelas);
   campoParcelaManual.style.display = ehParcela ? '' : 'none';
   campoTotalParcelasManual.style.display = ehParcela ? '' : 'none';
-  if (diff || l.observacao || l.fatura || l.centroDeCusto || ehParcela) document.getElementById('maisDetalhes').open = true;
+  if (diff || l.observacao || l.fatura || l.centroDeCusto || ehParcela || l.natureza === 'PF') document.getElementById('maisDetalhes').open = true;
   refreshQuemSelect();
   document.getElementById('fQuem').value = l.quem || '';
   refreshCentroCustoSelect();
@@ -3736,6 +4133,12 @@ function startEdit(id) {
   document.getElementById('fLocal').value = l.local || '';
   refreshFormaPagamentoSelect();
   document.getElementById('fFormaPagamento').value = l.formaPagamento || '';
+  const convL = l.convenio && (state.config.convenios || []).find(c => c.nome === l.convenio);
+  document.getElementById('fConvenio').value = convL ? convL.id : '';
+  document.getElementById('fChaves').value = l.chaves ? mostraNumeroBR(l.chaves) : '';
+  refreshPrestadorSelect();
+  document.getElementById('fPrestador').value = l.prestadorId && state.prestadores.some(p => p.id === l.prestadorId) ? l.prestadorId : '';
+  atualizarInfoPagamento();
   document.getElementById('fFatura').value = l.fatura || '';
   document.getElementById('fParcela').value = l.parcela || '';
   document.getElementById('fTotalParcelas').value = l.totalParcelas || '';
@@ -3764,8 +4167,9 @@ async function deleteLancamento(id) {
       const rec = l.recorrencia && (state.recorrencias || []).find(r => r.id === l.recorrencia);
       if (rec) rec.ativa = false; // excluir esta e as próximas, ou todas, encerra a repetição
     }
-  } else if (!confirm(`Excluir o lançamento de ${formatDateBR(l.data)} (${formatCurrency(l.valor)})?`)) return;
-  state.lancamentos.forEach(x => { if (x.ajusteDe && apagar.includes(x.ajusteDe)) apagar.push(x.id); });
+  } else if (!confirm(`Excluir o lançamento de ${formatDateBR(l.data)} (${formatCurrency(l.valor)})?`
+    + (valorPagoEmPartes(l.id) ? ` Os pagamentos parciais dele (${formatCurrency(valorPagoEmPartes(l.id))}) também serão excluídos.` : ''))) return;
+  state.lancamentos.forEach(x => { if ((x.ajusteDe && apagar.includes(x.ajusteDe)) || (x.parcialDe && apagar.includes(x.parcialDe))) apagar.push(x.id); });
   const apagarSet = new Set(apagar);
   state.lancamentos = state.lancamentos.filter(x => !apagarSet.has(x.id));
   markDirty();
@@ -3958,16 +4362,17 @@ function renderTable() {
         <td><input type="checkbox" data-select="${l.id}" ${checked}></td>
         <td>${formatDateBR(l.data)}</td>
         <td><span class="tag tag-empresa">${escapeHtml(l.empresa || '—')}</span></td>
-        <td><span class="tag tag-natureza-${(l.natureza||'PJ').toLowerCase()}">${l.natureza || 'PJ'}</span></td>
         <td>
-          <span class="op-dot ${tipo || ''}"></span>${escapeHtml(l.operacao || '—')}
-          <div class="muted">${escapeHtml(l.categoria || '')}</div>
+          <span class="op-dot ${tipo || ''}"></span>${escapeHtml(l.categoria || l.operacao || '—')}${l.natureza === 'PF' ? ' <span class="tag tag-natureza-pf" title="Conta pessoal">PF</span>' : ''}
         </td>
         <td>
           ${l.descricao ? escapeHtml(l.descricao) : '<span class="muted">—</span>'}
           ${l.quem ? `<div class="muted">${escapeHtml(l.quem)}</div>` : ''}
           ${l.recorrencia ? '<div class="tag-rec">↻ repete todo mês</div>' : ''}
           ${l.ajusteDe ? '<div class="tag-rec">diferença na baixa</div>' : ''}
+          ${l.taxaDe ? '<div class="tag-rec">taxa do cartão, segue a receita</div>' : ''}
+          ${l.convenio ? `<div class="tag-rec">${escapeHtml(l.convenio)}: ${mostraNumeroBR(l.chaves)} chaves × ${mostraNumeroBR(l.valorChave)}</div>` : ''}
+          ${historicoParcialHtml(l)}${etiquetaPrestador(l)}
         </td>
         <td class="num" style="color:var(--${valorClass})">${sinal} ${formatCurrency(l.valor)}</td>
         <td>
@@ -4035,7 +4440,7 @@ document.getElementById('btnBulkDelete').addEventListener('click', () => {
   const n = selectedIds.size;
   if (!n) return;
   if (!confirm(`Excluir ${n} lançamento${n === 1 ? '' : 's'} selecionado${n === 1 ? '' : 's'}? Essa ação não pode ser desfeita.`)) return;
-  state.lancamentos = state.lancamentos.filter(l => !selectedIds.has(l.id) && !(l.ajusteDe && selectedIds.has(l.ajusteDe)));
+  state.lancamentos = state.lancamentos.filter(l => !selectedIds.has(l.id) && !(l.ajusteDe && selectedIds.has(l.ajusteDe)) && !(l.parcialDe && selectedIds.has(l.parcialDe)));
   if (editingId && selectedIds.has(editingId)) clearForm();
   selectedIds.clear();
   markDirty();
@@ -4055,41 +4460,416 @@ const filtroPendTipoEl = document.getElementById('filtroPendTipo');
 filtroPendBuscaEl.addEventListener('input', renderPendencias);
 
 
+/* =========================================================================
+   3.7.1: CAIXA (no lugar de Pendências)
+   Mostra as entradas e saídas de um período, confirmadas ou não. O que está
+   em aberto entra pela data de vencimento; o confirmado, pela data em que foi
+   pago ou recebido. "Tudo em aberto" é a antiga lista de Pendências.
+   ========================================================================= */
+const caixaUI = { padrao: 'dia', periodo: 'dia', ref: todayISO() };
+function caixaIntervalo() {
+  const r = caixaUI.ref || todayISO();
+  if (caixaUI.periodo === 'aberto') return null;
+  if (caixaUI.periodo === 'semana') { const ini = inicioSemana(r); return { ini, fim: somarDias(ini, 6) }; }
+  if (caixaUI.periodo === 'mes') { const ini = r.slice(0, 8) + '01'; return { ini, fim: somarDias(addMonthsClamped(ini, 1), -1) }; }
+  return { ini: r, fim: r };
+}
+function caixaRotulo() {
+  const iv = caixaIntervalo();
+  if (!iv) return 'Tudo o que falta pagar ou receber';
+  const hoje = todayISO();
+  if (caixaUI.periodo === 'dia') {
+    const d = DIAS_SEMANA[diaDaSemana(iv.ini)];
+    return `${d.charAt(0).toUpperCase() + d.slice(1)}, ${formatDateBR(iv.ini)}${iv.ini === hoje ? ' (hoje)' : ''}`;
+  }
+  if (caixaUI.periodo === 'semana') return `${formatDateBR(iv.ini).slice(0, 5)} a ${formatDateBR(iv.fim)}${hoje >= iv.ini && hoje <= iv.fim ? ' (esta semana)' : ''}`;
+  return `${MESES_LONGOS[Number(iv.ini.slice(5, 7)) - 1]} de ${iv.ini.slice(0, 4)}`;
+}
+function dataNoCaixa(l) { return l.efetivado || l.data; }
 function getPendentes() {
   const status = filtroPendStatusEl.value;
   const busca = filtroPendBuscaEl.value.trim().toLowerCase();
   const tipoPend = filtroPendTipoEl.value;
+  const iv = caixaIntervalo();
   return state.lancamentos
-    .filter(l => computeStatus(l.data, l.efetivado) !== 'LIQUIDADO')
+    .filter(l => !l.taxaDe && l.data)
+    .filter(l => { if (!iv) return computeStatus(l.data, l.efetivado) !== 'LIQUIDADO'; const d = dataNoCaixa(l); return d >= iv.ini && d <= iv.fim; })
     .filter(l => !tipoPend || tipoFluxo(l.origem) === tipoPend)
     .filter(l => noFiltroCtx(l))
-    .filter(l => !status || computeStatus(l.data, l.efetivado) === status)
+    .filter(l => {
+      if (!status) return true;
+      const st = computeStatus(l.data, l.efetivado);
+      return status === 'ABERTO' ? st !== 'LIQUIDADO' : st === status;
+    })
     .filter(l => {
       if (!busca) return true;
       const hay = [l.descricao, l.categoria, l.quem, l.observacao, l.centroDeCusto].filter(Boolean).join(' ').toLowerCase();
       return hay.includes(busca);
     })
-    .sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+    .sort((a, b) => (dataNoCaixa(a) || '').localeCompare(dataNoCaixa(b) || '') || (a.efetivado ? 1 : 0) - (b.efetivado ? 1 : 0));
 }
+/* contas em aberto vencidas antes do período mostrado */
+function caixaAtrasados() {
+  const iv = caixaIntervalo();
+  if (!iv) return [];
+  return state.lancamentos.filter(l => !l.taxaDe && l.data && !l.efetivado && l.data < iv.ini
+    && computeStatus(l.data, null) === 'VENCIDO' && noFiltroCtx(l));
+}
+function renderCaixaTopo(rows) {
+  const iv = caixaIntervalo();
+  document.getElementById('caixaPeriodo').value = caixaUI.periodo;
+  document.getElementById('caixaRotulo').textContent = caixaRotulo();
+  document.getElementById('caixaData').value = caixaUI.ref;
+  ['caixaAnt', 'caixaProx', 'caixaData'].forEach(id => { document.getElementById(id).style.display = iv ? '' : 'none'; });
+  document.getElementById('caixaHoje').style.display = iv && caixaUI.ref === todayISO() && caixaUI.periodo === 'dia' ? 'none' : '';
+  const somar = (lista, tipo) => lista.filter(l => tipoFluxo(l.origem) === tipo).reduce((a, l) => a + (Number(l.valor) || 0), 0);
+  const atr = caixaAtrasados();
+  const faixa = document.getElementById('caixaAtrasados');
+  faixa.hidden = !atr.length;
+  if (atr.length) {
+    const ar = somar(atr, 'receita'), ap = somar(atr, 'despesa');
+    faixa.innerHTML = `<span>${svgIco('alerta')}<strong>${atr.length} conta${atr.length === 1 ? '' : 's'} atrasada${atr.length === 1 ? '' : 's'}</strong>, de antes deste período: `
+      + [ar ? `${formatCurrency(ar)} a receber` : '', ap ? `${formatCurrency(ap)} a pagar` : ''].filter(Boolean).join(' · ') + '</span>'
+      + '<button type="button" class="btn btn-outline btn-sm" id="caixaVerAtrasados">Ver atrasados</button>';
+    document.getElementById('caixaVerAtrasados').addEventListener('click', () => abrirCaixa({ periodo: 'aberto', status: 'VENCIDO' }));
+  }
+  const resumo = document.getElementById('caixaResumo');
+  resumo.hidden = !iv;
+  if (!iv) { resumo.innerHTML = ''; return; }
+  const conf = rows.filter(l => l.efetivado), abertos = rows.filter(l => !l.efetivado);
+  const ec = somar(conf, 'receita'), ea = somar(abertos, 'receita'), sc = somar(conf, 'despesa'), sa = somar(abertos, 'despesa');
+  const saldo = ec - sc;
+  const cx = (rot, val, cls, sub) => `<div class="cx"><div class="rot">${rot}</div><div class="val" style="color:var(--${cls})">${val}</div><div class="sub">${sub}</div></div>`;
+  resumo.innerHTML = cx('Entradas', formatCurrency(ec + ea), 'receita', `${formatCurrency(ec)} confirmado · ${formatCurrency(ea)} a confirmar`)
+    + cx('Saídas', formatCurrency(sc + sa), 'despesa', `${formatCurrency(sc)} confirmado · ${formatCurrency(sa)} a confirmar`)
+    + cx('Saldo confirmado', formatCurrency(saldo), saldo >= 0 ? 'receita' : 'despesa', `com o que falta: ${formatCurrency(ec + ea - sc - sa)}`);
+}
+function moverCaixa(passo) {
+  const r = caixaUI.ref || todayISO();
+  caixaUI.ref = caixaUI.periodo === 'mes' ? addMonthsClamped(r.slice(0, 8) + '01', passo) : somarDias(r, passo * (caixaUI.periodo === 'semana' ? 7 : 1));
+  renderPendencias();
+}
+/* abre o Caixa já num período ou filtro (atalhos do Painel e da faixa de atrasados) */
+function abrirCaixa(opts) {
+  if (abaAtual !== 'pendencias') switchTab('pendencias');
+  if (opts.periodo) caixaUI.periodo = opts.periodo;
+  if (opts.status !== undefined) filtroPendStatusEl.value = opts.status;
+  if (opts.tipo !== undefined) filtroPendTipoEl.value = opts.tipo;
+  renderPendencias();
+}
+function resetCaixa() { caixaUI.periodo = caixaUI.padrao; caixaUI.ref = todayISO(); }
+document.getElementById('caixaPeriodo').addEventListener('change', (e) => { caixaUI.periodo = e.target.value; renderPendencias(); });
+document.getElementById('caixaAnt').addEventListener('click', () => moverCaixa(-1));
+document.getElementById('caixaProx').addEventListener('click', () => moverCaixa(1));
+document.getElementById('caixaData').addEventListener('change', (e) => { if (e.target.value) { caixaUI.ref = e.target.value; renderPendencias(); } });
+document.getElementById('caixaHoje').addEventListener('click', () => { caixaUI.ref = todayISO(); if (caixaUI.periodo === 'aberto') caixaUI.periodo = 'dia'; renderPendencias(); });
+
+/* =========================================================================
+   3.7.2: PRESTADORES E REPASSE
+   A receita guarda quem atendeu (prestadorId). Quando ela é recebida, entra
+   uma conta a pagar ligada (repasseDe) com o % do prestador sobre o valor que
+   sobra depois da taxa do cartão, vencendo no último dia do mês. Enquanto não
+   é paga, ela acompanha a receita; depois de paga, não muda mais.
+   ========================================================================= */
+const CAT_REPASSE = 'Repasse a prestadores';
+function prestadorPorId(id) { return id ? (state.prestadores || []).find(p => p.id === id) || null : null; }
+function prestadorDoForm() {
+  return document.getElementById('fOrigem').value === 'RECEITAS' && !modoTransf ? (document.getElementById('fPrestador').value || null) : null;
+}
+function refreshPrestadorSelect() {
+  const sel = document.getElementById('fPrestador');
+  const v = sel.value;
+  sel.innerHTML = '<option value="">Consultório (sem repasse)</option>' + (state.prestadores || []).slice().sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
+    .map(p => `<option value="${p.id}">${escapeHtml(p.nome)}${Number(p.repassePct) ? ` (${mostraNumeroBR(p.repassePct, 2)}%)` : ''}</option>`).join('');
+  sel.value = (state.prestadores || []).some(p => p.id === v) ? v : '';
+}
+function fimDoMes(iso) { const [y, m] = iso.split('-').map(Number); return dateToISO(new Date(y, m, 0)); }
+function baseRepasse(r) {
+  const taxa = state.lancamentos.filter(x => x.taxaDe === r.id).reduce((a, x) => a + (Number(x.valor) || 0), 0);
+  return Math.max(0, (Number(r.valor) || 0) - taxa);
+}
+/* devolve true se mudou algo */
+function sincronizarRepasses() {
+  if (!state || !Array.isArray(state.lancamentos)) return false;
+  if (!(state.prestadores || []).length && !state.lancamentos.some(x => x.repasseDe)) return false;
+  let mudou = false;
+  const porId = new Map(state.lancamentos.map(x => [x.id, x]));
+  const repDe = new Map();
+  const apagar = new Set();
+  state.lancamentos.forEach(x => { if (x.repasseDe) repDe.set(x.repasseDe, x); });
+  /* repasses ainda não pagos cuja receita não pede mais repasse saem */
+  state.lancamentos.forEach(rep => {
+    if (!rep.repasseDe || rep.efetivado) return;
+    const r = porId.get(rep.repasseDe);
+    const p = r && prestadorPorId(r.prestadorId);
+    if (!r || !r.efetivado || !p || r.prestadorId !== rep.prestadorId || !(Number(rep.repassePct) > 0)) { apagar.add(rep.id); repDe.delete(rep.repasseDe); }
+  });
+  const novos = [];
+  state.lancamentos.forEach(r => {
+    if (r.origem !== 'RECEITAS' || !r.efetivado || !r.prestadorId || r.taxaDe || r.ajusteDe || apagar.has(r.id)) return;
+    const p = prestadorPorId(r.prestadorId);
+    if (!p) return;
+    let rep = repDe.get(r.id);
+    if (rep && rep.efetivado) return; /* já pago: fica como está */
+    const pct = rep ? Number(rep.repassePct) : Number(p.repassePct) || 0;
+    if (!(pct > 0)) return;
+    const valor = Math.round(baseRepasse(r) * pct) / 100;
+    if (!rep) {
+      if (!(valor > 0)) return;
+      const op = operacaoDaLinha('DESPESAS', 'custo', '3. CUSTOS');
+      if (!state.config.categorias[op].includes(CAT_REPASSE)) state.config.categorias[op].push(CAT_REPASSE);
+      rep = { id: uid(), repasseDe: r.id, prestadorId: p.id, repassePct: pct, origem: 'DESPESAS', operacao: op, categoria: CAT_REPASSE,
+        efetivado: null, fatura: null, parcela: null, totalParcelas: null, formaPagamento: null, observacao: null, local: null };
+      novos.push(rep);
+    }
+    garantirFornecedor(p.nome);
+    const campos = { quem: p.nome, descricao: `Repasse ${mostraNumeroBR(pct, 2)}% a ${p.nome}: ${r.descricao || r.categoria || ''}`.trim(),
+      competencia: r.efetivado, data: fimDoMes(r.efetivado), empresa: r.empresa, natureza: r.natureza, centroDeCusto: r.centroDeCusto || null };
+    if (rep.valorTotal != null) campos.valorTotal = valor; else campos.valor = valor;
+    Object.keys(campos).forEach(k => { if (rep[k] !== campos[k]) { rep[k] = campos[k]; mudou = true; } });
+  });
+  if (apagar.size) { state.lancamentos = state.lancamentos.filter(x => !apagar.has(x.id)); mudou = true; }
+  if (novos.length) { state.lancamentos.push(...novos); mudou = true; }
+  return mudou;
+}
+function etiquetaPrestador(l) {
+  if (l.repasseDe) return `<div class="tag-rec">repasse de ${mostraNumeroBR(l.repassePct, 2)}%, segue a receita</div>`;
+  const p = l.origem === 'RECEITAS' && prestadorPorId(l.prestadorId);
+  return p ? `<div class="tag-rec">atendido por ${escapeHtml(p.nome)}</div>` : '';
+}
+
+/* ---- tela Cadastros › Prestadores, com o acerto do período ---- */
+const prestUI = { editandoId: null };
+function resumoPrestadores(p) {
+  const r = {};
+  (state.prestadores || []).forEach(x => { r[x.id] = { atendido: 0, recebido: 0, gerado: 0, pago: 0 }; });
+  state.lancamentos.forEach(l => {
+    if (!noFiltroCtx(l)) return;
+    if (l.repasseDe) {
+      const t = r[l.prestadorId];
+      if (!t || !noPeriodo(l.competencia, p)) return;
+      const v = Number(l.valorTotal != null ? l.valorTotal : l.valor) || 0;
+      t.gerado += v;
+      if (l.efetivado) t.pago += v;
+      else t.pago += valorPagoEmPartes(l.id);
+      return;
+    }
+    if (l.origem !== 'RECEITAS' || l.taxaDe) return;
+    const t = r[l.prestadorId];
+    if (!t) return;
+    if (!l.parcialDe && noPeriodo(l.competencia || l.data, p)) t.atendido += Number(l.valorTotal != null ? l.valorTotal : l.valor) || 0;
+    if (l.efetivado && noPeriodo(l.efetivado, p)) t.recebido += Number(l.valor) || 0;
+  });
+  return r;
+}
+function renderPrestadores() {
+  const busca = document.getElementById('prBusca').value.trim().toLowerCase();
+  const p = periodoAtual();
+  const res = resumoPrestadores(p);
+  const todos = state.prestadores || [];
+  const lista = todos.filter(x => !busca || `${x.nome} ${x.especialidade} ${x.telefone} ${x.email}`.toLowerCase().includes(busca))
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  document.getElementById('prCount').textContent = `${lista.length} de ${todos.length} prestador${todos.length === 1 ? '' : 'es'}`;
+  const m = v => v ? formatCurrency(v) : '<span class="muted">—</span>';
+  const tot = { atendido: 0, recebido: 0, gerado: 0, pago: 0 };
+  document.getElementById('prTbody').innerHTML = lista.length ? lista.map(x => {
+    const t = res[x.id];
+    Object.keys(tot).forEach(k => { tot[k] += t[k]; });
+    const falta = Math.round((t.gerado - t.pago) * 100) / 100;
+    return `<tr>
+      <td><strong>${escapeHtml(x.nome)}</strong>${x.telefone || x.pix ? `<div class="pc-mini">${[x.telefone ? escapeHtml(x.telefone) : '', x.pix ? 'Pix: ' + escapeHtml(x.pix) : ''].filter(Boolean).join(' · ')}</div>` : ''}</td>
+      <td>${x.especialidade ? escapeHtml(x.especialidade) : '<span class="muted">—</span>'}</td>
+      <td class="num pr-pct">${Number(x.repassePct) ? mostraNumeroBR(x.repassePct, 2) + '%' : '<span class="muted">—</span>'}</td>
+      <td class="num">${m(t.atendido)}</td>
+      <td class="num">${m(t.recebido)}</td>
+      <td class="num">${m(t.gerado)}</td>
+      <td class="num">${m(t.pago)}</td>
+      <td class="num"${falta > 0 ? ' style="color:var(--despesa); font-weight:600"' : ''}>${m(falta)}</td>
+      <td class="col-actions">${falta > 0 ? `<button class="btn btn-brass btn-sm" data-pr-pagar="${x.id}" type="button">Pagar</button> ` : ''}<button class="btn btn-outline btn-sm" data-pr-edit="${x.id}" type="button">Editar</button> <button class="btn btn-danger-text btn-sm" data-pr-del="${x.id}" type="button">Excluir</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="9" class="muted" style="padding:18px; text-align:center">${todos.length ? 'Nenhum prestador encontrado.' : 'Nenhum prestador cadastrado ainda. Clique em + Novo prestador.'}</td></tr>`;
+  document.getElementById('prTfoot').innerHTML = lista.length > 1
+    ? `<tr><td colspan="3">Total</td><td class="num">${m(tot.atendido)}</td><td class="num">${m(tot.recebido)}</td><td class="num">${m(tot.gerado)}</td><td class="num">${m(tot.pago)}</td><td class="num">${m(Math.round((tot.gerado - tot.pago) * 100) / 100)}</td><td></td></tr>` : '';
+  document.getElementById('prNota').textContent = `Valores de ${p.rotulo}. Atendido: receitas lançadas para o prestador no período. Recebido: o que os clientes já pagaram. `
+    + 'Repasse gerado: a parte do prestador sobre o que foi recebido, já sem a taxa do cartão. O repasse vence no último dia do mês e é pago pelo Caixa.';
+  const tb = document.getElementById('prTbody');
+  tb.querySelectorAll('[data-pr-edit]').forEach(b => b.addEventListener('click', () => abrirFichaPrestador(b.dataset.prEdit)));
+  tb.querySelectorAll('[data-pr-del]').forEach(b => b.addEventListener('click', () => excluirPrestador(b.dataset.prDel)));
+  tb.querySelectorAll('[data-pr-pagar]').forEach(b => b.addEventListener('click', () => {
+    const x = prestadorPorId(b.dataset.prPagar);
+    abrirCaixa({ periodo: 'aberto', status: '', tipo: 'despesa' });
+    filtroPendBuscaEl.value = x.nome;
+    renderPendencias();
+  }));
+}
+const PREST_FICHA = { prNome: 'nome', prEspecialidade: 'especialidade', prDoc: 'documento', prFone: 'telefone', prEmail: 'email', prPix: 'pix', prBanco: 'banco', prObs: 'obs' };
+function abrirFichaPrestador(id) {
+  const x = id ? prestadorPorId(id) : null;
+  prestUI.editandoId = x ? x.id : null;
+  Object.entries(PREST_FICHA).forEach(([el, k]) => { document.getElementById(el).value = x ? (x[k] || '') : ''; });
+  document.getElementById('prRepasse').value = x && Number(x.repassePct) ? mostraNumeroBR(x.repassePct, 2) : '';
+  document.getElementById('prFormTitulo').textContent = x ? `Ficha de ${x.nome}` : 'Novo prestador';
+  document.getElementById('prSalvar').textContent = x ? 'Salvar alterações' : 'Cadastrar prestador';
+  document.getElementById('prModal').classList.add('open');
+  setTimeout(() => { try { document.getElementById('prNome').focus(); } catch (e) {} }, 30);
+}
+function fecharFichaPrestador() { document.getElementById('prModal').classList.remove('open'); prestUI.editandoId = null; }
+function excluirPrestador(id) {
+  const x = prestadorPorId(id);
+  if (!x) return;
+  const aPagar = state.lancamentos.filter(l => l.repasseDe && l.prestadorId === id && !l.efetivado).length;
+  if (aPagar) { toast(`${x.nome} tem ${aPagar} repasse${aPagar === 1 ? '' : 's'} a pagar. Pague no Caixa antes de excluir o cadastro.`); return; }
+  if (!confirm(`Excluir o cadastro de ${x.nome}? Lançamentos já salvos não são apagados, e as receitas dele deixam de gerar repasse.`)) return;
+  state.prestadores = state.prestadores.filter(p => p.id !== id);
+  markDirty();
+  renderPrestadores();
+  refreshPrestadorSelect();
+  toast('Cadastro excluído.');
+}
+document.getElementById('prForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const nome = document.getElementById('prNome').value.trim();
+  if (!nome) { toast('Informe o nome.'); return; }
+  const dup = state.prestadores.find(p => p.nome.toLowerCase() === nome.toLowerCase() && p.id !== prestUI.editandoId);
+  if (dup) { toast(`Já existe um prestador com o nome ${dup.nome}.`); return; }
+  const pctTxt = document.getElementById('prRepasse').value.trim();
+  const pct = numeroBR(pctTxt.replace('%', ''));
+  if (pctTxt && (pct < 0 || pct > 100)) { toast('O repasse vai de 0 a 100%.'); document.getElementById('prRepasse').focus(); return; }
+  const doc = document.getElementById('prDoc').value.replace(/\D/g, '');
+  if (doc && !(doc.length === 11 ? cpfValido(doc) : cnpjValido(doc))) { toast('O CPF ou CNPJ não confere. Corrija ou deixe em branco.'); document.getElementById('prDoc').focus(); return; }
+  const dados = {};
+  Object.entries(PREST_FICHA).forEach(([el, k]) => { dados[k] = document.getElementById(el).value.trim(); });
+  dados.nome = nome;
+  dados.repassePct = pct;
+  const profs = state.config.profissionais || (state.config.profissionais = []);
+  if (prestUI.editandoId) {
+    const x = prestadorPorId(prestUI.editandoId);
+    const antigo = x.nome;
+    Object.assign(x, dados);
+    if (antigo !== nome) {
+      const i = profs.indexOf(antigo);
+      if (i >= 0) { if (profs.includes(nome)) profs.splice(i, 1); else profs[i] = nome; }
+      state.agenda.forEach(a => { if (a.profissional === antigo) a.profissional = nome; });
+      (state.agendaRepeticoes || []).forEach(r => { if (r.base && r.base.profissional === antigo) r.base.profissional = nome; });
+    }
+    toast('Cadastro atualizado. Repasses ainda não pagos usam os dados novos de nome; o percentual novo vale para os próximos.');
+  } else {
+    state.prestadores.push({ id: uid(), ...dados });
+    toast('Prestador cadastrado. Ele já aparece na Agenda como profissional.');
+  }
+  if (!profs.includes(nome)) profs.push(nome);
+  markDirty();
+  fecharFichaPrestador();
+  renderPrestadores();
+  refreshPrestadorSelect();
+  atualizarInfoPagamento();
+});
+document.getElementById('prCancelar').addEventListener('click', fecharFichaPrestador);
+document.getElementById('prModalFechar').addEventListener('click', fecharFichaPrestador);
+document.getElementById('prModal').addEventListener('click', (e) => { if (e.target.id === 'prModal') fecharFichaPrestador(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.getElementById('prModal').classList.contains('open')) fecharFichaPrestador(); });
+document.getElementById('prNovo').addEventListener('click', () => abrirFichaPrestador(null));
+document.getElementById('prBusca').addEventListener('input', renderPrestadores);
+document.getElementById('prFone').addEventListener('input', (e) => { e.target.value = formatPhoneBR(e.target.value); });
+document.getElementById('prDoc').addEventListener('input', (e) => { e.target.value = documentoFormatado(e.target.value); });
+
+/* ---- 3.7.1: pagamento parcial ----
+   Cada parte vira um lançamento já confirmado (parcialDe = conta). A conta
+   guarda o valor cheio em valorTotal e o valor dela passa a ser o que falta. */
+function partesDe(id) { return state.lancamentos.filter(x => x.parcialDe === id).sort((a, b) => (a.efetivado || '').localeCompare(b.efetivado || '')); }
+function valorPagoEmPartes(id) { return Math.round(partesDe(id).reduce((a, x) => a + (Number(x.valor) || 0), 0) * 100) / 100; }
+function sincronizarParciais() {
+  if (!state || !Array.isArray(state.lancamentos) || !state.lancamentos.some(x => x.parcialDe || x.valorTotal != null)) return;
+  const porId = new Map(state.lancamentos.map(x => [x.id, x]));
+  const pago = new Map();
+  state.lancamentos.forEach(x => {
+    if (!x.parcialDe) return;
+    if (!porId.has(x.parcialDe)) { delete x.parcialDe; return; } /* conta sumiu: a parte fica como lançamento comum */
+    pago.set(x.parcialDe, (pago.get(x.parcialDe) || 0) + (Number(x.valor) || 0));
+  });
+  state.lancamentos.forEach(l => {
+    if (l.valorTotal == null) return;
+    const p = pago.get(l.id) || 0;
+    if (!p) { l.valor = l.valorTotal; delete l.valorTotal; return; }
+    l.valor = Math.round((Number(l.valorTotal) - p) * 100) / 100;
+  });
+}
+function registrarParcial(l, valor, data, forma) {
+  if (l.valorTotal == null) l.valorTotal = Number(l.valor) || 0;
+  const p = {
+    id: uid(), parcialDe: l.id,
+    competencia: l.competencia || l.data, data, efetivado: data,
+    empresa: l.empresa, natureza: l.natureza, origem: l.origem, operacao: l.operacao, categoria: l.categoria,
+    quem: l.quem || null, descricao: l.descricao || null, centroDeCusto: l.centroDeCusto || null,
+    valor: Math.round(valor * 100) / 100, fatura: l.fatura || null, parcela: null, totalParcelas: null,
+    formaPagamento: forma || l.formaPagamento || null, observacao: null, local: l.local || null,
+    prestadorId: l.prestadorId || null,
+  };
+  state.lancamentos.push(p);
+  l.valor = Math.round((Number(l.valor) - p.valor) * 100) / 100;
+  aplicarTaxaCartao(p, 1);
+  return p;
+}
+function historicoParcialHtml(l) {
+  const desp = tipoFluxo(l.origem) === 'despesa';
+  if (l.parcialDe) {
+    const c = state.lancamentos.find(x => x.id === l.parcialDe);
+    return `<div class="tag-rec">${desp ? 'pagamento' : 'recebimento'} parcial${c && c.valorTotal != null ? ` de uma conta de ${formatCurrency(c.valorTotal)}` : ''}</div>`;
+  }
+  const partes = partesDe(l.id);
+  if (!partes.length) return '';
+  const itens = partes.map(x => `<strong>${formatCurrency(x.valor)}</strong> em ${formatDateBR(x.efetivado).slice(0, 5)}${x.formaPagamento ? ` (${escapeHtml(x.formaPagamento)})` : ''}`);
+  const fim = l.efetivado ? `${desp ? 'quitada' : 'quitado'} em ${formatDateBR(l.efetivado).slice(0, 5)} com <strong>${formatCurrency(l.valor)}</strong>` : `Falta <strong>${formatCurrency(l.valor)}</strong>`;
+  return `<div class="hist-parcial">${desp ? 'Pago' : 'Recebido'} ${itens.join(' · ')} · ${fim}</div>`;
+}
+let parcialResolver = null;
+function perguntarParcial(l, valor) {
+  const desp = tipoFluxo(l.origem) === 'despesa';
+  const falta = Math.round(((Number(l.valor) || 0) - valor) * 100) / 100;
+  document.getElementById('parcialTexto').textContent = `A conta é de ${formatCurrency(l.valor)} e você informou ${formatCurrency(valor)} ${desp ? 'pagos' : 'recebidos'}. `
+    + (desp ? 'Você pagou só uma parte ou foi um desconto?' : 'O cliente pagou só uma parte ou foi um desconto?');
+  document.getElementById('parcialNota').textContent = `Uma parte: ${formatCurrency(valor)} entram no caixa na data escolhida e ${formatCurrency(falta)} continuam em aberto. `
+    + `Desconto: a conta é encerrada e ${formatCurrency(falta)} vão para "${desp ? 'Descontos obtidos' : 'Descontos concedidos'}".`;
+  const sel = document.getElementById('parcialForma');
+  fillSelect(sel, state.config.formaPagamento || [], { placeholder: '—' });
+  sel.value = l.formaPagamento || '';
+  document.getElementById('parcialModal').classList.add('open');
+  return new Promise(res => { parcialResolver = res; });
+}
+function fecharParcialModal(tipo) {
+  document.getElementById('parcialModal').classList.remove('open');
+  if (parcialResolver) { const r = parcialResolver; parcialResolver = null; r(tipo ? { tipo, forma: document.getElementById('parcialForma').value || null } : null); }
+}
+document.querySelectorAll('#parcialModal [data-parcial]').forEach(b => b.addEventListener('click', () => fecharParcialModal(b.dataset.parcial)));
+document.getElementById('parcialModal').addEventListener('click', (e) => { if (e.target.id === 'parcialModal') fecharParcialModal(null); });
 
 function renderPendencias() {
   const rows = getPendentes();
   const tbody = document.getElementById('tbodyPend');
   const empty = document.getElementById('emptyStatePend');
-  const totalPend = state.lancamentos.filter(l => computeStatus(l.data, l.efetivado) !== 'LIQUIDADO').length;
-  document.getElementById('filterCountPend').textContent = `${rows.length} de ${totalPend} pendência${totalPend === 1 ? '' : 's'}`;
+  const totalPend = state.lancamentos.filter(l => !l.taxaDe && computeStatus(l.data, l.efetivado) !== 'LIQUIDADO').length;
+  const ivCx = caixaIntervalo();
+  document.getElementById('filterCountPend').textContent = ivCx
+    ? `${rows.length} lançamento${rows.length === 1 ? '' : 's'} no período`
+    : `${rows.length} de ${totalPend} em aberto`;
+  renderCaixaTopo(rows);
 
   const badge = document.getElementById('tabBadgePendencias');
-  const urgentes = state.lancamentos.filter(l => { const st = computeStatus(l.data, l.efetivado); return st === 'VENCIDO' || st === 'PAGAR/RECEBER'; }).length;
+  const urgentes = state.lancamentos.filter(l => { if (l.taxaDe) return false; const st = computeStatus(l.data, l.efetivado); return st === 'VENCIDO' || st === 'PAGAR/RECEBER'; }).length;
   if (urgentes > 0) { badge.style.display = ''; badge.textContent = urgentes; badge.title = `${urgentes} ${urgentes === 1 ? 'conta vence hoje ou já venceu' : 'contas vencem hoje ou já venceram'}`; }
   else { badge.style.display = 'none'; badge.title = ''; }
   document.querySelector('#viewPendencias table').classList.toggle('oculta-empresa-pend', state.config.empresas.length <= 1);
-  renderTotaisFiltro(rows, document.getElementById('totaisPend'), ['A receber', 'A pagar']);
+  renderTotaisFiltro(rows, document.getElementById('totaisPend'), ivCx ? ['Entradas', 'Saídas'] : ['A receber', 'A pagar']);
 
   if (!rows.length) {
     tbody.innerHTML = '';
     empty.style.display = '';
-    empty.querySelector('.big').textContent = totalPend ? 'Nenhum resultado para esse filtro' : 'Nenhuma pendência';
+    const filtrando = filtroPendStatusEl.value || filtroPendTipoEl.value || filtroPendBuscaEl.value.trim();
+    empty.querySelector('.big').textContent = filtrando ? 'Nenhum resultado para esse filtro' : ivCx ? 'Nada neste período' : 'Nada em aberto';
+    document.getElementById('emptyStatePendSub').textContent = ivCx
+      ? (caixaUI.periodo === 'dia' ? 'Nenhuma entrada ou saída nesta data.' : 'Nenhuma entrada ou saída neste período.')
+      : 'Tudo que está cadastrado já foi confirmado como pago ou recebido.';
+    updateBulkBarPend();
     return;
   }
   empty.style.display = 'none';
@@ -4100,29 +4880,31 @@ function renderPendencias() {
     const tipo = tipoFluxo(l.origem);
     const sinal = tipo === 'despesa' ? '−' : '+';
     const valorClass = tipo === 'despesa' ? 'despesa' : 'receita';
+    const conf = status === 'LIQUIDADO';
     return `
-      <tr>
-        <td><input type="checkbox" data-select-pend="${l.id}" ${selectedPend.has(l.id) ? 'checked' : ''}></td>
+      <tr${conf ? ' class="cx-confirmado"' : ''}>
+        <td>${conf ? '' : `<input type="checkbox" data-select-pend="${l.id}" ${selectedPend.has(l.id) ? 'checked' : ''}>`}</td>
         <td>${formatDateBR(l.data)}</td>
         <td><span class="tag tag-empresa">${escapeHtml(l.empresa || '—')}</span></td>
-        <td><span class="tag tag-natureza-${(l.natureza||'PJ').toLowerCase()}">${l.natureza || 'PJ'}</span></td>
         <td>
-          <span class="op-dot ${tipo || ''}"></span>${escapeHtml(l.operacao || '—')}
-          <div class="muted">${escapeHtml(l.categoria || '')}</div>
+          <span class="op-dot ${tipo || ''}"></span>${escapeHtml(l.categoria || l.operacao || '—')}${l.natureza === 'PF' ? ' <span class="tag tag-natureza-pf" title="Conta pessoal">PF</span>' : ''}
         </td>
         <td>
           ${l.descricao ? escapeHtml(l.descricao) : '<span class="muted">—</span>'}
           ${l.quem ? `<div class="muted">${escapeHtml(l.quem)}</div>` : ''}
           ${l.recorrencia ? '<div class="tag-rec">↻ repete todo mês</div>' : ''}
+          ${l.ajusteDe ? '<div class="tag-rec">diferença na baixa</div>' : ''}
+          ${historicoParcialHtml(l)}${etiquetaPrestador(l)}
         </td>
         <td class="num" style="color:var(--${valorClass})">${sinal} ${formatCurrency(l.valor)}</td>
         <td>${statusTag(status)}</td>
         <td class="col-actions">
+          ${conf ? `<div class="caixa-ok"><span>${tipo === 'despesa' ? 'Pago' : 'Recebido'} em ${formatDateBR(l.efetivado)}</span><button type="button" class="link-btn" data-undo-caixa="${l.id}">desfazer</button></div>` : `
           <div class="settle-row">
             <input type="text" inputmode="decimal" class="settle-valor" value="${numberToCurrencyDisplay(l.valor)}" data-settle-valor="${l.id}" title="${tipo === 'despesa' ? 'Valor pago' : 'Valor recebido'}" aria-label="${tipo === 'despesa' ? 'Valor pago' : 'Valor recebido'}">
-            <input type="date" value="${hoje}" data-settle-date="${l.id}">
-            <button class="btn btn-brass btn-sm" data-settle="${l.id}">${tipo === 'despesa' ? 'Marcar pago' : 'Marcar recebido'}</button>
-          </div>
+            <input type="date" value="${dataBaixaPadrao(l, hoje)}" data-settle-date="${l.id}">
+            <button class="btn btn-brass btn-sm" data-settle="${l.id}" title="${tipo === 'despesa' ? 'Confirmar que foi pago' : 'Confirmar que foi recebido'}">Confirmar</button>
+          </div>`}
         </td>
       </tr>`;
   }).join('');
@@ -4136,6 +4918,7 @@ function renderPendencias() {
       settleLancamento(id, dateInput.value || todayISO(), valor);
     });
   });
+  tbody.querySelectorAll('[data-undo-caixa]').forEach(b => b.addEventListener('click', () => undoBaixa(b.dataset.undoCaixa)));
   tbody.querySelectorAll('[data-settle-valor]').forEach(inp => {
     inp.addEventListener('input', () => { inp.value = liveFormatCurrencyTyping(inp.value, false); });
     inp.addEventListener('blur', () => { if (inp.value.trim()) inp.value = finalizeCurrencyDisplay(inp.value, false); });
@@ -4145,6 +4928,10 @@ function renderPendencias() {
     updateBulkBarPend();
   }));
   updateBulkBarPend();
+}
+
+function dataBaixaPadrao(l, hoje) {
+  return caixaUI.periodo === 'dia' && caixaUI.ref < hoje ? caixaUI.ref : hoje;
 }
 
 /* ---- baixa em lote (3.4) ---- */
@@ -4218,9 +5005,164 @@ function criarAjusteBaixa(l, valorPago, data) {
   return aj;
 }
 
-function settleLancamento(id, dataEfetivado, valorPago) {
+/* =========================================================================
+   3.7.0: TAXA DO CARTÃO E CONVÊNIO
+   A receita entra cheia; a taxa vira uma despesa ligada (taxaDe), em Deduções,
+   que acompanha a receita: mesma data, mesma baixa, some se a receita sumir.
+   ========================================================================= */
+const CAT_TAXA = 'Taxas de cartão';
+function taxasCartaoIniciais(formas) {
+  const r = [];
+  formas.forEach(f => {
+    if (/d[eé]bito/i.test(f)) r.push({ id: uid(), nome: 'Débito', forma: f, de: 1, ate: 1, taxa: 0, dias: 1 });
+    else if (/cr[eé]dito/i.test(f)) {
+      r.push({ id: uid(), nome: 'Crédito à vista', forma: f, de: 1, ate: 1, taxa: 0, dias: 30 });
+      r.push({ id: uid(), nome: 'Crédito 2 a 6 vezes', forma: f, de: 2, ate: 6, taxa: 0, dias: 30 });
+      r.push({ id: uid(), nome: 'Crédito 7 a 12 vezes', forma: f, de: 7, ate: 12, taxa: 0, dias: 30 });
+    }
+  });
+  return r;
+}
+function ehFormaConvenio(f) { return /conv[eê]nio/i.test(f || ''); }
+function ehFormaCartao(f) { return /cart[aã]o|cr[eé]dito|d[eé]bito|maquin/i.test(f || ''); }
+function numeroBR(v) { const n = parseFloat(String(v === undefined || v === null ? '' : v).replace(/\./g, '').replace(',', '.')); return isNaN(n) ? 0 : n; }
+function mostraNumeroBR(n, casas) { return n || n === 0 ? Number(n).toLocaleString('pt-BR', { maximumFractionDigits: casas === undefined ? 4 : casas }) : ''; }
+function regraTaxaCartao(forma, nParcelas) {
+  const n = nParcelas || 1;
+  return (state.config.taxasCartao || []).find(r => r.forma === forma && Number(r.taxa) > 0
+    && n >= (Number(r.de) || 1) && n <= (Number(r.ate) || Number(r.de) || 1)) || null;
+}
+function valorTaxa(valor, pct) { return Math.round((Number(valor) || 0) * (Number(pct) || 0)) / 100; }
+function copiarDaReceita(t, l) {
+  Object.assign(t, { data: l.data, competencia: l.competencia || l.data, efetivado: l.efetivado || null, empresa: l.empresa,
+    natureza: l.natureza, centroDeCusto: l.centroDeCusto || null, formaPagamento: l.formaPagamento || null, local: l.local || null });
+}
+/* cria, atualiza ou remove a taxa ligada a uma receita */
+function aplicarTaxaCartao(l, nParcelas) {
+  const existente = state.lancamentos.find(x => x.taxaDe === l.id);
+  const regra = tipoFluxo(l.origem) === 'receita' ? regraTaxaCartao(l.formaPagamento, nParcelas || l.totalParcelas || 1) : null;
+  if (!regra) {
+    if (existente) state.lancamentos = state.lancamentos.filter(x => x !== existente);
+    return null;
+  }
+  const op = operacaoDaLinha('DESPESAS', 'deducao', '2. DEDUÇÕES');
+  if (!state.config.categorias[op].includes(CAT_TAXA)) state.config.categorias[op].push(CAT_TAXA);
+  const t = existente || { id: uid(), taxaDe: l.id };
+  Object.assign(t, {
+    taxaPct: Number(regra.taxa), origem: 'DESPESAS', operacao: op, categoria: CAT_TAXA, quem: null,
+    descricao: `Taxa do cartão (${regra.nome}): ${l.descricao || l.categoria || ''}`.trim(),
+    valor: valorTaxa(l.valor, regra.taxa), fatura: null, parcela: null, totalParcelas: null, observacao: null,
+  });
+  copiarDaReceita(t, l);
+  if (!existente) state.lancamentos.push(t);
+  return t;
+}
+/* chamada a cada gravação: a taxa segue a receita (data, baixa, valor) e some com ela */
+function sincronizarTaxasCartao() {
+  if (!state || !Array.isArray(state.lancamentos) || !state.lancamentos.some(x => x.taxaDe)) return;
+  const porId = new Map(state.lancamentos.map(x => [x.id, x]));
+  let orfas = false;
+  state.lancamentos.forEach(t => {
+    if (!t.taxaDe) return;
+    const l = porId.get(t.taxaDe);
+    if (!l) { orfas = true; t.__orfa = true; return; }
+    copiarDaReceita(t, l);
+    t.valor = valorTaxa(l.valor, t.taxaPct);
+  });
+  if (orfas) state.lancamentos = state.lancamentos.filter(t => !t.__orfa);
+}
+
+function camposConvenioDoForm() {
+  const c = document.getElementById('fOrigem').value === 'RECEITAS' && ehFormaConvenio(document.getElementById('fFormaPagamento').value) ? convenioDoForm() : null;
+  const chaves = numeroBR(document.getElementById('fChaves').value);
+  return c && chaves > 0 ? { convenio: c.nome, chaves, valorChave: Number(c.valorChave) || 0 } : { convenio: null, chaves: null, valorChave: null };
+}
+/* aviso no formulário: taxa e quanto sobra, ou o cálculo do convênio */
+function regraDoForm() {
+  const parcelado = document.getElementById('fParcelado').checked;
+  const qtd = parcelado ? parseInt(document.getElementById('fParceladoQtd').value, 10) || 1 : 1;
+  return { regra: regraTaxaCartao(document.getElementById('fFormaPagamento').value, qtd), parcelado, qtd };
+}
+function convenioDoForm() {
+  return (state.config.convenios || []).find(c => c.id === document.getElementById('fConvenio').value) || null;
+}
+function atualizarInfoPagamento(opts) {
+  const box = document.getElementById('pagInfo');
+  if (!box) return;
+  const receita = document.getElementById('fOrigem').value === 'RECEITAS' && !modoTransf;
+  const forma = document.getElementById('fFormaPagamento').value;
+  const conv = receita && ehFormaConvenio(forma);
+  document.getElementById('campoConvenio').hidden = !conv;
+  document.getElementById('campoPrestador').hidden = !(receita && (state.prestadores || []).length); /* 3.7.2 */
+  document.getElementById('campoChaves').hidden = !conv;
+  box.hidden = true; box.classList.remove('aviso');
+  if (!receita) return;
+  if (conv) {
+    const c = convenioDoForm();
+    if (!(state.config.convenios || []).length) {
+      box.hidden = false; box.classList.add('aviso');
+      box.innerHTML = 'Nenhum convênio cadastrado. Cadastre em Configurações › Financeiro › <strong>Convênios</strong>, com o valor da chave.';
+      return;
+    }
+    if (!c) return;
+    const chaves = numeroBR(document.getElementById('fChaves').value);
+    if (chaves > 0) {
+      const total = Math.round(chaves * (Number(c.valorChave) || 0) * 100) / 100;
+      document.getElementById('fValor').value = numberToCurrencyDisplay(total);
+      box.hidden = false;
+      box.innerHTML = `${mostraNumeroBR(chaves)} chave${chaves === 1 ? '' : 's'} × R$ ${mostraNumeroBR(Number(c.valorChave) || 0)} (${escapeHtml(c.nome)}) = <strong>${formatCurrency(total)}</strong>`
+        + (Number(c.dias) > 0 ? ` · o convênio paga em ${c.dias} dias` : '');
+    } else {
+      box.hidden = false; box.classList.add('aviso');
+      box.innerHTML = `Valor da chave em ${escapeHtml(c.nome)}: <strong>${mostraNumeroBR(Number(c.valorChave) || 0)}</strong>. Informe a quantidade de chaves e o valor é calculado.`;
+    }
+    if (opts && opts.convenioMudou && !editingId && !document.getElementById('fParcelado').checked && Number(c.dias) > 0) {
+      document.getElementById('fData').value = somarDias(todayISO(), Number(c.dias));
+    }
+    return;
+  }
+  if (!ehFormaCartao(forma)) return;
+  const { regra, parcelado, qtd } = regraDoForm();
+  const valor = currencyDisplayToNumber(document.getElementById('fValor').value);
+  if (document.getElementById('fRecorrente').checked) {
+    if (regra) { box.hidden = false; box.classList.add('aviso'); box.textContent = 'Na repetição mensal a taxa do cartão não é lançada sozinha. Se precisar, lance a taxa à parte.'; }
+    return;
+  }
+  if (!regra) {
+    box.hidden = false; box.classList.add('aviso');
+    box.innerHTML = `Sem taxa cadastrada para ${escapeHtml(forma)}${parcelado ? ` em ${qtd} vezes` : ''}. Cadastre em Configurações › Financeiro › <strong>Taxas do cartão</strong>.`;
+    return;
+  }
+  if (!valor) return;
+  const taxa = parcelado ? (parcelasForm.length ? parcelasForm.reduce((t, p) => t + valorTaxa(p.valor, regra.taxa), 0) : valorTaxa(valor, regra.taxa)) : valorTaxa(valor, regra.taxa);
+  box.hidden = false;
+  box.innerHTML = `Taxa do cartão (${escapeHtml(regra.nome)}, ${mostraNumeroBR(regra.taxa, 2)}%): <strong>${formatCurrency(taxa)}</strong>`
+    + ` · Fica para nós: <strong class="fica">${formatCurrency(Math.round((valor - taxa) * 100) / 100)}</strong>`
+    + (Number(regra.dias) > 0 ? ` · o dinheiro cai em ${regra.dias} dia${Number(regra.dias) === 1 ? '' : 's'}` : '');
+}
+document.getElementById('fFormaPagamento').addEventListener('change', () => atualizarInfoPagamento({ convenioMudou: true }));
+document.getElementById('fConvenio').addEventListener('change', () => atualizarInfoPagamento({ convenioMudou: true }));
+document.getElementById('fChaves').addEventListener('input', () => atualizarInfoPagamento());
+['fValor', 'fParceladoQtd'].forEach(id => document.getElementById(id).addEventListener('input', () => atualizarInfoPagamento()));
+['fOrigem', 'fParcelado', 'fRecorrente'].forEach(id => document.getElementById(id).addEventListener('change', () => atualizarInfoPagamento()));
+
+async function settleLancamento(id, dataEfetivado, valorPago) {
   const l = state.lancamentos.find(x => x.id === id);
   if (!l) return;
+  /* 3.7.1: valor menor pode ser só uma parte; a pessoa escolhe */
+  if (valorPago !== undefined && valorPago > 0.004 && valorPago < (Number(l.valor) || 0) - 0.004) {
+    const resp = await perguntarParcial(l, valorPago);
+    if (!resp) return;
+    if (resp.tipo === 'parte') {
+      registrarParcial(l, valorPago, dataEfetivado, resp.forma);
+      markDirty();
+      renderPendencias();
+      renderTable();
+      renderKpis();
+      toast(`${tipoFluxo(l.origem) === 'despesa' ? 'Pago' : 'Recebido'} ${formatCurrency(valorPago)}. Falta ${formatCurrency(l.valor)}, que continua em aberto.`);
+      return;
+    }
+  }
   l.efetivado = dataEfetivado;
   const aj = valorPago !== undefined ? criarAjusteBaixa(l, valorPago, dataEfetivado) : null;
   markDirty();
@@ -4233,8 +5175,18 @@ function settleLancamento(id, dataEfetivado, valorPago) {
 function undoBaixa(id) {
   const l = state.lancamentos.find(x => x.id === id);
   if (!l) return;
+  if (l.parcialDe) {
+    if (!confirm(`Desfazer este pagamento parcial de ${formatCurrency(l.valor)}? O valor volta a ficar em aberto na conta.`)) return;
+    state.lancamentos = state.lancamentos.filter(x => x.id !== id);
+    markDirty();
+    renderTable();
+    renderPendencias();
+    renderKpis();
+    toast('Pagamento parcial desfeito.');
+    return;
+  }
   const ajustes = state.lancamentos.filter(x => x.ajusteDe === id);
-  if (!confirm('Desfazer a baixa deste lançamento? Ele volta a aparecer em Pendências.'
+  if (!confirm('Desfazer a baixa deste lançamento? Ele volta a ficar em aberto no Caixa.'
     + (ajustes.length ? ` A diferença lançada na baixa (${formatCurrency(ajustes.reduce((a, x) => a + (Number(x.valor) || 0), 0))}) também será excluída.` : ''))) return;
   l.efetivado = null;
   if (ajustes.length) state.lancamentos = state.lancamentos.filter(x => x.ajusteDe !== id);
@@ -5150,8 +6102,8 @@ function renderOrcamento() {
   const aviso = document.getElementById('orcAviso');
   if (orcAba === 'montar') {
     aviso.textContent = alvo
-      ? `Orçamento de ${alvo.empresa} (${alvo.natureza}) para ${ano}. Os valores são salvos ao sair de cada campo.`
-      : 'Soma das empresas e naturezas. Para montar o orçamento, escolha a empresa e PJ ou PF no topo.';
+      ? `Previsão de ${alvo.empresa} (${alvo.natureza}) para ${ano}. Os valores são salvos ao sair de cada campo.`
+      : 'Soma das empresas e naturezas. Para montar a previsão, escolha a empresa e PJ ou PF no topo.';
     renderGradeOrcamento(ano, alvo);
   } else {
     aviso.textContent = '';
@@ -5161,7 +6113,7 @@ function renderOrcamento() {
 
 /* ---- previsto x realizado ---- */
 function statusOrcamento(origem, prev, real) {
-  if (!prev) return real ? { cls: 'tag-pendente', txt: 'sem orçamento' } : null;
+  if (!prev) return real ? { cls: 'tag-pendente', txt: 'sem previsão' } : null;
   const pct = real / prev * 100;
   let cls;
   if (origem === 'RECEITAS') cls = pct >= 100 ? 'tag-liquidado' : pct >= 90 ? 'tag-pendente' : 'tag-vencido';
@@ -5354,7 +6306,7 @@ function substituirOrcamento(novo, descricao) {
   if (!alvo) return;
   const ano = periodoAtual().ano;
   const atual = orcamentoDoAlvo(alvo, ano, false);
-  if (Object.keys(atual).length && !confirm(`${descricao} Os valores já digitados no orçamento de ${ano} serão substituídos. Continuar?`)) return;
+  if (Object.keys(atual).length && !confirm(`${descricao} Os valores já digitados na previsão de ${ano} serão substituídos. Continuar?`)) return;
   const k = saldoInicialKey(alvo.empresa, ano, alvo.natureza);
   if (Object.keys(novo).length) state.orcamento[k] = novo; else delete state.orcamento[k];
   markDirty();
@@ -5377,8 +6329,8 @@ document.getElementById('orcCopiarOrc').addEventListener('click', () => {
   if (!alvo) return;
   const de = document.getElementById('orcAnoOrc').value;
   const origem = orcamentoDoAlvo(alvo, de, false);
-  if (!Object.keys(origem).length) { toast(`Não há orçamento de ${de} para copiar.`); return; }
-  substituirOrcamento(JSON.parse(JSON.stringify(origem)), `Copiar o orçamento de ${de}.`);
+  if (!Object.keys(origem).length) { toast(`Não há previsão de ${de} para copiar.`); return; }
+  substituirOrcamento(JSON.parse(JSON.stringify(origem)), `Copiar a previsão de ${de}.`);
 });
 document.getElementById('orcAplicarPct').addEventListener('click', () => {
   const alvo = resolverAlvoSaldo();
@@ -5388,8 +6340,8 @@ document.getElementById('orcAplicarPct').addEventListener('click', () => {
   const qual = document.getElementById('orcPctAlvo').value;
   const mapa = orcamentoDoAlvo(alvo, periodoAtual().ano, false);
   const chaves = Object.keys(mapa).filter(ck => !qual || origemDaOperacao(orcParte(ck).op) === qual);
-  if (!chaves.length) { toast('Não há valores no orçamento para reajustar.'); return; }
-  const nomeAlvo = qual === 'RECEITAS' ? 'nas receitas' : qual === 'DESPESAS' ? 'nas despesas' : 'em todo o orçamento';
+  if (!chaves.length) { toast('Não há valores na previsão para reajustar.'); return; }
+  const nomeAlvo = qual === 'RECEITAS' ? 'nas receitas' : qual === 'DESPESAS' ? 'nas despesas' : 'em toda a previsão';
   if (!confirm(`Aplicar ${String(pct).replace('.', ',')}% ${nomeAlvo}?`)) return;
   chaves.forEach(ck => { mapa[ck] = mapa[ck].map(v => Math.round((Number(v) || 0) * (1 + pct / 100) * 100) / 100); });
   markDirty();
@@ -5401,7 +6353,7 @@ document.getElementById('orcAplicarPct').addEventListener('click', () => {
    NAVEGAÇÃO ENTRE ABAS
    ========================================================================= */
 let abaAtual = 'cadastro';
-const ABAS_COM_CONTEXTO = ['lancamentos', 'pendencias', 'fluxocaixa', 'orcamento', 'relatorios'];
+const ABAS_COM_CONTEXTO = ['lancamentos', 'pendencias', 'fluxocaixa', 'orcamento', 'relatorios', 'prestadores'];
 /* 3.6.8b: entrar numa tela pelo menu, atalho ou + Novo começa limpo: Novo Lançamento
    sem dados do anterior (nem edição pela metade) e as pesquisas sem o texto e os
    filtros da última vez. Só o Voltar/Avançar mantém a tela como estava. */
@@ -5411,6 +6363,7 @@ const PESQUISAS_DA_TELA = {
   tarefas: ['tFiltroStatus', 'tFiltroCategoria', 'tFiltroResp', 'tBusca'],
   clientes: ['pcBusca'],
   fornecedores: ['fnBusca'],
+  prestadores: ['prBusca'],
   ajuda: ['ajBusca'],
 };
 function limparPesquisas(tela) {
@@ -5420,6 +6373,7 @@ function limparPesquisas(tela) {
     if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
   });
   if (tela === 'lancamentos' && typeof selectedIds !== 'undefined') selectedIds.clear();
+  if (tela === 'pendencias') resetCaixa();
 }
 function switchTab(tabName, opts) {
   const telaAnterior = abaAtual;
@@ -5445,8 +6399,9 @@ function switchTab(tabName, opts) {
   document.getElementById('viewAgenda').style.display = tabName === 'agenda' ? '' : 'none';
   document.getElementById('viewClientes').style.display = tabName === 'clientes' ? '' : 'none';
   document.getElementById('viewFornecedores').style.display = tabName === 'fornecedores' ? '' : 'none';
+  document.getElementById('viewPrestadores').style.display = tabName === 'prestadores' ? '' : 'none';
   document.getElementById('viewTarefas').style.display = tabName === 'tarefas' ? '' : 'none';
-  document.getElementById('kpiRow').style.display = (tabName === 'inicio' || tabName === 'ajuda' || tabName === 'painel' || tabName === 'cadastro' || tabName === 'agenda' || tabName === 'clientes' || tabName === 'fornecedores' || tabName === 'tarefas' || tabName === 'orcamento') ? 'none' : '';
+  document.getElementById('kpiRow').style.display = (tabName === 'inicio' || tabName === 'ajuda' || tabName === 'painel' || tabName === 'cadastro' || tabName === 'agenda' || tabName === 'clientes' || tabName === 'fornecedores' || tabName === 'prestadores' || tabName === 'tarefas' || tabName === 'orcamento') ? 'none' : '';
   document.getElementById('ctxBar').style.display = ABAS_COM_CONTEXTO.includes(tabName) ? '' : 'none';
   atualizarNotaContexto();
   const titles = {
@@ -5455,18 +6410,20 @@ function switchTab(tabName, opts) {
     painel: ['Painel', 'O dia de hoje: caixa, contas, agenda e tarefas.'],
     cadastro: ['Novo Lançamento', 'Registre uma receita ou uma despesa.'],
     lancamentos: ['Lançamentos', 'Todos os registros cadastrados — filtre, edite ou exclua em lote.'],
-    pendencias: ['Pendências', 'Marque aqui o que já foi efetivamente pago ou recebido.'],
+    pendencias: ['Caixa', 'Entradas e saídas do período. Confirme o que já foi pago ou recebido.'],
     fluxocaixa: ['Fluxo de Caixa', 'O que já foi pago e recebido (realizado) e o que ainda vence (projetado).'],
-    orcamento: ['Orçamento', 'Quanto você espera receber e gastar, e como está o realizado.'],
+    orcamento: ['Previsão orçamentária', 'Quanto você espera receber e gastar, e como está o realizado.'],
     relatorios: ['Relatórios Mensais', 'Despesas, receitas e DRE, mês a mês, no regime escolhido.'],
     agenda: ['Agenda', 'Atendimentos, compromissos e bloqueios de horário.'],
     clientes: [`${termoCliente()}s`, 'Dados pessoais, endereço e pessoas importantes de cada um.'],
     fornecedores: ['Fornecedores', 'Dados de contato e quanto já foi pago a cada um.'],
+    prestadores: ['Prestadores', 'Quem atende no consultório, o repasse de cada um e o acerto do período.'],
     tarefas: ['Tarefas', 'O que precisa ser feito, por responsável, em lista ou quadro.'],
   };
   document.getElementById('pageTitle').textContent = titles[tabName][0];
   document.getElementById('pageDesc').textContent = titles[tabName][1];
   if (tabName === 'inicio') renderInicio();
+  document.querySelector('.topbar').classList.toggle('sem-titulo', tabName === 'inicio');
   if (tabName === 'ajuda') renderAjuda();
   if (tabName === 'painel') renderPainel();
   if (tabName === 'pendencias') renderPendencias();
@@ -5477,6 +6434,7 @@ function switchTab(tabName, opts) {
   if (tabName === 'agenda') renderAgenda();
   if (tabName === 'clientes') renderPacientes();
   if (tabName === 'fornecedores') renderFornecedores();
+  if (tabName === 'prestadores') renderPrestadores();
   if (tabName === 'tarefas') renderTarefas();
   registrarNavegacao(tabName, telaAnterior, opts);
 }
@@ -5569,7 +6527,7 @@ function atualizarNotaContexto() {
   const nota = document.getElementById('ctxNota');
   document.getElementById('ctxPeriodoWrap').style.display = abaAtual === 'pendencias' ? 'none' : '';
   const p = periodoAtual();
-  if (abaAtual === 'pendencias') nota.textContent = 'Mostra tudo o que está em aberto, de qualquer mês.';
+  if (abaAtual === 'pendencias') nota.textContent = 'O período do Caixa é escolhido logo abaixo.';
   else if (abaAtual === 'lancamentos') nota.textContent = p.tudo ? '' : 'O período vale pela data de vencimento.';
   else if (p.tudo) nota.textContent = `Mostrando o ano de ${p.ano}.`;
   else nota.textContent = '';
@@ -5581,6 +6539,7 @@ function renderContexto() {
   renderKpis();
   if (abaAtual === 'lancamentos') renderTable();
   else if (abaAtual === 'pendencias') renderPendencias();
+  else if (abaAtual === 'prestadores') renderPrestadores();
   else if (abaAtual === 'fluxocaixa') renderFluxoCaixa();
   else if (abaAtual === 'relatorios') renderRelatorios();
   else if (abaAtual === 'orcamento') renderOrcamento();
@@ -5666,7 +6625,7 @@ function marcarLancamentoTocado(id) {
 function lancadosAgora() {
   if (!sessaoLanc.inicial) marcarInicioSessao();
   state.lancamentos.forEach(l => {
-    if (!sessaoLanc.inicial.has(l.id) && !sessaoLanc.tocados.includes(l.id)) sessaoLanc.tocados.push(l.id);
+    if (!l.taxaDe && !sessaoLanc.inicial.has(l.id) && !sessaoLanc.tocados.includes(l.id)) sessaoLanc.tocados.push(l.id);
   });
   const porId = new Map(state.lancamentos.map(l => [l.id, l]));
   const lista = [], series = new Set();
@@ -5742,6 +6701,7 @@ function downloadBackup() {
     tarefas: state.tarefas || [],
     pacientes: state.pacientes || [],
     fornecedores: state.fornecedores || [],
+    prestadores: state.prestadores || [],
     agendaRepeticoes: state.agendaRepeticoes || [],
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -5778,6 +6738,7 @@ function restoreBackup(file) {
         tarefas: parsed.tarefas || [],
         pacientes: parsed.pacientes || [],
         fornecedores: parsed.fornecedores || [],
+        prestadores: parsed.prestadores || [],
         agendaRepeticoes: parsed.agendaRepeticoes || [],
         dirtyCount: 0,
         lastBackupAt: new Date().toISOString(),
@@ -5867,12 +6828,18 @@ overlay.addEventListener('click', closeDrawer);
 
 function simpleListEditor(title, note, list) {
   const chips = list.map((v, i) => `
-    <span class="chip"><button class="chip-label" data-rename-i="${i}" type="button" title="Clique para renomear">${escapeHtml(v)}</button><button data-i="${i}" type="button" title="Remover">✕</button></span>`).join('');
+    <span class="chip"><input type="checkbox" class="chip-sel" data-sel-i="${i}" aria-label="Selecionar ${escapeHtml(v)}" title="Marcar para excluir"><button class="chip-label" data-rename-i="${i}" type="button" title="Clique para renomear">${escapeHtml(v)}</button></span>`).join('');
   return `
     <div class="settings-group">
       <h3>${escapeHtml(title)}</h3>
       ${note ? `<p class="sub-note">${note}</p>` : ''}
       <div class="chip-list" data-list>${chips || '<span class="muted" style="font-size:12px">Nenhum item ainda.</span>'}</div>
+      <div class="chip-acoes" data-acoes hidden>
+        <span class="chip-qtd" data-qtd></span>
+        <button type="button" class="link-btn" data-sel-todos>Marcar todos</button>
+        <button type="button" class="link-btn" data-sel-limpar>Cancelar</button>
+        <button type="button" class="btn btn-sm btn-excluir btn-ic" data-excluir>${svgIco('lixeira')}Excluir</button>
+      </div>
       <div class="add-row">
         <input type="text" placeholder="Adicionar novo…" data-input>
         <button class="btn btn-outline btn-sm" type="button" data-addbtn>Adicionar</button>
@@ -5891,11 +6858,12 @@ function renderDrawer() {
   const body = document.getElementById('drawerBody');
   body.innerHTML = `
     <nav class="cfg-topicos" aria-label="Tópicos das configurações">
-      <button type="button" class="cfg-topico-btn" data-cfg-ir="geral">Geral</button>
-      <button type="button" class="cfg-topico-btn" data-cfg-ir="financeiro">Financeiro</button>
-      <button type="button" class="cfg-topico-btn" data-cfg-ir="contabil">Plano de contas</button>
-      <button type="button" class="cfg-topico-btn" data-cfg-ir="agenda">Agenda e tarefas</button>
-      <button type="button" class="cfg-topico-btn" data-cfg-ir="dados">Planilhas e dados</button>
+      <button type="button" class="cfg-topico-btn" data-cfg-ir="geral">${svgIco('geral')}Geral</button>
+      <button type="button" class="cfg-topico-btn" data-cfg-ir="financeiro">${svgIco('financeiro')}Financeiro</button>
+      <button type="button" class="cfg-topico-btn" data-cfg-ir="contabil">${svgIco('contabil')}Plano de contas</button>
+      <button type="button" class="cfg-topico-btn" data-cfg-ir="agenda">${svgIco('agenda')}Agenda e tarefas</button>
+      <button type="button" class="cfg-topico-btn" data-cfg-ir="dados">${svgIco('dados')}Planilhas e dados</button>
+      <div class="cfg-desfazer" id="cfgDesfazer" hidden style="flex-basis:100%"><span id="cfgDesfazerTxt"></span><button type="button" id="cfgDesfazerBtn">${svgIco('desfazer')}Desfazer</button></div>
     </nav>
     <section class="cfg-topico" data-cfg-topico="geral">
       <p class="sub-note">Ramo de atividade, tela de abertura, marca e licença. Comece pelo ramo: ele monta o plano de contas.</p>
@@ -5973,9 +6941,21 @@ function renderDrawer() {
       <div id="grpLocal"></div>
     </div>
     <div id="grpFormaPagto"></div>
+    <div class="settings-group">
+      <h3>Taxas do cartão</h3>
+      <p class="sub-note">Quanto a maquininha cobra em cada tipo de recebimento. No lançamento, o sistema mostra a taxa e quanto sobra, e lança a taxa como despesa em Deduções, junto com a receita. Taxa zero = sem taxa. "Parcelas de/até" separa o crédito à vista do parcelado.</p>
+      <div class="cfg-tabela-wrap"><div class="cfg-tabela taxas" id="grpTaxas"></div></div>
+      <button type="button" class="btn btn-outline btn-sm" id="cfgTaxaNova">+ Adicionar tipo</button>
+    </div>
+    <div class="settings-group">
+      <h3>Convênios</h3>
+      <p class="sub-note">Valor da chave (R$ por chave ou US) e em quantos dias o convênio paga. No lançamento com a forma de pagamento Convênio, o valor sai de chaves × valor da chave, e o vencimento já vem com o prazo.</p>
+      <div class="cfg-tabela-wrap"><div class="cfg-tabela convenios" id="grpConvenios"></div></div>
+      <button type="button" class="btn btn-outline btn-sm" id="cfgConvNovo">+ Adicionar convênio</button>
+    </div>
     </section>
     <section class="cfg-topico" data-cfg-topico="contabil">
-      <p class="sub-note">Operações, categorias, linha da DRE e centros de custo. Clique num item para renomear ou no ✕ para remover; lançamentos já feitos não são apagados.</p>
+      <p class="sub-note">Operações, categorias, linha da DRE e centros de custo. Clique no nome para renomear. Para excluir, marque a caixinha de um ou vários itens e use <strong>Excluir</strong>; dá para desfazer logo em seguida. Lançamentos já feitos não são apagados.</p>
     <div class="settings-group">
       <h3>Operação por tipo</h3>
       <p class="sub-note">Cada tipo (Receitas e Despesas) tem sua própria lista de operações.</p>
@@ -6031,7 +7011,7 @@ function renderDrawer() {
         <span>Modelos em branco</span>
         <div class="xl-btns">
           <button class="btn btn-outline btn-sm" type="button" data-xl-modelo="lanc">Lançamentos</button>
-          <button class="btn btn-outline btn-sm" type="button" data-xl-modelo="orc">Orçamento</button>
+          <button class="btn btn-outline btn-sm" type="button" data-xl-modelo="orc">Previsão orçamentária</button>
           <button class="btn btn-outline btn-sm" type="button" data-xl-modelo="plano">Plano de contas</button>
           <button class="btn btn-outline btn-sm" type="button" data-xl-modelo="cad">Cadastros</button>
         </div>
@@ -6043,7 +7023,7 @@ function renderDrawer() {
           <button class="btn btn-outline btn-sm" type="button" data-xl-exportar="cad">Cadastros</button>
         </div>
       </div>
-      <p class="sub-note">Lançamentos, Orçamento e Relatórios têm o botão Exportar Excel na própria tela.</p>
+      <p class="sub-note">Lançamentos, Previsão orçamentária e Relatórios têm o botão Exportar Excel na própria tela.</p>
     </div>
     <div class="settings-group danger-zone">
       <h3>Zona de risco</h3>
@@ -6055,6 +7035,8 @@ function renderDrawer() {
   document.getElementById('btnResetFactory').addEventListener('click', resetToFactoryDefaults);
   mostrarTopicoConfig(cfgUI.topico);
   body.querySelectorAll('[data-cfg-ir]').forEach(b => b.addEventListener('click', () => { mostrarTopicoConfig(b.dataset.cfgIr); body.scrollTop = 0; }));
+  document.getElementById('cfgDesfazerBtn').addEventListener('click', desfazerExclusaoConfig);
+  mostrarBarraDesfazer();
   bindMarcaELicenca();
   bindPlanilhasConfig();
 
@@ -6193,7 +7175,11 @@ function renderDrawer() {
     },
   });
   renderCentroPorCategoria();
-  mountListEditor('grpFormaPagto', 'Forma de pagamento/recebimento', null, state.config.formaPagamento, { onChange: refreshFormaPagamentoSelect });
+  montarListaComRenomear('grpFormaPagto', 'Forma de pagamento/recebimento', null, state.config.formaPagamento,
+    (o, n) => { (state.config.taxasCartao || []).forEach(r => { if (r.forma === o) r.forma = n; }); },
+    () => { refreshFormaPagamentoSelect(); renderTaxasCfg(); });
+  renderTaxasCfg();
+  renderConveniosCfg();
 
   // Operação: renomear/remover precisa também atualizar a chave correspondente
   // em Categorias (indexada pelo nome da operação) e os lançamentos já salvos.
@@ -6255,6 +7241,100 @@ function renderDrawer() {
 
 }
 
+/* 3.6.11: desfazer a última exclusão nas Configurações. Guarda as configurações de antes;
+   só desfaz se nada mais mudou depois (senão desfaria outra alteração junto). */
+let cfgDesfazer = null;
+function registrarExclusaoConfig(antes, nomes) {
+  const txt = nomes.length === 1 ? `"${nomes[0]}" excluído.` : `${nomes.length} itens excluídos.`;
+  cfgDesfazer = { antes, txt, marca: state.dirtyCount };
+  mostrarBarraDesfazer();
+  toast(txt, { rotulo: 'Desfazer', fn: desfazerExclusaoConfig });
+}
+function podeDesfazerConfig() { return !!cfgDesfazer && cfgDesfazer.marca === state.dirtyCount; }
+function mostrarBarraDesfazer() {
+  const bar = document.getElementById('cfgDesfazer');
+  if (!bar) return;
+  bar.hidden = !podeDesfazerConfig();
+  if (!bar.hidden) document.getElementById('cfgDesfazerTxt').textContent = cfgDesfazer.txt;
+}
+function desfazerExclusaoConfig() {
+  if (!podeDesfazerConfig()) {
+    cfgDesfazer = null; mostrarBarraDesfazer();
+    toast('Não dá mais para desfazer: houve outra alteração depois.');
+    return;
+  }
+  state.config = JSON.parse(cfgDesfazer.antes);
+  cfgDesfazer = null;
+  markDirty();
+  populateAllDropdowns();
+  refreshCategoriaSelectGrouped();
+  if (document.getElementById('drawer').classList.contains('open')) renderDrawer();
+  toast('Exclusão desfeita.');
+}
+
+/* 3.7.0: tabelas de taxas do cartão e de convênios (Configurações › Financeiro) */
+function renderTaxasCfg() {
+  const box = document.getElementById('grpTaxas');
+  if (!box) return;
+  const lista = state.config.taxasCartao;
+  const formas = state.config.formaPagamento || [];
+  box.innerHTML = '<span class="cab">Tipo</span><span class="cab">Forma</span><span class="cab">Parc. de</span><span class="cab">até</span><span class="cab">Taxa %</span><span class="cab">Cai em (dias)</span><span></span>'
+    + lista.map((r, i) => `<input type="text" data-tx="${i}" data-k="nome" value="${escapeHtml(r.nome || '')}" aria-label="Tipo">
+      <select data-tx="${i}" data-k="forma" aria-label="Forma de pagamento">${[...new Set([...formas, r.forma].filter(Boolean))].map(f => `<option${f === r.forma ? ' selected' : ''}>${escapeHtml(f)}</option>`).join('')}</select>
+      <input type="number" min="1" step="1" data-tx="${i}" data-k="de" value="${r.de || 1}" aria-label="Parcelas de">
+      <input type="number" min="1" step="1" data-tx="${i}" data-k="ate" value="${r.ate || r.de || 1}" aria-label="Parcelas até">
+      <input type="text" inputmode="decimal" data-tx="${i}" data-k="taxa" value="${mostraNumeroBR(Number(r.taxa) || 0, 2)}" aria-label="Taxa em %">
+      <input type="number" min="0" step="1" data-tx="${i}" data-k="dias" value="${Number(r.dias) || 0}" aria-label="Dias para cair">
+      <button type="button" class="del" data-tx-del="${i}" title="Excluir">${svgIco('lixeira')}</button>`).join('')
+    + (lista.length ? '' : '<span class="muted" style="grid-column:1/-1">Nenhum tipo cadastrado.</span>');
+  box.querySelectorAll('[data-tx]').forEach(el => el.addEventListener('change', () => {
+    const r = lista[Number(el.dataset.tx)], k = el.dataset.k;
+    r[k] = k === 'taxa' ? numeroBR(el.value) : (k === 'de' || k === 'ate' || k === 'dias') ? Math.max(0, parseInt(el.value, 10) || 0) : el.value.trim();
+    if (k === 'taxa') el.value = mostraNumeroBR(r.taxa, 2);
+    markDirty(); atualizarInfoPagamento();
+  }));
+  box.querySelectorAll('[data-tx-del]').forEach(b => b.addEventListener('click', () => {
+    const antes = JSON.stringify(state.config);
+    const [r] = lista.splice(Number(b.dataset.txDel), 1);
+    markDirty(); registrarExclusaoConfig(antes, [r.nome || 'tipo']); renderTaxasCfg();
+  }));
+}
+function renderConveniosCfg() {
+  const box = document.getElementById('grpConvenios');
+  if (!box) return;
+  const lista = state.config.convenios;
+  box.innerHTML = '<span class="cab">Convênio</span><span class="cab">Valor da chave</span><span class="cab">Paga em (dias)</span><span></span>'
+    + lista.map((c, i) => `<input type="text" data-cv="${i}" data-k="nome" value="${escapeHtml(c.nome || '')}" aria-label="Nome do convênio">
+      <input type="text" inputmode="decimal" data-cv="${i}" data-k="valorChave" value="${mostraNumeroBR(Number(c.valorChave) || 0)}" aria-label="Valor da chave em reais">
+      <input type="number" min="0" step="1" data-cv="${i}" data-k="dias" value="${Number(c.dias) || 0}" aria-label="Prazo de pagamento em dias">
+      <button type="button" class="del" data-cv-del="${i}" title="Excluir">${svgIco('lixeira')}</button>`).join('')
+    + (lista.length ? '' : '<span class="muted" style="grid-column:1/-1">Nenhum convênio cadastrado.</span>');
+  box.querySelectorAll('[data-cv]').forEach(el => el.addEventListener('change', () => {
+    const c = lista[Number(el.dataset.cv)], k = el.dataset.k;
+    c[k] = k === 'valorChave' ? numeroBR(el.value) : k === 'dias' ? Math.max(0, parseInt(el.value, 10) || 0) : el.value.trim();
+    if (k === 'valorChave') el.value = mostraNumeroBR(c.valorChave);
+    markDirty(); refreshFormaPagamentoSelect();
+  }));
+  box.querySelectorAll('[data-cv-del]').forEach(b => b.addEventListener('click', () => {
+    const antes = JSON.stringify(state.config);
+    const [c] = lista.splice(Number(b.dataset.cvDel), 1);
+    markDirty(); registrarExclusaoConfig(antes, [c.nome || 'convênio']); renderConveniosCfg(); refreshFormaPagamentoSelect();
+  }));
+}
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#cfgTaxaNova')) {
+    const f = (state.config.formaPagamento || []).find(ehFormaCartao) || (state.config.formaPagamento || [])[0] || '';
+    state.config.taxasCartao.push({ id: uid(), nome: 'Novo tipo', forma: f, de: 1, ate: 1, taxa: 0, dias: 30 });
+    markDirty(); renderTaxasCfg();
+    const ult = document.querySelectorAll('#grpTaxas [data-k="nome"]'); if (ult.length) ult[ult.length - 1].select();
+  }
+  if (e.target.closest('#cfgConvNovo')) {
+    state.config.convenios.push({ id: uid(), nome: 'Novo convênio', valorChave: 0, dias: 30 });
+    markDirty(); renderConveniosCfg(); refreshFormaPagamentoSelect();
+    const ult = document.querySelectorAll('#grpConvenios [data-k="nome"]'); if (ult.length) ult[ult.length - 1].select();
+  }
+});
+
 /* lista simples cujo renomear leva o novo nome para os registros que o usam */
 function montarListaComRenomear(target, title, note, listRef, renomear, depois) {
   const fim = depois || (() => {});
@@ -6272,18 +7352,31 @@ function mountListEditor(target, title, note, listRef, opts) {
   el.innerHTML = simpleListEditor(title, note, listRef);
   const chipList = el.querySelector('[data-list]');
 
-  chipList.querySelectorAll('button[data-i]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const i = Number(btn.dataset.i);
-      const v = listRef[i];
-      if (!confirm(`Remover "${v}"? Lançamentos já salvos com esse valor não serão apagados.`)) return;
-      listRef.splice(i, 1);
-      if (opts.onRemove) opts.onRemove(v); // pode mutar outras partes de state.config/lancamentos
-      markDirty(); // persiste DEPOIS que toda a cascata já foi aplicada
-      if (opts.onRemove) return;
-      mountListEditor(el, title, note, listRef, opts);
-      onChange();
-    });
+  /* 3.6.11: marcar um ou vários e excluir de uma vez, com Desfazer */
+  const acoes = el.querySelector('[data-acoes]');
+  const caixas = () => [...chipList.querySelectorAll('[data-sel-i]')];
+  const atualizarSelecao = () => {
+    const marcadas = caixas().filter(c => c.checked);
+    caixas().forEach(c => c.closest('.chip').classList.toggle('selecionado', c.checked));
+    acoes.hidden = !marcadas.length;
+    acoes.querySelector('[data-qtd]').textContent = `${marcadas.length} marcado${marcadas.length === 1 ? '' : 's'}`;
+    acoes.querySelector('[data-sel-todos]').hidden = marcadas.length === caixas().length;
+  };
+  chipList.addEventListener('change', atualizarSelecao);
+  acoes.querySelector('[data-sel-todos]').addEventListener('click', () => { caixas().forEach(c => { c.checked = true; }); atualizarSelecao(); });
+  acoes.querySelector('[data-sel-limpar]').addEventListener('click', () => { caixas().forEach(c => { c.checked = false; }); atualizarSelecao(); });
+  acoes.querySelector('[data-excluir]').addEventListener('click', () => {
+    const idx = caixas().filter(c => c.checked).map(c => Number(c.dataset.selI)).sort((a, b) => b - a);
+    if (!idx.length) return;
+    const nomes = idx.map(i => listRef[i]).reverse();
+    const antes = JSON.stringify(state.config);
+    idx.forEach(i => listRef.splice(i, 1));
+    if (opts.onRemove) nomes.forEach(v => opts.onRemove(v)); // pode mutar outras partes de state.config
+    markDirty(); // persiste DEPOIS que toda a cascata já foi aplicada
+    registrarExclusaoConfig(antes, nomes);
+    if (opts.onRemove) return;
+    mountListEditor(el, title, note, listRef, opts);
+    onChange();
   });
 
   chipList.querySelectorAll('button[data-rename-i]').forEach(btn => {
@@ -6419,6 +7512,19 @@ function buildWhatsAppUrl(a) {
   return fone ? `https://wa.me/${fone}?text=${text}` : `https://wa.me/?text=${text}`;
 }
 
+/* 3.6.11: abre o Google Agenda com o compromisso preenchido; a pessoa só confere e salva */
+function buildGoogleAgendaUrl(a) {
+  const tipo = a.tipo === 'atendimento' ? 'Atendimento: ' : '';
+  const det = [
+    a.tipo === 'atendimento' && a.titulo ? `Procedimento: ${a.titulo}` : '',
+    a.profissional ? `Profissional: ${a.profissional}` : '',
+    a.telefone ? `Telefone: ${a.telefone}` : '',
+    a.obs || '',
+  ].filter(Boolean).join('\n');
+  const p = new URLSearchParams({ action: 'TEMPLATE', text: tipo + apptTitulo(a), dates: `${icsDate(apptStart(a))}/${icsDate(apptEnd(a))}`, ctz: 'America/Sao_Paulo' });
+  if (det) p.set('details', det);
+  return 'https://calendar.google.com/calendar/render?' + p.toString();
+}
 function icsEscape(s) {
   return String(s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
 }
@@ -6608,7 +7714,7 @@ function termoCliente() { return 'Cliente'; }
 function aplicarTermos() {
   const t = termoCliente(), min = t.toLowerCase();
   document.getElementById('tabClientesNome').textContent = `${t}s`;
-  document.getElementById('novoMenuCliente').textContent = t;
+  document.getElementById('novoMenuCliente').innerHTML = svgIco('cliente') + escapeHtml(t);
   document.getElementById('pcNovo').textContent = `+ Novo ${min}`;
   document.getElementById('agPacienteLabel').textContent = t;
   document.getElementById('agTelefoneLabel').textContent = `WhatsApp do ${min}`;
@@ -6713,6 +7819,7 @@ document.getElementById('pcAddPessoa').addEventListener('click', () => {
 /* ---- ficha: abrir, preencher, fechar ---- */
 const PAC_FICHA = { pcNome: 'nome', pcEndereco: 'endereco', pcComplemento: 'complemento', pcBairro: 'bairro', pcCidade: 'cidade', pcCep: 'cep', pcUf: 'uf', pcCpf: 'cpf', pcNasc: 'nascimento', pcEmail: 'email', pcWhats: 'whatsapp', pcEstadoCivil: 'estadoCivil', pcProfissao: 'profissao', pcObs: 'obs' };
 function abrirFichaPaciente(id, opts) {
+  try { mostrarErroCpf(false); } catch (e) {}
   opts = opts || {};
   const p = id ? state.pacientes.find(x => x.id === id) : null;
   const t = termoCliente();
@@ -6758,7 +7865,10 @@ document.getElementById('pcForm').addEventListener('submit', (e) => {
   const dup = state.pacientes.find(p => p.nome.toLowerCase() === nome.toLowerCase() && p.id !== pacientesUI.editandoId);
   if (dup) { toast(`Já existe um cadastro com o nome ${dup.nome}.`); return; }
   const cpf = document.getElementById('pcCpf').value.trim();
-  if (cpf && !cpfValido(cpf)) { toast('O CPF não confere. Corrija ou deixe em branco.'); document.getElementById('pcCpf').focus(); return; }
+  if (!cpf) { toast('Informe o CPF.'); document.getElementById('pcCpf').focus(); return; }
+  if (!cpfValido(cpf)) { mostrarErroCpf(true); toast('O CPF não confere. Confira os números.'); document.getElementById('pcCpf').focus(); return; }
+  const cpfDup = state.pacientes.find(p => p.id !== pacientesUI.editandoId && p.cpf && p.cpf.replace(/\D/g, '') === cpf.replace(/\D/g, ''));
+  if (cpfDup) { toast(`Este CPF já está no cadastro de ${cpfDup.nome}.`); document.getElementById('pcCpf').focus(); return; }
   lerPessoasDaFicha();
   const dados = {};
   Object.entries(PAC_FICHA).forEach(([el, k]) => { dados[k] = document.getElementById(el).value.trim(); });
@@ -6793,7 +7903,10 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document
 document.getElementById('pcNovo').addEventListener('click', () => abrirFichaPaciente(null));
 document.getElementById('pcBusca').addEventListener('input', renderPacientes);
 document.getElementById('pcWhats').addEventListener('input', (e) => { e.target.value = formatPhoneBR(e.target.value); });
-document.getElementById('pcCpf').addEventListener('input', (e) => { e.target.value = cpfFormatado(e.target.value); });
+document.getElementById('pcCpf').addEventListener('input', (e) => { e.target.value = cpfFormatado(e.target.value); mostrarErroCpf(e.target.value.replace(/\D/g, '').length === 11 && !cpfValido(e.target.value)); });
+document.getElementById('pcCpf').addEventListener('blur', (e) => { mostrarErroCpf(!!e.target.value.trim() && !cpfValido(e.target.value)); });
+/* 3.7.2: aviso na hora, embaixo do campo */
+function mostrarErroCpf(sim) { document.getElementById('pcCpfErro').hidden = !sim; document.getElementById('pcCpf').classList.toggle('invalido', !!sim); }
 document.getElementById('pcCep').addEventListener('input', (e) => { e.target.value = cepFormatado(e.target.value); });
 /* + Novo ao lado do campo, no lançamento e na agenda: abre a ficha e já preenche o campo */
 function nomeDigitadoNovo(v) { v = String(v || '').trim(); return v && !pacientePorNome(v) ? v : ''; }
@@ -7222,7 +8335,8 @@ function renderAgendaDia() {
           ${bloqueio ? '' : `<select data-ag-status="${a.id}" aria-label="Status">${statusOpts}</select>`}
           <button class="btn btn-outline btn-sm" data-ag-edit="${a.id}" type="button">Editar</button>
           ${a.tipo === 'atendimento' ? waLinkHtml(a, 'WhatsApp') : ''}
-          ${bloqueio ? '' : `<button class="btn btn-outline btn-sm" data-ag-ics="${a.id}" type="button">.ics</button>`}
+          ${bloqueio ? '' : `<a class="btn btn-outline btn-sm btn-ic" data-ag-google="${a.id}" href="${buildGoogleAgendaUrl(a)}" target="_blank" rel="noopener" title="Abre o Google Agenda com este compromisso preenchido">${svgIco('google')}Google Agenda</a>`}
+          ${bloqueio ? '' : `<button class="btn btn-outline btn-sm" data-ag-ics="${a.id}" type="button" title="Baixa o arquivo do compromisso para outro calendário">.ics</button>`}
           <button class="btn btn-danger-text btn-sm" data-ag-del="${a.id}" type="button">Excluir</button>
         </div>
         ${receita}
@@ -8397,30 +9511,39 @@ const AJUDA = [
       <li><strong>Geral › Ramo de atividade:</strong> escolha o ramo antes de tudo. Ele monta o plano de contas, os centros de custo e as formas de pagamento. Veja <em>Configurações e ramo de atividade</em>.</li>
       <li><strong>Geral › Abertura do sistema:</strong> o nome que aparece na tela de boas-vindas.</li>
       <li><strong>Financeiro:</strong> confira o nome da empresa e cadastre cada conta e caixa, com o <strong>saldo inicial</strong> e a data desse saldo. É o ponto de partida do Fluxo de Caixa.</li>
-      <li><strong>Plano de contas:</strong> revise categorias e centros de custo. Clique num item para renomear ou no ✕ para remover. Em <strong>Centro de custo de cada categoria</strong>, defina o centro que cada categoria já traz preenchido.</li>
+      <li><strong>Plano de contas:</strong> revise categorias e centros de custo. Clique num item para renomear. Para excluir, marque a caixinha de um ou vários e clique em <strong>Excluir</strong> (dá para desfazer). Em <strong>Centro de custo de cada categoria</strong>, defina o centro que cada categoria já traz preenchido.</li>
       <li><strong>Agenda e tarefas:</strong> ajuste a mensagem de WhatsApp e confira os responsáveis pelas tarefas.</li>
     </ol>
     <div class="aj-aviso">Não use o botão da <strong>Zona de risco</strong> (“apaga tudo”) sem falar com o suporte antes.</div>` },
-  { id: 'navegar', titulo: 'Voltar para a tela anterior', ir: null, html: `
+  { id: 'navegar', titulo: 'Início, menu e voltar', ir: null, html: `
+    <h3>Início</h3>
+    <p>A tela de Início mostra só o que pede atenção hoje: <strong>compromissos</strong>, <strong>tarefas</strong> (com as atrasadas em vermelho) e <strong>contas</strong> que vencem hoje ou já venceram e <strong>aniversariantes</strong> do dia (clientes e as pessoas importantes deles). Cada aniversariante com telefone tem o botão <strong>Parabenizar no WhatsApp</strong>, com a mensagem pronta. Clique num quadro para abrir a tela correspondente. O resto fica no menu da esquerda.</p>
+    <h3>Voltar para a tela anterior</h3>
     <p class="aj-lead">Abriu uma tela sem querer? Dá para voltar de três jeitos:</p>
     <ul>
       <li>O link <strong>← Voltar para …</strong>, acima do título da tela, diz para onde vai e leva para lá.</li>
       <li>O botão <strong>Voltar</strong> do navegador (a seta no alto, à esquerda) ou o botão lateral do mouse.</li>
       <li>O logo, no alto do menu, sempre leva ao <strong>Início</strong>.</li>
     </ul>
+    <h3>Recolher o menu</h3>
+    <p>O botão <strong>Recolher menu</strong>, no pé do menu da esquerda, deixa só os ícones e abre mais espaço para a tela. Passe o mouse sobre um ícone para ver o nome. Clique de novo para expandir. O sistema lembra a escolha neste computador.</p>
     <p>Voltar não desfaz nada do que foi salvo; só troca de tela, e a tela volta como estava (com a pesquisa que você tinha feito).</p>
     <h3>Telas que começam limpas</h3>
     <p>Quando você entra numa tela pelo menu, pelos atalhos do Início ou pelo <strong>+ Novo</strong>, ela começa do zero: <strong>Novo Lançamento</strong> vem em branco (uma edição não salva é descartada) e as buscas e filtros de Lançamentos, Pendências, Tarefas, Clientes e Fornecedores vêm vazios. O período escolhido na barra do alto (mês ou ano) continua o mesmo.</p>` },
   { id: 'lancar', titulo: 'Lançar receitas e despesas', ir: 'cadastro', html: `
-    <p class="aj-lead">Em <strong>Novo Lançamento</strong>, escolha Receita ou Despesa e preencha de cima para baixo.</p>
+    <p class="aj-lead">Em <strong>Novo Lançamento</strong>, escolha Receita ou Despesa e preencha as três partes, de cima para baixo: <strong>1. Categoria e valor</strong>, <strong>2. Vencimento</strong> e <strong>3. Quem e como paga</strong>.</p>
     <ul>
       <li><strong>Valor:</strong> digite só os números, sem vírgula. <code>15000</code> vira 150,00.</li>
       <li><strong>Categoria:</strong> o centro de custo já vem preenchido pela categoria. Dá para trocar em <em>Mais detalhes</em>.</li>
       <li><strong>Categoria:</strong> a lista abre depois de escolher <strong>Receita</strong> ou <strong>Despesa</strong> no alto do formulário.</li>
       <li><strong>Cliente / fornecedor:</strong> clique no campo para ver a lista ou digite para buscar. Se o nome não existir, escolha <strong>+ Cadastrar</strong> na lista. O link <strong>+ Novo cliente</strong> (ou <strong>+ Novo fornecedor</strong>, em despesas), acima do campo, abre a ficha completa e já preenche o campo ao salvar. O ✕ apaga o nome escolhido.</li>
-      <li><strong>Já foi pago / recebido?</strong> Marque se o dinheiro já entrou ou saiu. Senão, o lançamento fica em Pendências.</li>
-      <li><strong>É parcelado?</strong> Informe o valor total e o número de parcelas. Quando não divide exato, a 1ª parcela fica com os centavos (400,00 em 3 = 133,34 + 133,33 + 133,33).</li>
-      <li><strong>Repete todo mês?</strong> Para contas fixas, como aluguel. Os meses seguintes entram sozinhos.</li>
+      <li><strong>Já foi pago / recebido?</strong> Marque se o dinheiro já entrou ou saiu. Senão, o lançamento fica no Caixa, para confirmar depois.</li>
+      <li><strong>Empresa:</strong> com uma empresa só, ela já vem escolhida. Todo lançamento de empresa é PJ. Para uma conta pessoal do sócio, abra <em>Mais detalhes</em> e marque <strong>Conta pessoal</strong> (PF).</li>
+      <li><strong>Como é:</strong> escolha <strong>Uma vez</strong>, <strong>Parcelado</strong> ou <strong>Repete todo mês</strong>. Só aparecem os campos da opção escolhida.</li>
+      <li><strong>Parcelado:</strong> informe o valor total, a data da 1ª parcela e o número de parcelas. Aparece a lista de todas as parcelas, com data e valor. Mude o que precisar (por exemplo, uma data diferente); se estiver tudo certo, é só salvar. A soma das parcelas tem de fechar com o total; se não fechar, use <strong>Ajustar na última parcela</strong>. Quando não divide exato, a 1ª fica com os centavos (400,00 em 3 = 133,34 + 133,33 + 133,33).</li>
+      <li><strong>Repete todo mês:</strong> para contas fixas, como aluguel. Os meses seguintes entram sozinhos.</li>
+      <li><strong>Cartão:</strong> ao escolher a forma de recebimento no cartão, aparece a taxa e quanto <strong>fica para nós</strong>. A receita entra cheia e a taxa entra sozinha como despesa (categoria <em>Taxas de cartão</em>, em Deduções), ligada à receita: tem a mesma data, é baixada junto e some se a receita for excluída. No parcelado, cada parcela tem a sua taxa. As taxas de cada tipo ficam em Configurações › Financeiro › <strong>Taxas do cartão</strong>.</li>
+      <li><strong>Convênio:</strong> com a forma de recebimento Convênio, escolha o convênio e informe a <strong>quantidade de chaves</strong>. O valor é calculado (chaves × valor da chave) e o vencimento já vem com o prazo do convênio. Os convênios ficam em Configurações › Financeiro › <strong>Convênios</strong>.</li>
       <li><strong>Transferência:</strong> para passar dinheiro de uma conta para outra. Não conta como receita nem despesa.</li>
     </ul>
     <p><strong>Lançados agora</strong>, abaixo do formulário, mostra só o que você lançou ou corrigiu desde que abriu o sistema, para conferir na hora. Começa vazio a cada abertura. Os lançamentos antigos ficam em <strong>Lançamentos</strong> (link <em>ver todos</em>).</p>` },
@@ -8431,20 +9554,55 @@ const AJUDA = [
       <li><strong>Pertence a outro mês?</strong> Só aparece ao editar, em <em>Mais detalhes</em>. Use quando uma despesa é de um mês, mas foi paga em outro (por exemplo, a conta de luz de setembro paga em outubro).</li>
       <li><strong>Excluir:</strong> pede confirmação. Em parcelas e repetições, o sistema pergunta quais meses: só esta, esta e as próximas, ou todas.</li>
     </ul>` },
-  { id: 'baixa', titulo: 'Dar baixa no que foi pago ou recebido', ir: 'pendencias', html: `
-    <p class="aj-lead">Em <strong>Pendências</strong> fica tudo o que ainda não foi pago ou recebido. O número vermelho no menu conta o que vence hoje ou já venceu.</p>
+  { id: 'baixa', titulo: 'Caixa: confirmar o que foi pago ou recebido', ir: 'pendencias', html: `
+    <p class="aj-lead">O <strong>Caixa</strong> mostra as entradas e saídas de um período, já confirmadas ou não. Ele abre no dia de hoje. O número vermelho no menu conta o que vence hoje ou já venceu.</p>
+    <ul>
+      <li><strong>Período:</strong> escolha <strong>Dia</strong>, <strong>Semana</strong> ou <strong>Mês</strong> e use as setas ‹ › para ir e voltar, ou escolha uma data. <strong>Hoje</strong> volta para o dia atual.</li>
+      <li><strong>Tudo em aberto:</strong> mostra tudo o que falta pagar ou receber, de qualquer data.</li>
+      <li><strong>Atrasados:</strong> a faixa vermelha no alto avisa o que venceu antes do período. Clique em <strong>Ver atrasados</strong> para ver a lista.</li>
+      <li><strong>Resumo:</strong> entradas, saídas e saldo do período, separando o que já foi confirmado do que falta confirmar.</li>
+      <li>O que está em aberto aparece na data de vencimento. O que já foi confirmado aparece na data em que foi pago ou recebido.</li>
+    </ul>
+    <h3>Confirmar</h3>
     <ol>
-      <li>Na linha da conta, confira a data e o valor.</li>
-      <li>Clique em <strong>Marcar pago</strong> ou <strong>Marcar recebido</strong>.</li>
+      <li>Na linha da conta, confira o valor e a data.</li>
+      <li>Clique em <strong>Confirmar</strong>.</li>
     </ol>
-    <p>Se o valor for diferente (juros, multa ou desconto), corrija o valor antes de marcar. O sistema registra a diferença sozinho.</p>
-    <p>Para várias de uma vez, marque as caixinhas à esquerda e clique em <strong>Marcar selecionados como pagos/recebidos</strong>.</p>` },
+    <p>Se o valor for maior (juros ou multa), corrija o valor antes de confirmar. O sistema registra a diferença sozinho. Para desfazer, clique em <strong>desfazer</strong> na linha confirmada.</p>
+    <h3>Pagamento parcial</h3>
+    <p>Se o valor for menor que o da conta, o sistema pergunta:</p>
+    <ul>
+      <li><strong>Foi só uma parte:</strong> o valor entra no caixa na data escolhida e o resto continua em aberto. Escolha também a forma de pagamento desta parte.</li>
+      <li><strong>Foi desconto:</strong> a conta é encerrada e a diferença vai para descontos.</li>
+    </ul>
+    <p>A conta mostra o histórico, por exemplo "Recebido R$ 100,00 em 05/10 (Pix) · Falta R$ 200,00". Para corrigir uma parte, clique em <strong>desfazer</strong> na linha dela: o valor volta para a conta. Excluir a conta exclui também as partes dela.</p>
+    <p>Para várias contas de uma vez, marque as caixinhas à esquerda e clique em <strong>Confirmar selecionados</strong>. Elas são confirmadas pelo valor inteiro.</p>` },
+  { id: 'prestadores', titulo: 'Prestadores e repasse', ir: 'prestadores', html: `
+    <p class="aj-lead">Prestadores são os profissionais que atendem no consultório e recebem uma parte do que o cliente paga (o repasse). Ficam em <strong>Cadastros › Prestadores</strong>.</p>
+    <h3>Cadastrar</h3>
+    <ul>
+      <li>Clique em <strong>+ Novo prestador</strong> (ou no <strong>+ Novo</strong> do alto). Informe o nome e o <strong>repasse</strong>, o % que fica com ele (por exemplo 40).</li>
+      <li>Especialidade, CPF ou CNPJ, telefone, e-mail, Pix e banco são opcionais.</li>
+      <li>O prestador passa a aparecer também na <strong>Agenda</strong>, como profissional.</li>
+    </ul>
+    <h3>No lançamento</h3>
+    <ul>
+      <li>Numa receita, escolha em <strong>Quem atendeu</strong> o prestador. "Consultório (sem repasse)" é quando não há repasse.</li>
+      <li>Quando o cliente paga (no Caixa ou marcando "Já foi recebido"), o sistema cria sozinho a conta a pagar do repasse, em "Repasse a prestadores", vencendo no último dia do mês.</li>
+      <li>O repasse é calculado sobre o que sobra depois da taxa do cartão. Exemplo: R$ 300,00 no crédito com taxa de 3,2% e repasse de 40% dá R$ 116,16.</li>
+      <li>No pagamento parcial, o repasse é só da parte paga. Desfazendo o recebimento, o repasse ainda não pago some.</li>
+      <li>O repasse segue a receita: para mudar o valor, corrija a receita; para mudar o %, edite o prestador (vale para os próximos).</li>
+    </ul>
+    <h3>Acerto do mês</h3>
+    <p>A tela Prestadores mostra, para o mês escolhido no alto: o que cada um atendeu, o que os clientes já pagaram, o repasse gerado, o que já foi pago e o que falta. O botão <strong>Pagar</strong> abre o Caixa com os repasses dele para confirmar.</p>` },
   { id: 'clientes', titulo: 'Clientes e fornecedores', ir: 'clientes', html: `
     <p class="aj-lead">No menu, em <strong>Cadastros</strong>, ficam <strong>Clientes</strong> e <strong>Fornecedores</strong>. É ali que se inclui, edita, exclui e pesquisa. Configurações não tem mais cadastro de nomes.</p>
     <h3>Clientes</h3>
     <ul>
       <li><strong>Cadastrar:</strong> clique em <strong>+ Novo cliente</strong>. Também dá pelo <strong>+ Novo</strong> do alto da tela, ou pelo link <strong>+ Novo</strong> no lançamento de receita e na agenda.</li>
-      <li><strong>Dados da ficha:</strong> nome, endereço, complemento, bairro, cidade, CEP, estado, CPF, nascimento, e-mail, celular, estado civil e profissão. Só o nome é obrigatório; o resto pode ser completado depois em <strong>Editar</strong>.</li>
+      <li><strong>Dados da ficha:</strong> nome, CPF, endereço, complemento, bairro, cidade, CEP, estado, nascimento, e-mail, celular, estado civil e profissão. <strong>Nome e CPF são obrigatórios</strong>; o resto pode ser completado depois em <strong>Editar</strong>.</li>
+      <li><strong>CPF:</strong> o sistema confere os dígitos na hora. Se estiver errado, o campo fica vermelho com o aviso "CPF inválido", e a ficha não é salva. Também avisa se o CPF já está na ficha de outro cliente.</li>
+      <li><strong>Nascimento:</strong> preencha para o cliente aparecer nos aniversariantes do dia, no Início.</li>
       <li><strong>Pessoas importantes:</strong> no fim da ficha, clique em <strong>+ Adicionar pessoa</strong> para cada companheiro(a), filho, pai, mãe e outros, com nome, nascimento, parentesco e telefone.</li>
       <li><strong>Buscar:</strong> pelo nome, celular, CPF ou cidade.</li>
       <li><strong>Agendar:</strong> o botão da linha abre um compromisso já com o nome preenchido.</li>
@@ -8463,11 +9621,18 @@ const AJUDA = [
     <p class="aj-lead">Abra <strong>Configurações</strong> no menu. Elas ficam em tópicos, nos botões do alto da janela.</p>
     <ul>
       <li><strong>Geral:</strong> ramo de atividade, tela de abertura, marca exibida e licença.</li>
-      <li><strong>Financeiro:</strong> empresas, contas e bancos com o saldo inicial, formas de pagamento.</li>
+      <li><strong>Financeiro:</strong> empresas, contas e bancos com o saldo inicial, formas de pagamento, <strong>taxas do cartão</strong> e <strong>convênios</strong> (valor da chave e prazo).</li>
       <li><strong>Plano de contas:</strong> operações, categorias, linha da DRE e centros de custo.</li>
       <li><strong>Agenda e tarefas:</strong> mensagem do WhatsApp, lembretes, profissionais e responsáveis.</li>
       <li><strong>Planilhas e dados:</strong> modelos do Excel, importar, exportar e a Zona de risco.</li>
     </ul>
+    <h3>Renomear, excluir e desfazer</h3>
+    <ul>
+      <li><strong>Renomear:</strong> clique no nome do item. Os lançamentos que usam o nome antigo passam a usar o novo.</li>
+      <li><strong>Excluir um ou vários:</strong> marque a caixinha ao lado de cada item (ou <em>Marcar todos</em>) e clique em <strong>Excluir</strong>.</li>
+      <li><strong>Desfazer:</strong> logo depois de excluir aparece <strong>Desfazer</strong>, no aviso de baixo e no alto das Configurações. Ele vale até a próxima alteração.</li>
+    </ul>
+    <p>Excluir um item da lista não apaga lançamentos já feitos com ele.</p>
     <h3>Trocar o ramo de atividade</h3>
     <ol>
       <li>Em <strong>Geral › Ramo de atividade</strong>, escolha o ramo na lista e clique em <strong>Trocar ramo</strong>.</li>
@@ -8482,6 +9647,7 @@ const AJUDA = [
       <li><strong>Novo compromisso:</strong> clique em <strong>+ Novo</strong>, no alto da tela, e escolha <strong>Compromisso na agenda</strong>. No campo Cliente, escolha da lista, ou use o link <strong>+ Novo</strong> acima do campo para fazer a ficha na hora. O WhatsApp é preenchido sozinho.</li>
       <li><strong>Lembrete por WhatsApp:</strong> o botão <strong>WhatsApp</strong> do compromisso abre a conversa com o cliente e a mensagem pronta. É só conferir e enviar.</li>
       <li><strong>Mensagem do lembrete:</strong> pode ser mudada em Configurações › Agenda e tarefas.</li>
+      <li><strong>Google Agenda:</strong> o botão <strong>Google Agenda</strong> do compromisso abre o Google Agenda já preenchido; confira e clique em Salvar. Para levar todos os compromissos futuros de uma vez, use <strong>Exportar compromissos futuros</strong> e importe o arquivo no Google Agenda (Configurações › Importar e exportar). A sincronização automática, nos dois sentidos, ainda não existe: um compromisso mudado aqui precisa ser mudado lá também.</li>
       <li><strong>Visões:</strong> Mês, Semana e Dia, nos botões do alto da agenda.</li>
     </ul>` },
   { id: 'tarefas', titulo: 'Tarefas', ir: 'tarefas', html: `
@@ -8497,13 +9663,13 @@ const AJUDA = [
     <p><strong>Em andamento</strong> é só uma marca para avisar que a tarefa já começou.</p>
     <h3>Relatório</h3>
     <p>O botão <strong>Relatório</strong> mostra as tarefas pendentes, atrasadas ou concluídas por período e responsável. Dá para imprimir, salvar em PDF, baixar em Excel ou <strong>enviar por WhatsApp</strong>. A opção <strong>Cumprimento de prazos</strong> mostra quanto cada pessoa concluiu no prazo combinado e quantas vezes adiou.</p>` },
-  { id: 'relatorios', titulo: 'Relatórios, orçamento e planilhas', ir: 'relatorios', html: `
+  { id: 'relatorios', titulo: 'Relatórios, previsão orçamentária e planilhas', ir: 'relatorios', html: `
     <ul>
       <li><strong>Painel:</strong> o resumo do dia — saldo, contas a pagar e a receber, agenda e tarefas.</li>
       <li><strong>Fluxo de Caixa:</strong> o saldo de cada conta e de cada mês.</li>
-      <li><strong>Orçamento:</strong> quanto você espera receber e gastar, e quanto já foi realizado.</li>
+      <li><strong>Previsão orçamentária:</strong> quanto você espera receber e gastar em cada mês, e quanto já foi realizado.</li>
       <li><strong>Relatórios Mensais:</strong> despesas, receitas e DRE, mês a mês.</li>
-      <li><strong>Excel:</strong> as telas de Lançamentos, Orçamento e Relatórios têm o botão <strong>Exportar Excel</strong>. Em Configurações › Planilhas e dados, dá para baixar modelos em branco e importar lançamentos de uma planilha (o sistema mostra uma prévia antes de gravar).</li>
+      <li><strong>Excel:</strong> as telas de Lançamentos, Previsão orçamentária e Relatórios têm o botão <strong>Exportar Excel</strong>. Em Configurações › Planilhas e dados, dá para baixar modelos em branco e importar lançamentos de uma planilha (o sistema mostra uma prévia antes de gravar).</li>
     </ul>` },
   { id: 'backup', titulo: 'Backup', ir: null, html: `
     <p class="aj-lead">Faça um backup pelo menos <strong>uma vez por semana</strong>. Ele é a única cópia dos seus dados fora do navegador.</p>
@@ -8533,7 +9699,7 @@ const AJUDA = [
     <p>Quando o problema envolver valores ou relatórios, mande também o backup mais recente. Assim vemos exatamente o mesmo que você.</p>` },
 ];
 const ajudaUI = { atual: 'comecar' };
-const ABA_NOME = { cadastro: 'Novo Lançamento', lancamentos: 'Lançamentos', pendencias: 'Pendências', agenda: 'Agenda', tarefas: 'Tarefas', relatorios: 'Relatórios Mensais' };
+const ABA_NOME = { cadastro: 'Novo Lançamento', lancamentos: 'Lançamentos', pendencias: 'Caixa', prestadores: 'Prestadores', agenda: 'Agenda', tarefas: 'Tarefas', relatorios: 'Relatórios Mensais' };
 function textoPuro(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
 function renderAjuda() {
   const termo = normNome(document.getElementById('ajBusca').value || '');
@@ -8554,6 +9720,32 @@ function renderAjuda() {
 document.getElementById('ajBusca').addEventListener('input', renderAjuda);
 document.getElementById('bvAjuda').addEventListener('click', () => switchTab('ajuda'));
 
+/* ---- ícones (3.6.11) ---- */
+const ICONES = {"lancamento": "<path d=\"M8 3v10M3 8h10\"/>", "agenda": "<rect x=\"2\" y=\"3\" width=\"12\" height=\"11\" rx=\"2\"/><path d=\"M2 6.5h12M5.5 1.8v2.6M10.5 1.8v2.6\"/>", "cliente": "<circle cx=\"8\" cy=\"5.2\" r=\"2.7\"/><path d=\"M2.8 14c.4-2.9 2.6-4.6 5.2-4.6s4.8 1.7 5.2 4.6\"/>", "fornecedor": "<path d=\"M2 6.5 3.2 3h9.6L14 6.5M2 6.5h12M2 6.5V13h12V6.5M6 13V9.5h4V13\"/>", "tarefa": "<rect x=\"2.2\" y=\"2.2\" width=\"11.6\" height=\"11.6\" rx=\"2\"/><path d=\"M5 8.2l2 2 4-4.2\"/>", "enviar": "<path d=\"M8 11V3M4.8 6.2 8 3l3.2 3.2M3 13.5h10\"/>", "baixar": "<path d=\"M8 3v8M4.8 7.8 8 11l3.2-3.2M3 13.5h10\"/>", "geral": "<path d=\"M2.5 4h11M2.5 8h11M2.5 12h11\"/><circle cx=\"6\" cy=\"4\" r=\"1.5\" fill=\"var(--paper-raised)\"/><circle cx=\"10.5\" cy=\"8\" r=\"1.5\" fill=\"var(--paper-raised)\"/><circle cx=\"5\" cy=\"12\" r=\"1.5\" fill=\"var(--paper-raised)\"/>", "financeiro": "<path d=\"M2 6 8 2.5 14 6M3.5 6.5v5.5M6.5 6.5v5.5M9.5 6.5v5.5M12.5 6.5v5.5M2 13.5h12\"/>", "contabil": "<rect x=\"2.5\" y=\"2\" width=\"11\" height=\"12\" rx=\"1.5\"/><path d=\"M5 5.5h6M5 8h6M5 10.5h4\"/>", "dados": "<rect x=\"2\" y=\"2.5\" width=\"12\" height=\"11\" rx=\"1.5\"/><path d=\"M2 6.5h12M2 10h12M6.5 6.5v7\"/>", "pendencia": "<circle cx=\"8\" cy=\"8\" r=\"6\"/><path d=\"M8 4.8V8l2.2 1.4\"/>", "lixeira": "<path d=\"M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5\"/>", "desfazer": "<path d=\"M5.5 3.5 2.5 6.5l3 3\"/><path d=\"M2.8 6.5H10a3.5 3.5 0 0 1 0 7H7\"/>", "recolher": "<path d=\"M10 3.5 5.5 8l4.5 4.5\"/>", "alerta": "<path d=\"M8 2.2 14.3 13.5H1.7z\"/><path d=\"M8 6.5v3.2M8 11.6v.1\"/>", "bolo": "<path d=\"M2.5 14h11M3.5 14V9.5h9V14M3.5 11.5c1.5 1 3 1 4.5 0s3-1 4.5 0M8 9.5V7M8 5.2c-.8-.6-.8-1.6 0-2.4.8.8.8 1.8 0 2.4z\"/>", "google": "<rect x=\"2\" y=\"3\" width=\"12\" height=\"11\" rx=\"2\"/><path d=\"M2 6.5h12M5.5 1.8v2.6M10.5 1.8v2.6M8 8.5v3.5M6.2 10.2h3.6\"/>"};
+function svgIco(k) {
+  return `<svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${ICONES[k] || ''}</svg>`;
+}
+
+/* ---- menu lateral que recolhe (3.6.11); a escolha fica guardada neste navegador ---- */
+function aplicarMenuRecolhido(recolher) {
+  const app = document.querySelector('.app');
+  app.classList.toggle('menu-recolhido', recolher);
+  const b = document.getElementById('btnRecolher');
+  b.setAttribute('aria-expanded', String(!recolher));
+  b.title = recolher ? 'Expandir menu' : 'Recolher menu';
+  b.querySelector('.nav-txt').textContent = recolher ? 'Expandir menu' : 'Recolher menu';
+  document.querySelectorAll('.nav .tab, .nav .nav-btn').forEach(t => {
+    const txt = t.querySelector('.nav-txt');
+    if (txt && t.id !== 'btnRecolher') { if (recolher) t.title = txt.textContent.trim(); else t.removeAttribute('title'); }
+  });
+}
+document.getElementById('btnRecolher').addEventListener('click', () => {
+  const recolher = !document.querySelector('.app').classList.contains('menu-recolhido');
+  aplicarMenuRecolhido(recolher);
+  try { localStorage.setItem('theways.menuRecolhido', recolher ? '1' : ''); } catch (e) {}
+});
+try { if (localStorage.getItem('theways.menuRecolhido') === '1') aplicarMenuRecolhido(true); } catch (e) {}
+
 /* ---- tela de boas-vindas ---- */
 function saudacaoDoHorario(d) {
   const h = d.getHours();
@@ -8570,22 +9762,43 @@ function renderInicio() {
   const nAg = state.agenda.filter(a => a.data === hoje && a.tipo !== 'bloqueio' && AG_STATUS_ATIVOS.includes(a.status)).length;
   const nTarHoje = state.tarefas.filter(t => !t.concluida && t.prazo === hoje).length;
   const nTarAtras = state.tarefas.filter(t => !t.concluida && t.prazo && t.prazo < hoje).length;
-  const nPend = state.lancamentos.filter(l => { const st = computeStatus(l.data, l.efetivado); return st === 'VENCIDO' || st === 'PAGAR/RECEBER'; }).length;
-  const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
+  const nPend = state.lancamentos.filter(l => { if (l.taxaDe) return false; const st = computeStatus(l.data, l.efetivado); return st === 'VENCIDO' || st === 'PAGAR/RECEBER'; }).length;
+  /* 3.6.11: só o que importa hoje; o resto está no menu */
+  const plural = (n, um, varios) => (n === 1 ? um : varios);
+  const aniv = aniversariantesDoDia(hoje);
   const atalhos = [
-    { tab: 'cadastro', titulo: 'Novo lançamento', txt: 'Registrar uma receita, despesa ou transferência' },
-    { tab: 'agenda', titulo: 'Agenda', txt: nAg ? plural(nAg, 'compromisso hoje', 'compromissos hoje') : 'Nenhum compromisso hoje' },
-    { tab: 'tarefas', titulo: 'Tarefas', txt: nTarHoje || nTarAtras
-      ? [nTarHoje ? plural(nTarHoje, 'para hoje', 'para hoje') : '', nTarAtras ? `<span class="bv-alerta">${plural(nTarAtras, 'atrasada', 'atrasadas')}</span>` : ''].filter(Boolean).join(' · ')
-      : 'Nada para hoje' },
-    { tab: 'pendencias', titulo: 'Pendências', txt: nPend ? `<span class="bv-alerta">${plural(nPend, 'conta vence hoje ou já venceu', 'contas vencem hoje ou já venceram')}</span>` : 'Nada vencendo hoje' },
-    { tab: 'painel', titulo: 'Painel', txt: 'Resumo do caixa, contas, agenda e tarefas' },
-    { tab: 'lancamentos', titulo: 'Lançamentos', txt: 'Ver, editar e filtrar o que já foi lançado' },
+    { tab: 'agenda', ic: 'agenda', n: nAg, rot: plural(nAg, 'compromisso hoje', 'compromissos hoje') },
+    { tab: 'tarefas', ic: 'tarefa', n: nTarHoje + nTarAtras, alerta: nTarAtras > 0,
+      rot: nTarAtras ? `${plural(nTarHoje + nTarAtras, 'tarefa', 'tarefas')}, ${nTarAtras} atrasada${nTarAtras === 1 ? '' : 's'}` : plural(nTarHoje, 'tarefa para hoje', 'tarefas para hoje') },
+    { tab: 'pendencias', ic: 'pendencia', n: nPend, alerta: nPend > 0, rot: plural(nPend, 'conta vence hoje ou venceu', 'contas vencem hoje ou venceram') },
+    { tab: 'clientes', ic: 'bolo', n: aniv.length, rot: plural(aniv.length, 'aniversariante hoje', 'aniversariantes hoje') },
   ];
   const box = document.getElementById('bvAtalhos');
-  box.innerHTML = atalhos.map(a => `<button type="button" class="bv-atalho" data-bv-tab="${a.tab}"><strong>${a.titulo}</strong><span>${a.txt}</span></button>`).join('');
+  box.innerHTML = atalhos.map(a => `<button type="button" class="bv-atalho bv-stat" data-bv-tab="${a.tab}"><span class="bv-ic">${svgIco(a.ic)}</span><span class="bv-num${a.alerta ? ' alerta' : ''}">${a.n}</span><span class="bv-rot">${a.rot}</span></button>`).join('');
   box.querySelectorAll('[data-bv-tab]').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.bvTab)));
+  const lista = document.getElementById('bvAniv');
+  lista.hidden = !aniv.length;
+  lista.innerHTML = aniv.map(a => {
+    const fone = normalizePhoneBR(a.fone);
+    const msg = encodeURIComponent(`Olá, ${primeiroNome(a.nome)}! Hoje é o seu dia, e toda a nossa equipe deseja um feliz aniversário, com muita saúde e alegria!`);
+    return `<div class="bv-aniv-item"><span>${svgIco('bolo')} <strong>${escapeHtml(a.nome)}</strong>${a.idade ? `, ${a.idade} anos` : ''}${a.de ? ` <span class="muted">(${escapeHtml(a.de)})</span>` : ''}</span>`
+      + (fone ? `<a class="btn btn-outline btn-sm" href="https://wa.me/${fone}?text=${msg}" target="_blank" rel="noopener">Parabenizar no WhatsApp</a>` : '<span class="muted">sem telefone</span>') + '</div>';
+  }).join('');
 }
+/* 3.7.2: clientes e pessoas importantes que fazem aniversário hoje (29/02 cai em 28/02 nos outros anos) */
+function aniversariantesDoDia(hoje) {
+  const md = hoje.slice(5), ano = Number(hoje.slice(0, 4));
+  const bissexto = (ano % 4 === 0 && ano % 100 !== 0) || ano % 400 === 0;
+  const faz = n => !!n && /^\d{4}-\d{2}-\d{2}$/.test(n) && (n.slice(5) === md || (!bissexto && md === '02-28' && n.slice(5) === '02-29'));
+  const idade = n => { const i = ano - Number(n.slice(0, 4)); return i > 0 && i < 130 ? i : null; };
+  const r = [];
+  (state.pacientes || []).forEach(p => {
+    if (faz(p.nascimento)) r.push({ nome: p.nome, idade: idade(p.nascimento), fone: p.whatsapp || '', de: '' });
+    (p.pessoas || []).forEach(x => { if (faz(x.nascimento)) r.push({ nome: x.nome, idade: idade(x.nascimento), fone: x.telefone || '', de: `${(x.parentesco || 'pessoa importante').toLowerCase()} de ${p.nome}` }); });
+  });
+  return r.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+}
+document.querySelectorAll('.bv-acoes [data-bv-tab]').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.bvTab)));
 document.getElementById('bvNomeForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const v = document.getElementById('bvNome').value.trim();
@@ -8641,13 +9854,13 @@ function renderPainel() {
   });
   const saldoFim = saldoHoje + proj;
   const contas = (n, txt) => n ? `${n} conta${n === 1 ? '' : 's'} até ${formatDateBR(em7)}` : `nada até ${formatDateBR(em7)}`;
-  const card = (go, label, valor, cls, sub) => `<button type="button" class="kpi painel-card" data-pn-go="${go}">
+  const card = (go, label, valor, cls, sub, caixa) => `<button type="button" class="kpi painel-card" data-pn-go="${go}"${caixa ? ` data-pn-caixa="${caixa}"` : ''}>
       <p class="kpi-label">${label}</p><p class="kpi-value ${cls}">${valor}</p><p class="kpi-sub">${sub}</p></button>`;
   document.getElementById('pnKpis').innerHTML =
     card('fluxocaixa', 'Saldo de hoje', formatCurrency(saldoHoje), saldoHoje >= 0 ? 'receita' : 'despesa', 'o que já foi pago e recebido')
-    + card('pendencias', 'A receber em 7 dias', formatCurrency(rec7), 'receita', contas(n7r))
-    + card('pendencias', 'A pagar em 7 dias', formatCurrency(pag7), 'despesa', contas(n7p))
-    + card('pendencias', 'Contas vencidas', String(vq), vq ? 'despesa' : '', vq ? `${formatCurrency(vr)} a receber · ${formatCurrency(vp)} a pagar` : 'nenhuma conta vencida')
+    + card('pendencias', 'A receber em 7 dias', formatCurrency(rec7), 'receita', contas(n7r), 'receita')
+    + card('pendencias', 'A pagar em 7 dias', formatCurrency(pag7), 'despesa', contas(n7p), 'despesa')
+    + card('pendencias', 'Contas vencidas', String(vq), vq ? 'despesa' : '', vq ? `${formatCurrency(vr)} a receber · ${formatCurrency(vp)} a pagar` : 'nenhuma conta vencida', 'vencidos')
     + card('fluxocaixa', `Saldo projetado em ${formatDateBR(fimMes)}`, formatCurrency(saldoFim), saldoFim >= 0 ? 'receita' : 'despesa', 'com o que vence até o fim do mês');
 
   // agenda de hoje
@@ -8669,7 +9882,7 @@ function renderPainel() {
 
   // orçamento do mês
   const nomeMes = MESES_LONGOS[mesIdx].toLowerCase();
-  document.getElementById('pnOrcTitulo').textContent = `Orçamento de ${nomeMes}`;
+  document.getElementById('pnOrcTitulo').textContent = `Previsão de ${nomeMes}`;
   const orc = orcamentoFiltro(f, ano);
   const real = realizadoPorCategoria(f, ano, 'competencia');
   let prevR = 0, realR = 0, prevD = 0, realD = 0;
@@ -8685,7 +9898,7 @@ function renderPainel() {
   });
   let orcHtml;
   if (!prevR && !prevD) {
-    orcHtml = `<div class="pn-vazio">Nenhum orçamento para ${nomeMes}. Monte em Orçamento → Montar orçamento.</div>`;
+    orcHtml = `<div class="pn-vazio">Nenhuma previsão para ${nomeMes}. Monte em Previsão orçamentária → Montar previsão.</div>`;
   } else {
     const linha = (rot, pv, rv, origem) => {
       const st = statusOrcamento(origem, pv, rv);
@@ -8714,6 +9927,8 @@ document.getElementById('viewPainel').addEventListener('click', (e) => {
     agendaUI.selecionado = hoje;
     agendaUI.ano = Number(hoje.slice(0, 4)); agendaUI.mes = Number(hoje.slice(5, 7)) - 1;
   }
+  const cx = b.dataset.pnCaixa;
+  if (cx) { abrirCaixa(cx === 'vencidos' ? { periodo: 'aberto', status: 'VENCIDO' } : { periodo: 'aberto', status: 'A VENCER', tipo: cx }); return; }
   switchTab(go);
 });
 document.getElementById('pnEmpresa').addEventListener('change', (e) => { painelEmpresa = e.target.value; renderPainel(); });
@@ -9082,12 +10297,12 @@ function linhasOrcamentoXl(ano, f) {
 function exportarOrcamentoXl() {
   const ano = periodoAtual().ano;
   const linhas = linhasOrcamentoXl(ano, ctxFiltro());
-  if (!linhas.length) { toast(`Nenhum orçamento em ${ano} para exportar. Monte em Montar orçamento.`); return; }
+  if (!linhas.length) { toast(`Nenhuma previsão em ${ano} para exportar. Monte em Montar previsão.`); return; }
   return xlExecutar(async () => {
     const wb = xlNovo();
     xlAba(wb, 'Orçamento', XL_ORC, linhas);
     await xlBaixar(wb, xlNomeArquivo('orcamento-' + ano));
-    toast(`Orçamento de ${ano} baixado como planilha.`);
+    toast(`Previsão orçamentária de ${ano} baixada como planilha.`);
   });
 }
 function linhasPlanoXl() {
@@ -10090,6 +11305,9 @@ novoMenu.querySelectorAll('[data-novo]').forEach(b => b.addEventListener('click'
   } else if (tipo === 'fornecedor') {
     switchTab('fornecedores');
     abrirFichaFornecedor(null);
+  } else if (tipo === 'prestador') {
+    switchTab('prestadores');
+    abrirFichaPrestador(null);
   } else {
     switchTab('tarefas');
     setTimeout(() => { try { document.getElementById('tTitulo').focus(); } catch (e) {} }, 30);
@@ -10179,11 +11397,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
  */function n(e){return e>=65&&e<=90||95===e||e>=97&&e<=122||e>=192&&e<=214||e>=216&&e<=246||e>=248&&e<=767||e>=880&&e<=893||e>=895&&e<=8191||e>=8204&&e<=8205||e>=8304&&e<=8591||e>=11264&&e<=12271||e>=12289&&e<=55295||e>=63744&&e<=64975||e>=65008&&e<=65533||e>=65536&&e<=983039}Object.defineProperty(r,"__esModule",{value:!0}),r.NC_NAME_START_CHAR="A-Z_a-z\xc0-\xd6\xd8-\xf6\xf8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c-\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd\ud800\udc00-\udb7f\udfff",r.NC_NAME_CHAR="-"+r.NC_NAME_START_CHAR+".0-9\xb7\u0300-\u036f\u203f-\u2040",r.NC_NAME_START_CHAR_RE=new RegExp("^["+r.NC_NAME_START_CHAR+"]$","u"),r.NC_NAME_CHAR_RE=new RegExp("^["+r.NC_NAME_CHAR+"]$","u"),r.NC_NAME_RE=new RegExp("^["+r.NC_NAME_START_CHAR+"]["+r.NC_NAME_CHAR+"]*$","u"),r.isNCNameStartChar=n,r.isNCNameChar=function(e){return n(e)||45===e||46===e||e>=48&&e<=57||183===e||e>=768&&e<=879||e>=8255&&e<=8256}},{}]},{},[15])(15)}));
 </script>
 <script>
-// Registro do app instalável (só funciona em https ou localhost; ignorado ao abrir o arquivo direto do computador)
-if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('sw.js').catch(function () {});
-  });
+/* versão app (GitHub Pages): funciona sem internet depois da primeira abertura */
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').catch(function () {});
 }
 </script>
 </body>
