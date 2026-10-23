@@ -1183,6 +1183,36 @@
   .menu-recolhido .nav .ico { width: 18px; height: 18px; }
   .menu-recolhido .nav .tab-badge { position: absolute; top: 1px; right: 3px; margin: 0; font-size: 9.5px; min-width: 16px; padding: 0 4px; }
   .menu-recolhido .side-toggle .ico { transform: rotate(180deg); }
+  /* 3.9.0: pagar de mais de um jeito */
+  .btn-dividir { font: inherit; font-size: 13.5px; font-weight: 600; color: var(--brand-ink); background: var(--brand-soft); border: 1.5px dashed var(--brass); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+  .btn-dividir:hover { border-style: solid; }
+  #lancForm.dividindo .so-uma-forma { display: none !important; }
+  #ocForm [hidden] { display: none !important; } /* campos que só valem para uma condição de pagamento */
+  .partes { display: flex; flex-direction: column; gap: 8px; }
+  .parte-linha { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: flex-end; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+  .parte-linha > label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); min-width: 0; }
+  .parte-linha input, .parte-linha select { font: inherit; font-size: 14px; height: 36px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .parte-letra { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--brand-soft); color: var(--brand-ink); font-weight: 700; align-self: center; flex: none; }
+  .parte-linha .p-valor { width: 120px; text-align: right; font-variant-numeric: tabular-nums; }
+  .parte-linha .p-forma { width: 180px; }
+  .parte-linha .p-conta { width: 160px; }
+  .parte-linha .p-vezes { width: 70px; }
+  .parte-linha .p-venc { width: 150px; }
+  .parte-linha .p-pago { width: 150px; }
+  .parte-info { font-size: 12.5px; color: var(--ink-soft); align-self: center; font-variant-numeric: tabular-nums; }
+  .parte-x { margin-left: auto; align-self: center; background: none; border: 0; color: var(--ink-soft); font-size: 18px; line-height: 1; padding: 4px 6px; border-radius: 6px; cursor: pointer; }
+  .parte-x:hover { color: var(--despesa); background: var(--despesa-bg); }
+  .parte-parcelas { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 6px 10px; padding-top: 4px; }
+  .parte-parcelas label { flex-direction: row !important; align-items: center; gap: 6px !important; }
+  .parte-parcelas input { width: auto; }
+  .partes-acoes { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin-top: 8px; }
+  .partes-conf { margin-top: 8px; padding: 9px 12px; border-radius: 10px; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+  .partes-conf.ok { background: var(--receita-bg); color: var(--receita); }
+  .partes-conf.erro { background: var(--pendente-bg); color: var(--pendente); }
+  @media (max-width: 600px) {
+    .parte-linha .p-valor, .parte-linha .p-forma, .parte-linha .p-conta, .parte-linha .p-venc, .parte-linha .p-pago { width: 100%; }
+    .parte-linha > label { flex: 1 1 140px; }
+  }
   /* 3.8.4: chave do tema escuro no pé do menu, visível em todas as telas */
   .tema-chave { margin-left: auto; width: 30px; height: 17px; border-radius: 9px; background: var(--side-active); position: relative; flex: none; transition: background .15s; }
   .tema-chave::after { content: ""; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: var(--side-soft); transition: transform .15s, background .15s; }
@@ -1809,10 +1839,24 @@
 
           <div class="form-secao"><span class="num">3</span><span id="fSecaoPag">Como será o pagamento?</span></div>
           <div class="form-grid">
-            <div class="field" style="grid-column: 1 / -1">
+            <div class="field" id="campoForma" style="grid-column: 1 / -1">
               <label id="fFormaLabel">Forma de pagamento</label>
               <div class="forma-chips" id="formaChips" role="group" aria-labelledby="fFormaLabel"></div>
               <select id="fFormaPagamento" hidden aria-hidden="true" tabindex="-1"></select>
+            </div>
+
+            <!-- 3.9.0: pagar de mais de um jeito (ex.: parte no cartão agora, o resto no Pix em 5 vezes) -->
+            <div class="field" id="campoDividirBtn" style="grid-column: 1 / -1" hidden>
+              <button type="button" class="btn-dividir" id="btnDividir">+ Pagar de mais de um jeito</button>
+            </div>
+            <div class="field" id="campoDivisao" style="grid-column: 1 / -1" hidden>
+              <label>Partes do pagamento <span class="hint" id="divisaoTotal"></span></label>
+              <div class="partes" id="divisaoPartes"></div>
+              <div class="partes-acoes">
+                <button type="button" class="btn btn-outline btn-sm" id="divisaoAdd">+ Outra parte</button>
+                <button type="button" class="link-btn" id="divisaoSair">Voltar para uma forma só</button>
+              </div>
+              <div class="partes-conf" id="divisaoConf"></div>
             </div>
 
             <div class="field" id="campoLocal" hidden>
@@ -2852,7 +2896,7 @@
               <label for="ocDesconto">Desconto (R$) <span class="hint">(opcional)</span></label>
               <input type="text" inputmode="decimal" id="ocDesconto" placeholder="0,00">
             </div>
-            <div class="field">
+            <div class="field" id="ocCampoForma">
               <label for="ocForma">Forma de pagamento</label>
               <select id="ocForma"></select>
             </div>
@@ -2862,6 +2906,7 @@
                 <option value="avista">À vista</option>
                 <option value="parcelado">Parcelado</option>
                 <option value="entrada">Entrada + parcelas</option>
+                <option value="dividido">Mais de um jeito</option>
               </select>
             </div>
             <div class="field" id="ocCampoEntrada" hidden>
@@ -2872,9 +2917,15 @@
               <label for="ocParcelas">Número de parcelas</label>
               <input type="number" id="ocParcelas" min="1" max="60" step="1">
             </div>
-            <div class="field">
+            <div class="field" id="ocCampoVenc">
               <label for="ocVenc" id="ocVencLabel">Vencimento</label>
               <input type="date" id="ocVenc">
+            </div>
+            <div class="field" id="ocCampoPartes" style="grid-column: 1 / -1" hidden>
+              <label>Partes do pagamento <span class="hint">(1º vencimento em branco = no dia da aprovação)</span></label>
+              <div class="partes" id="ocPartes"></div>
+              <div class="partes-acoes"><button type="button" class="btn btn-outline btn-sm" id="ocPartesAdd">+ Outra parte</button></div>
+              <div class="partes-conf" id="ocPartesConf"></div>
             </div>
             <div class="field span-2">
               <label for="ocObs">Observações <span class="hint">(saem na impressão)</span></label>
@@ -4122,6 +4173,155 @@ function dividirEmParcelas(valorTotal, qtd) {
   return Array.from({ length: qtd }, (_, i) => (baseCents + (i === 0 ? resto : 0)) / 100);
 }
 
+/* =========================================================================
+   3.9.0: PAGAR DE MAIS DE UM JEITO
+   Um mesmo lançamento ou orçamento dividido em partes, cada uma com valor,
+   forma, número de vezes e 1º vencimento. A última parte recebe sozinha o que
+   falta para o total, até a pessoa digitar o valor dela.
+   ========================================================================= */
+const LETRAS_PARTE = 'ABCDEFGHIJ';
+function novaParte(extra) { return { valor: 0, forma: '', conta: '', vezes: 1, venc: '', pago: false, auto: true, parcelas: null, ...extra }; }
+function formasSemConvenio() { return (state.config.formaPagamento || []).filter(f => !ehFormaConvenio(f)); }
+/* parcelas de uma parte: as que a pessoa ajustou ou, sem ajuste, iguais e mês a mês */
+function parcelasDaParte(pt, vencPadrao) {
+  const vezes = Math.max(1, parseInt(pt.vezes, 10) || 1);
+  if (Array.isArray(pt.parcelas) && pt.parcelas.length === vezes) return pt.parcelas;
+  const base = pt.venc || vencPadrao || todayISO();
+  return dividirEmParcelas(pt.valor, vezes).map((v, k) => ({ data: addMonthsClamped(base, k), valor: v }));
+}
+function somaPartes(partes) { return Math.round(partes.reduce((a, p) => a + (Number(p.valor) || 0), 0) * 100) / 100; }
+function preencherSobra(m) {
+  const ult = m.partes[m.partes.length - 1];
+  if (!ult || !ult.auto || m.partes.length < 2) return;
+  const outros = somaPartes(m.partes.slice(0, -1));
+  const v = Math.max(0, Math.round((m.total - outros) * 100) / 100);
+  if (v !== ult.valor) { ult.valor = v; ult.parcelas = null; }
+}
+/* devolve o texto do problema ou null */
+function problemaPartes(m, opts) {
+  if (m.partes.length < 2) return 'Use pelo menos duas partes.';
+  for (let i = 0; i < m.partes.length; i++) {
+    const pt = m.partes[i], L = LETRAS_PARTE[i];
+    if (!(pt.valor > 0)) return `A parte ${L} está sem valor.`;
+    if (!pt.forma) return `Escolha a forma de pagamento da parte ${L}.`;
+    if (!(parseInt(pt.vezes, 10) >= 1)) return `Informe em quantas vezes é a parte ${L}.`;
+    if (!(opts && opts.vencOpcional) && !pt.venc) return `Informe o 1º vencimento da parte ${L}.`;
+    if (Array.isArray(pt.parcelas) && pt.parcelas.length === (parseInt(pt.vezes, 10) || 1)) {
+      if (pt.parcelas.some(x => !x.data || !(x.valor > 0))) return `Confira as datas e os valores das parcelas da parte ${L}.`;
+      if (Math.abs(somaPartes(pt.parcelas) - pt.valor) >= 0.005) return `As parcelas da parte ${L} somam ${formatCurrency(somaPartes(pt.parcelas))}, mas a parte é de ${formatCurrency(pt.valor)}.`;
+    }
+  }
+  const soma = somaPartes(m.partes);
+  if (Math.abs(soma - m.total) >= 0.005) {
+    const dif = Math.round((m.total - soma) * 100) / 100;
+    return `As partes somam ${formatCurrency(soma)}, mas o total é ${formatCurrency(m.total)}. ${dif > 0 ? `Faltam ${formatCurrency(dif)}` : `Sobram ${formatCurrency(-dif)}`}: corrija um valor ou ${dif > 0 ? 'acrescente outra parte' : 'tire uma parte'}.`;
+  }
+  return null;
+}
+function infoParte(pt, vencPadrao) {
+  const vezes = Math.max(1, parseInt(pt.vezes, 10) || 1);
+  if (!(pt.valor > 0)) return '';
+  const ps = parcelasDaParte(pt, vencPadrao);
+  let t = vezes > 1 ? (Array.isArray(pt.parcelas) ? `${vezes} parcelas ajustadas` : `${vezes} × ${formatCurrency(ps[ps.length - 1].valor)}`) : '';
+  const regra = pt.receita ? regraTaxaCartao(pt.forma, vezes) : null;
+  if (regra) t += (t ? ' · ' : '') + `taxa ${formatCurrency(ps.reduce((a, x) => a + valorTaxa(x.valor, regra.taxa), 0))}`;
+  return t;
+}
+/* desenha as linhas; m = { partes, total, receita }; opts = { box, conf, comConta, comPago, comAjuste, vencOpcional, contas, vencPadrao } */
+function renderPartes(m, opts) {
+  const formas = formasSemConvenio();
+  const op = (lista, v, ph) => (ph != null ? `<option value="">${ph}</option>` : '') + lista.map(f => `<option value="${escapeHtml(f)}"${f === v ? ' selected' : ''}>${escapeHtml(f)}</option>`).join('');
+  m.partes.forEach(pt => { pt.receita = m.receita; });
+  opts.box.innerHTML = m.partes.map((pt, i) => {
+    const vezes = Math.max(1, parseInt(pt.vezes, 10) || 1);
+    const ps = opts.comAjuste && Array.isArray(pt.parcelas) ? pt.parcelas : null;
+    return `<div class="parte-linha" data-parte="${i}">
+      <span class="parte-letra" aria-label="Parte ${LETRAS_PARTE[i]}">${LETRAS_PARTE[i]}</span>
+      <label>Valor (R$)<input type="text" inputmode="decimal" class="p-valor" data-p="valor" value="${pt.valor > 0 ? numberToCurrencyDisplay(pt.valor) : ''}" placeholder="0,00"></label>
+      <label>Forma<select class="p-forma" data-p="forma">${op(formas, pt.forma, '— escolha —')}</select></label>
+      ${opts.comConta ? `<label>${m.receita ? 'Conta que recebe' : 'Conta que paga'}<select class="p-conta" data-p="conta">${op(opts.contas || [], pt.conta, '—')}</select></label>` : ''}
+      <label>Vezes<input type="number" min="1" max="120" step="1" class="p-vezes" data-p="vezes" value="${vezes}"></label>
+      <label>${vezes > 1 ? '1º vencimento' : 'Vencimento'}<input type="date" class="p-venc" data-p="venc" value="${pt.venc || ''}"></label>
+      ${opts.comPago && vezes === 1 ? `<label>${m.receita ? 'Já foi recebido?' : 'Já foi pago?'}<select class="p-pago" data-p="pago"><option value="0"${pt.pago ? '' : ' selected'}>Não, fica em aberto</option><option value="1"${pt.pago ? ' selected' : ''}>Sim</option></select></label>` : ''}
+      <span class="parte-info" data-info>${escapeHtml(infoParte(pt, opts.vencPadrao))}</span>
+      ${opts.comAjuste && vezes > 1 ? `<button type="button" class="link-btn" data-ajustar>${ps ? 'Voltar às parcelas iguais' : 'Ajustar parcelas'}</button>` : ''}
+      ${m.partes.length > 2 ? `<button type="button" class="parte-x" data-remover title="Tirar a parte ${LETRAS_PARTE[i]}" aria-label="Tirar a parte ${LETRAS_PARTE[i]}">×</button>` : ''}
+      ${ps ? `<div class="parte-parcelas">${ps.map((x, k) => `<label>${k + 1}ª <input type="date" data-pp-data="${k}" value="${x.data}"> <input type="text" inputmode="decimal" style="width:100px; text-align:right" data-pp-valor="${k}" value="${numberToCurrencyDisplay(x.valor)}"></label>`).join('')}</div>` : ''}
+    </div>`;
+  }).join('');
+  atualizarConfPartes(m, opts);
+}
+function atualizarConfPartes(m, opts) {
+  opts.box.querySelectorAll('[data-parte]').forEach(row => {
+    const pt = m.partes[Number(row.dataset.parte)];
+    const info = row.querySelector('[data-info]');
+    if (info) info.textContent = infoParte(pt, opts.vencPadrao);
+    const v = row.querySelector('[data-p="valor"]');
+    if (pt.auto && v && document.activeElement !== v) v.value = pt.valor > 0 ? numberToCurrencyDisplay(pt.valor) : '';
+  });
+  const erro = problemaPartes(m, opts);
+  opts.conf.className = 'partes-conf ' + (erro ? 'erro' : 'ok');
+  opts.conf.textContent = erro || `Partes: ${formatCurrency(somaPartes(m.partes))} · Total: ${formatCurrency(m.total)} · A soma bate.`;
+  if (opts.depois) opts.depois();
+}
+/* liga os eventos de um quadro de partes (uma vez só) */
+function ligarPartes(box, getModelo, getOpts) {
+  const ler = (el) => {
+    const m = getModelo(), opts = getOpts();
+    const row = el.closest('[data-parte]');
+    if (!row) return null;
+    return { m, opts, i: Number(row.dataset.parte), pt: m.partes[Number(row.dataset.parte)] };
+  };
+  box.addEventListener('input', (e) => {
+    const c = ler(e.target); if (!c) return;
+    const el = e.target, campo = el.dataset.p;
+    if (campo === 'valor') {
+      const doFim = el.value.length - el.selectionStart;
+      el.value = liveFormatCurrencyTyping(el.value);
+      const pos = Math.max(0, el.value.length - doFim);
+      el.setSelectionRange(pos, pos);
+      c.pt.valor = currencyDisplayToNumber(el.value) || 0; c.pt.auto = false; c.pt.parcelas = null;
+      preencherSobra(c.m);
+    } else if (el.dataset.ppValor != null && Array.isArray(c.pt.parcelas)) {
+      c.pt.parcelas[Number(el.dataset.ppValor)].valor = currencyDisplayToNumber(el.value) || 0;
+    } else if (el.dataset.ppData != null && Array.isArray(c.pt.parcelas)) {
+      c.pt.parcelas[Number(el.dataset.ppData)].data = el.value;
+    } else return;
+    atualizarConfPartes(c.m, c.opts);
+  });
+  box.addEventListener('change', (e) => {
+    const c = ler(e.target); if (!c) return;
+    const el = e.target, campo = el.dataset.p;
+    if (campo === 'valor') { el.value = c.pt.valor > 0 ? numberToCurrencyDisplay(c.pt.valor) : ''; atualizarConfPartes(c.m, c.opts); return; }
+    if (el.dataset.ppValor != null) { el.value = numberToCurrencyDisplay(currencyDisplayToNumber(el.value) || 0); return; }
+    if (campo === 'forma') c.pt.forma = el.value;
+    else if (campo === 'conta') c.pt.conta = el.value;
+    else if (campo === 'vezes') { c.pt.vezes = Math.max(1, parseInt(el.value, 10) || 1); c.pt.parcelas = null; if (c.pt.vezes > 1) c.pt.pago = false; }
+    else if (campo === 'venc') { c.pt.venc = el.value; c.pt.parcelas = null; }
+    else if (campo === 'pago') c.pt.pago = el.value === '1';
+    else return;
+    if (campo === 'vezes' || campo === 'venc') renderPartes(c.m, c.opts); else atualizarConfPartes(c.m, c.opts);
+  });
+  box.addEventListener('click', (e) => {
+    const c = ler(e.target); if (!c) return;
+    if (e.target.closest('[data-remover]')) {
+      c.m.partes.splice(c.i, 1);
+      c.m.partes[c.m.partes.length - 1].auto = true;
+      preencherSobra(c.m); renderPartes(c.m, c.opts);
+    } else if (e.target.closest('[data-ajustar]')) {
+      c.pt.parcelas = Array.isArray(c.pt.parcelas) ? null : parcelasDaParte(c.pt, c.opts.vencPadrao).map(x => ({ ...x }));
+      renderPartes(c.m, c.opts);
+    }
+  });
+}
+function acrescentarParte(m, extra) {
+  if (m.partes.length >= LETRAS_PARTE.length) { toast('Use no máximo 10 partes.'); return false; }
+  m.partes.forEach(p => { p.auto = false; });
+  m.partes.push(novaParte(extra));
+  preencherSobra(m);
+  return true;
+}
+
 /* 3.6.12: natureza sai do formulário. Lançamento de empresa é PJ; PF só marcando "Conta pessoal". */
 function naturezaDoForm() {
   return document.getElementById('fPessoal').checked ? 'PF' : 'PJ';
@@ -4271,6 +4471,7 @@ function clearForm(opts) {
   form.reset();
   editingId = null;
   agendaLigacaoPendente = null;
+  if (typeof divLanc !== 'undefined') { divLanc.ativa = false; divLanc.partes = []; form.classList.remove('dividindo'); } /* 3.9.0 */
   document.getElementById('formTitle').textContent = 'Novo lançamento';
   document.getElementById('btnSubmit').textContent = 'Adicionar lançamento';
   document.getElementById('btnCancelEdit').style.display = 'none';
@@ -4348,6 +4549,7 @@ form.addEventListener('submit', async (e) => {
     if (!convenioDoForm()) { toast('Escolha o convênio.'); return; }
     if (!(currencyDisplayToNumber(document.getElementById('fChaves').value) > 0)) { toast('Informe o valor: o total do relatório do convênio.'); return; }
   }
+  if (divLanc.ativa && !editingId) { salvarDivisaoLanc(); return; } /* 3.9.0 */
   const parcelado = !editingId && document.getElementById('fParcelado').checked;
   const recorrente = !editingId && document.getElementById('fRecorrente').checked;
 
@@ -5206,7 +5408,7 @@ document.addEventListener('keydown', (e) => {
    aberto, na proporção do valor de cada um.
    ========================================================================= */
 const svUI = { editandoId: null };
-const ocUI = { editandoId: null, itens: [], recebendoId: null };
+const ocUI = { editandoId: null, itens: [], recebendoId: null, partes: [] };
 function servicoPorId(id) { return id ? (state.servicos || []).find(s => s.id === id) || null : null; }
 function orcamentoPorId(id) { return id ? (state.orcamentos || []).find(o => o.id === id) || null : null; }
 function categoriasReceita() {
@@ -5417,6 +5619,7 @@ function abrirOrcamento(id, opts) {
   document.getElementById('ocForma').innerHTML = formas.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
   document.getElementById('ocForma').value = o ? o.forma : (formas.includes('Pix') ? 'Pix' : formas[0] || '');
   document.getElementById('ocCondicao').value = o ? o.condicao : 'avista';
+  ocUI.partes = o && Array.isArray(o.partes) ? o.partes.map(p => ({ ...novaParte(), ...p, auto: false })) : []; /* 3.9.0 */
   document.getElementById('ocParcelas').value = o ? o.parcelas : 2;
   document.getElementById('ocEntrada').value = o && Number(o.entrada) ? numberToCurrencyDisplay(Number(o.entrada)) : '';
   document.getElementById('ocVenc').value = o ? o.primeiroVenc : todayISO();
@@ -5508,14 +5711,49 @@ function dadosDoFormOrcamento() {
     primeiroVenc: document.getElementById('ocVenc').value || todayISO(),
     obs: document.getElementById('ocObs').value.trim(),
     itens: ocUI.itens.filter(i => i.servicoId).map(i => ({ ...i, valor: Math.round((Number(i.valor) || 0) * 100) / 100 })),
+    ...partesDoFormOrcamento(),
   };
 }
+/* 3.9.0: partes do pagamento no orçamento (condição "Mais de um jeito") */
+function partesDoFormOrcamento() {
+  if (document.getElementById('ocCondicao').value !== 'dividido') return { partes: null };
+  const partes = ocUI.partes.map(p => ({ valor: Math.round((Number(p.valor) || 0) * 100) / 100, forma: p.forma || '', vezes: Math.max(1, parseInt(p.vezes, 10) || 1), venc: p.venc || '' }));
+  return { partes, forma: (partes[0] && partes[0].forma) || document.getElementById('ocForma').value };
+}
+function totalBrutoOrcForm() {
+  lerItensDoForm();
+  const bruto = ocUI.itens.filter(i => i.servicoId).reduce((a, i) => a + (Number(i.valor) || 0), 0);
+  return Math.max(0, Math.round((bruto - currencyDisplayToNumber(document.getElementById('ocDesconto').value || '0')) * 100) / 100);
+}
+const ocModeloPartes = { get partes() { return ocUI.partes; }, set partes(v) { ocUI.partes = v; }, total: 0, receita: true };
+function optsPartesOrc() { return { box: document.getElementById('ocPartes'), conf: document.getElementById('ocPartesConf'), vencOpcional: true, vencPadrao: todayISO(), depois: pintarTotalOrcamento }; }
+function prepararPartesOrc(redesenhar) {
+  ocModeloPartes.total = totalBrutoOrcForm();
+  if (ocUI.partes.length < 2) {
+    const f = document.getElementById('ocForma').value;
+    ocUI.partes = [novaParte({ valor: ocModeloPartes.total, forma: f && !ehFormaConvenio(f) ? f : '', auto: false }), novaParte({ venc: addMonthsClamped(todayISO(), 1) })];
+    redesenhar = true;
+  }
+  preencherSobra(ocModeloPartes);
+  if (redesenhar) renderPartes(ocModeloPartes, optsPartesOrc()); else atualizarConfPartes(ocModeloPartes, optsPartesOrc());
+}
+ligarPartes(document.getElementById('ocPartes'), () => ocModeloPartes, optsPartesOrc);
+document.getElementById('ocPartesAdd').addEventListener('click', () => {
+  ocModeloPartes.total = totalBrutoOrcForm();
+  if (acrescentarParte(ocModeloPartes, { venc: addMonthsClamped(todayISO(), 1) })) renderPartes(ocModeloPartes, optsPartesOrc());
+});
 /* datas e valores de cada vencimento do orçamento */
 function cronogramaOrcamento(d) {
   const bruto = d.itens.reduce((a, i) => a + i.valor, 0);
   const total = Math.max(0, Math.round((bruto - (Number(d.desconto) || 0)) * 100) / 100);
   const r = [];
-  if (d.condicao === 'parcelado') {
+  if (d.condicao === 'dividido' && Array.isArray(d.partes)) { /* 3.9.0 */
+    d.partes.forEach((pt, i) => {
+      const vezes = Math.max(1, parseInt(pt.vezes, 10) || 1);
+      const base = pt.venc || d.aprovadoEm || todayISO();
+      dividirEmParcelas(pt.valor, vezes).forEach((v, k) => r.push({ data: addMonthsClamped(base, k), valor: v, forma: pt.forma, parte: LETRAS_PARTE[i], k, vezes }));
+    });
+  } else if (d.condicao === 'parcelado') {
     dividirEmParcelas(total, d.parcelas).forEach((v, k) => r.push({ data: addMonthsClamped(d.primeiroVenc, k), valor: v }));
   } else if (d.condicao === 'entrada') {
     const ent = Math.min(Number(d.entrada) || 0, total);
@@ -5532,15 +5770,31 @@ function textoCondicao(d, cr) {
     return lista.length > 1 && centavos(lista[0].valor) !== centavos(ult)
       ? `${lista.length}x (a 1ª de ${formatCurrency(lista[0].valor)} e as demais de ${formatCurrency(ult)})` : `${lista.length}x de ${formatCurrency(ult)}`;
   };
+  if (d.condicao === 'dividido' && Array.isArray(d.partes)) { /* 3.9.0 */
+    return d.partes.map((pt, i) => {
+      const vezes = Math.max(1, parseInt(pt.vezes, 10) || 1);
+      const lista = cr.parcelas.filter(x => x.parte === LETRAS_PARTE[i]);
+      const quando = pt.venc ? formatDateBR(pt.venc) : 'na aprovação';
+      return `Parte ${LETRAS_PARTE[i]}: ` + (vezes > 1 && lista.length ? `${parc(lista)}` : formatCurrency(pt.valor)) + (pt.forma ? ` no ${pt.forma}` : '') + (vezes > 1 ? `, a 1ª ${pt.venc ? 'em ' : ''}${quando}` : `, ${pt.venc ? 'em ' : ''}${quando}`);
+    }).join(' · ');
+  }
   if (d.condicao === 'parcelado') return `${parc(cr.parcelas)}${f}, a 1ª em ${formatDateBR(d.primeiroVenc)}`;
   if (d.condicao === 'entrada') return `Entrada de ${formatCurrency(cr.parcelas[0].valor)} + ${parc(cr.parcelas.slice(1))}${f}, a 1ª em ${formatDateBR(d.primeiroVenc)}`;
   return `À vista${f}, em ${formatDateBR(d.primeiroVenc)}`;
 }
 function atualizarTotalOrcamento() {
   const cond = document.getElementById('ocCondicao').value;
-  document.getElementById('ocCampoParcelas').hidden = cond === 'avista';
+  const div = cond === 'dividido'; /* 3.9.0 */
+  document.getElementById('ocCampoPartes').hidden = !div;
+  document.getElementById('ocCampoForma').hidden = div;
+  document.getElementById('ocCampoVenc').hidden = div;
+  document.getElementById('ocCampoParcelas').hidden = cond === 'avista' || div;
   document.getElementById('ocCampoEntrada').hidden = cond !== 'entrada';
   document.getElementById('ocVencLabel').textContent = cond === 'avista' ? 'Vencimento' : '1ª parcela em';
+  if (div) prepararPartesOrc(document.getElementById('ocPartes').children.length !== ocUI.partes.length);
+  else pintarTotalOrcamento();
+}
+function pintarTotalOrcamento() {
   const d = dadosDoFormOrcamento();
   const cr = cronogramaOrcamento(d);
   const box = document.getElementById('ocTotal');
@@ -5555,6 +5809,7 @@ function validarOrcamento(d) {
   if (!(cr.total > 0)) return 'O desconto não pode ser maior que o valor dos serviços.';
   if (d.condicao !== 'avista' && !(d.parcelas >= (d.condicao === 'parcelado' ? 2 : 1))) return 'Informe o número de parcelas.';
   if (d.condicao === 'entrada' && !(d.entrada > 0 && d.entrada < cr.total)) return 'A entrada tem de ser maior que zero e menor que o total.';
+  if (d.condicao === 'dividido') return problemaPartes({ partes: d.partes || [], total: cr.total }, { vencOpcional: true }); /* 3.9.0 */
   return null;
 }
 function salvarOrcamento(status) {
@@ -5581,8 +5836,22 @@ function aprovarOrcamento(o) {
     /* a parte de cada serviço em cada vencimento, na proporção do valor dele */
     const porVenc = cr.parcelas.map((p, k) => ratear(p.valor, liquidos)[i]);
     const op = findOperacaoForCategoria('RECEITAS', it.categoria) || (state.config.operacaoPorOrigem.RECEITAS || [])[0];
+    const seriePorParte = {}; /* 3.9.0: cada parte em várias vezes é uma série */
     cr.parcelas.forEach((p, k) => {
       if (!(porVenc[k] > 0)) return;
+      if (p.parte) {
+        if (p.vezes > 1 && !seriePorParte[p.parte]) seriePorParte[p.parte] = novaSerieId();
+        novos.push({
+          id: uid(), serie: p.vezes > 1 ? seriePorParte[p.parte] : null, competencia: p.data, data: p.data, efetivado: null, empresa, natureza: 'PJ', origem: 'RECEITAS',
+          operacao: op, categoria: it.categoria, quem: o.cliente,
+          descricao: `${it.nome} · orçamento nº ${o.numero} · parte ${p.parte}` + (p.vezes > 1 ? ` (${p.k + 1}/${p.vezes})` : ''),
+          centroDeCusto: centroDaCategoria(it.categoria), valor: porVenc[k], fatura: null,
+          parcela: p.vezes > 1 ? p.k + 1 : null, totalParcelas: p.vezes > 1 ? p.vezes : null,
+          formaPagamento: p.forma || null, observacao: null, local: conta,
+          prestadorId: it.prestadorId || null, servicoId: it.servicoId, orcamentoId: o.id, orcamentoItemId: it.id,
+        });
+        return;
+      }
       novos.push({
         id: uid(), serie, competencia: p.data, data: p.data, efetivado: null, empresa, natureza: 'PJ', origem: 'RECEITAS',
         operacao: op, categoria: it.categoria, quem: o.cliente,
@@ -5596,7 +5865,7 @@ function aprovarOrcamento(o) {
     });
   });
   state.lancamentos.push(...novos);
-  novos.forEach(l => aplicarTaxaCartao(l, o.condicao === 'avista' ? 1 : o.parcelas));
+  novos.forEach(l => aplicarTaxaCartao(l, o.condicao === 'dividido' ? (l.totalParcelas || 1) : o.condicao === 'avista' ? 1 : o.parcelas));
   registrarQuem('RECEITAS', o.cliente);
   o.status = 'aprovado';
   o.aprovadoEm = todayISO();
@@ -5644,7 +5913,7 @@ document.getElementById('ocNovoServico').addEventListener('click', () => {
     renderItensOrcamento();
   });
 });
-['ocCondicao', 'ocParcelas', 'ocEntrada', 'ocDesconto', 'ocVenc', 'ocForma', 'ocData'].forEach(id => {
+['ocCondicao', 'ocParcelas', 'ocEntrada', 'ocDesconto', 'ocVenc', 'ocForma', 'ocData'].forEach(id => { /* 3.9.0: 'dividido' usa as partes */
   document.getElementById(id).addEventListener('input', atualizarTotalOrcamento);
   document.getElementById(id).addEventListener('change', atualizarTotalOrcamento);
 });
@@ -5827,7 +6096,7 @@ function imprimirOrcamento(o) {
   </table>
   <div class="bloco"><strong>Forma de pagamento:</strong> ${esc(textoCondicao(o, cr))}</div>
   ${cr.parcelas.length > 1 ? `<table style="width:auto; min-width:50%"><thead><tr><th>Vencimento</th><th class="num">Valor</th></tr></thead><tbody>${cr.parcelas.map((p, k) =>
-    `<tr><td>${p.entrada ? 'Entrada, ' : `${o.condicao === 'entrada' ? k : k + 1}ª parcela, `}${formatDateBR(p.data)}</td><td class="num">${formatCurrency(p.valor)}</td></tr>`).join('')}</tbody></table>` : ''}
+    `<tr><td>${p.parte ? `Parte ${p.parte}${p.vezes > 1 ? `, ${p.k + 1}ª de ${p.vezes}` : ''} (${esc(p.forma || '')}), ` : p.entrada ? 'Entrada, ' : `${o.condicao === 'entrada' ? k : k + 1}ª parcela, `}${formatDateBR(p.data)}</td><td class="num">${formatCurrency(p.valor)}</td></tr>`).join('')}</tbody></table>` : ''}
   ${o.obs ? `<div class="bloco"><strong>Observações:</strong> ${esc(o.obs)}</div>` : ''}
   <div class="assin"><div>${esc(emp)}</div><div>${esc(o.cliente)}</div></div>
   <div class="rodape">Desenvolvido por The Ways</div>
@@ -6422,6 +6691,106 @@ let formEraConvenio = false; /* 3.7.7 */
 let convDigitando = false; /* 3.8.0: o campo Valor mostra o total do relatório enquanto é digitado */
 let jaPagoManual = false;
 /* 3.8.0: a forma de pagamento vira botões; a conta só aparece depois de escolher a forma, com o nome que faz sentido para ela */
+/* 3.9.0: divisão do pagamento no formulário de lançamento */
+const divLanc = { ativa: false, partes: [], total: 0, receita: true };
+function optsDivLanc() {
+  const empresa = document.getElementById('fEmpresa').value;
+  return { box: document.getElementById('divisaoPartes'), conf: document.getElementById('divisaoConf'), comConta: true, comPago: true, comAjuste: true,
+    contas: (state.config.localPorEmpresa || {})[empresa] || [], vencPadrao: todayISO() };
+}
+function totalDoFormLanc() { return currencyDisplayToNumber(document.getElementById('fValor').value) || 0; }
+function aplicarModoDivisao() {
+  const receita = document.getElementById('fOrigem').value === 'RECEITAS' && !modoTransf;
+  const pode = !editingId && !modoTransf && !!document.getElementById('fOrigem').value && !formEraConvenio;
+  if (divLanc.ativa && !pode) divLanc.ativa = false;
+  form.classList.toggle('dividindo', divLanc.ativa);
+  document.getElementById('campoDividirBtn').hidden = !pode || divLanc.ativa;
+  document.getElementById('campoDivisao').hidden = !divLanc.ativa;
+  if (divLanc.ativa && divLanc.receita !== receita) { divLanc.receita = receita; renderPartes(divLanc, optsDivLanc()); }
+}
+function entrarDivisao() {
+  const total = totalDoFormLanc();
+  if (!(total > 0)) { toast('Digite primeiro o valor total, na parte 2.'); fValorInput.focus(); return; }
+  const forma = document.getElementById('fFormaPagamento').value;
+  const formaA = forma && !ehFormaConvenio(forma) ? forma : '';
+  const hoje = todayISO();
+  divLanc.ativa = true;
+  divLanc.total = total;
+  divLanc.receita = document.getElementById('fOrigem').value === 'RECEITAS';
+  divLanc.partes = [
+    novaParte({ valor: total, forma: formaA, conta: document.getElementById('fLocal').value || '', venc: document.getElementById('fData').value || hoje,
+      pago: !!formaA && document.getElementById('fJaPago').checked, auto: false }),
+    novaParte({ venc: addMonthsClamped(hoje, 1) }),
+  ];
+  preencherSobra(divLanc);
+  renderPartes(divLanc, optsDivLanc());
+  aplicarModoDivisao();
+  const v = document.querySelector('#divisaoPartes [data-parte="0"] [data-p="valor"]');
+  if (v) { v.focus(); v.select(); }
+}
+function sairDivisao() { divLanc.ativa = false; divLanc.partes = []; aplicarModoDivisao(); }
+document.getElementById('btnDividir').addEventListener('click', entrarDivisao);
+document.getElementById('divisaoSair').addEventListener('click', sairDivisao);
+document.getElementById('divisaoAdd').addEventListener('click', () => {
+  if (acrescentarParte(divLanc, { venc: addMonthsClamped(todayISO(), 1) })) renderPartes(divLanc, optsDivLanc());
+});
+fValorInput.addEventListener('input', () => {
+  if (!divLanc.ativa) return;
+  divLanc.total = totalDoFormLanc();
+  preencherSobra(divLanc);
+  atualizarConfPartes(divLanc, optsDivLanc());
+});
+ligarPartes(document.getElementById('divisaoPartes'), () => divLanc, optsDivLanc);
+['campoForma', 'campoLocal', 'campoConvenio', 'campoDataAtend', 'pagInfo', 'campoData', 'campoRecorrente', 'campoRecInicio', 'campoRecFim',
+  'campoJaPago', 'campoParceladoDia', 'campoParceladoQtd', 'campoParceladoPreview'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('so-uma-forma'); });
+function salvarDivisaoLanc() {
+  divLanc.total = totalDoFormLanc();
+  const erro = !(divLanc.total > 0) ? 'Informe o valor total.' : problemaPartes(divLanc, optsDivLanc());
+  if (erro) { toast(erro); return; }
+  const base = {
+    empresa: document.getElementById('fEmpresa').value,
+    natureza: naturezaDoForm(),
+    origem: document.getElementById('fOrigem').value,
+    operacao: document.getElementById('fOperacaoDisplay').value,
+    categoria: document.getElementById('fCategoria').value,
+    quem: document.getElementById('fQuem').value.trim() || null,
+    centroDeCusto: centroDoForm(),
+    fatura: document.getElementById('fFatura').value || null,
+    observacao: document.getElementById('fObservacao').value || null,
+    prestadorId: prestadorDoForm(),
+  };
+  const desc = (document.getElementById('fDescricao').value || '').trim();
+  const divisao = 'd' + uid().slice(1);
+  const novos = [];
+  divLanc.partes.forEach((pt, i) => {
+    const vezes = Math.max(1, parseInt(pt.vezes, 10) || 1);
+    const serie = vezes > 1 ? novaSerieId() : null;
+    parcelasDaParte(pt, todayISO()).forEach((x, k) => {
+      novos.push({
+        id: uid(), serie, divisao, competencia: x.data, data: x.data,
+        efetivado: vezes === 1 && pt.pago ? x.data : null,
+        ...base,
+        descricao: `${desc ? desc + ' · ' : ''}parte ${LETRAS_PARTE[i]}` + (vezes > 1 ? ` (${k + 1}/${vezes})` : ''),
+        valor: x.valor, parcela: vezes > 1 ? k + 1 : null, totalParcelas: vezes > 1 ? vezes : null,
+        formaPagamento: pt.forma || null, local: pt.conta || null, _vezes: vezes,
+      });
+    });
+  });
+  state.lancamentos.push(...novos);
+  novos.forEach(n => { const v = n._vezes; delete n._vezes; aplicarTaxaCartao(n, v); });
+  registrarQuem(base.origem, base.quem);
+  markDirty();
+  try { sincronizarRepasses(); } catch (e) {}
+  const reps = state.lancamentos.filter(x => x.repasseDe && novos.some(n => n.id === x.repasseDe));
+  toast(`Pagamento dividido em ${divLanc.partes.length} partes: ${novos.length} lançamento${novos.length === 1 ? '' : 's'} criado${novos.length === 1 ? '' : 's'}.`
+    + (reps.length ? ` Repasse de ${formatCurrency(reps.reduce((a, x) => a + (Number(x.valor) || 0), 0))} lançado a pagar.` : ''));
+  clearForm();
+  fValorInput.focus();
+  renderTable();
+  renderPendencias();
+  renderKpis();
+}
+
 function sincronizarCamposForma(receita, forma) {
   const chips = document.getElementById('formaChips');
   /* 3.8.1: Convênio só aparece em receita */
@@ -6484,6 +6853,7 @@ function atualizarInfoPagamento(opts) {
   nota.hidden = true;
   sincronizarCamposForma(receita, forma);
   syncJaPago();
+  try { aplicarModoDivisao(); } catch (e) {} /* 3.9.0 */
   box.hidden = true; box.classList.remove('aviso');
   if (!receita) return;
   if (conv) {
@@ -11444,6 +11814,7 @@ const AJUDA = [
       <li><strong>Vencimento</strong> e <strong>Como é:</strong> <strong>Uma vez</strong>, <strong>Parcelado</strong> ou <strong>Repete todo mês</strong>.</li>
       <li><strong>Já foi pago / recebido?</strong> <strong>Sim</strong> grava como pago na data do vencimento. <strong>Não</strong> deixa o lançamento no Caixa, para confirmar depois. Em Pix e Dinheiro já vem marcado <strong>Sim</strong>; dá para trocar.</li>
       <li><strong>Convênio</strong> só aparece em receita. Com ele, o formulário pede só o convênio, a data do atendimento e o valor; o vencimento é calculado pelas regras do convênio e o lançamento fica a receber, numa vez só (sem as perguntas "Já foi recebido?" e "Como é").</li>
+      <li><strong>Pagar de mais de um jeito:</strong> digite o valor total na parte 2 e clique em <strong>+ Pagar de mais de um jeito</strong>. Cada parte (A, B...) tem valor, forma, conta, em quantas vezes e o 1º vencimento; a parte de uma vez só pergunta se já foi paga. A última parte recebe sozinha o que falta para o total. Exemplo: R$ 1.000,00 com A = R$ 500,00 no cartão, já recebido, e B = R$ 500,00 no Pix em 5 vezes. Em <strong>Ajustar parcelas</strong> dá para mudar a data e o valor de cada parcela. Só salva quando a soma bate com o total. A taxa do cartão e o repasse ao prestador saem de cada parte. Para desistir, clique em <strong>Voltar para uma forma só</strong>. Vale para receita e despesa.</li>
       <li><strong>Nº do documento</strong> (nota, boleto, fatura): só em despesas.</li>
       <li><strong>Parcelado:</strong> informe a data da 1ª parcela e o número de parcelas. Aparece a lista de todas, com data e valor, que podem ser mudados antes de salvar. A soma tem de fechar com o total; se não fechar, use <strong>Ajustar na última parcela</strong>. Quando não divide exato, a 1ª fica com os centavos (400,00 em 3 = 133,34 + 133,33 + 133,33).</li>
       <li><strong>Repete todo mês:</strong> para contas fixas, como aluguel. Os meses seguintes entram sozinhos.</li>
@@ -11514,7 +11885,8 @@ const AJUDA = [
     <ul>
       <li>Em Negócio › <strong>Orçamentos</strong>, clique em <strong>+ Novo orçamento</strong> (ou no botão <strong>Orçamento</strong> na lista de clientes, ou em + Novo › Orçamento).</li>
       <li>Escolha o cliente e adicione os serviços. Em cada serviço, escolha quem vai atender (o prestador, para o repasse) e ajuste o valor se precisar. Dá para cadastrar um serviço novo sem sair do orçamento.</li>
-      <li>Informe desconto (se houver), forma de pagamento e condição: <strong>à vista</strong>, <strong>parcelado</strong> ou <strong>entrada + parcelas</strong>. O total e as parcelas aparecem embaixo.</li>
+      <li>Informe desconto (se houver), forma de pagamento e condição: <strong>à vista</strong>, <strong>parcelado</strong>, <strong>entrada + parcelas</strong> ou <strong>mais de um jeito</strong>. O total e as parcelas aparecem embaixo.</li>
+      <li><strong>Mais de um jeito:</strong> divide o total em partes com formas diferentes, por exemplo R$ 500,00 no cartão na aprovação e R$ 500,00 no Pix em 5 vezes. Deixe o 1º vencimento em branco para vencer no dia da aprovação. Ao aprovar, cada serviço recebe a sua parte de cada pagamento, com a forma certa, e a taxa do cartão sai só da parte no cartão.</li>
       <li><strong>Salvar</strong> guarda o orçamento em aberto, esperando o cliente. <strong>Imprimir ou PDF</strong> abre a impressão com o logo, os serviços, o total e as parcelas; para PDF, escolha "Salvar como PDF" na impressora.</li>
     </ul>
     <h3>Aprovar</h3>
@@ -13273,7 +13645,7 @@ function bindMarcaELicenca() {
 }
 
 /* 3.7.6: a versão aparece no pé do menu, no rodapé e na Licença. Mudar só aqui a cada versão. */
-const APP_VERSAO = '3.8.5';
+const APP_VERSAO = '3.9.0';
 document.querySelectorAll('[data-versao]').forEach(el => { el.textContent = 'Versão ' + APP_VERSAO; });
 function abrirLicenca() { aplicarMarca(); document.getElementById('licModal').classList.add('open'); }
 function fecharLicenca() { document.getElementById('licModal').classList.remove('open'); }
