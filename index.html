@@ -1798,6 +1798,7 @@
             <div class="field" id="campoPrestador" hidden>
               <label for="fPrestador">Quem atendeu</label>
               <select id="fPrestador"></select>
+              <p class="conv-nota" id="prestNota" hidden></p>
             </div>
 
             <div class="field span-2">
@@ -4475,6 +4476,7 @@ form.addEventListener('submit', async (e) => {
 
   const data = document.getElementById('fData').value;
   if (!data) { toast('Informe a data.'); return; }
+  let msgNovo = '', idNovo = null;
   if (!fValorInput.value.trim()) { toast('Informe o valor.'); fValorInput.focus(); return; }
 
   const usaCompetenciaDiferente = document.getElementById('fUsaCompetencia').checked;
@@ -4553,11 +4555,18 @@ form.addEventListener('submit', async (e) => {
     if (ag) { novo.agendaId = ag.id; ag.lancamentoId = novo.id; }
     state.lancamentos.push(novo);
     const tx = aplicarTaxaCartao(novo);
-    toast((jaPago ? `Lançamento adicionado e marcado como ${tipoFluxo(record.origem) === 'receita' ? 'recebido' : 'pago'}.` : 'Lançamento adicionado.')
-      + (tx ? ` Taxa do cartão: ${formatCurrency(tx.valor)}; fica ${formatCurrency(Math.round((novo.valor - tx.valor) * 100) / 100)}.` : ''));
+    msgNovo = (jaPago ? `Lançamento adicionado e marcado como ${tipoFluxo(record.origem) === 'receita' ? 'recebido' : 'pago'}.` : 'Lançamento adicionado.')
+      + (tx ? ` Taxa do cartão: ${formatCurrency(tx.valor)}; fica ${formatCurrency(Math.round((novo.valor - tx.valor) * 100) / 100)}.` : '');
+    idNovo = novo.id;
   }
   registrarQuem(record.origem, record.quem);
   markDirty();
+  /* 3.8.5: avisa o repasse ao prestador, que vence no fim do mês e por isso não aparece no período Hoje */
+  if (msgNovo) {
+    try { sincronizarRepasses(); } catch (e) {}
+    const rp = state.lancamentos.find(x => x.repasseDe === idNovo);
+    toast(msgNovo + (rp ? ` Repasse de ${formatCurrency(rp.valor)} a ${rp.quem} lançado a pagar, vence em ${formatDateBR(rp.data)}.` : ''));
+  }
   const eraEdicao = !!editingId;
   clearForm();
   if (!eraEdicao) fValorInput.focus();
@@ -5854,6 +5863,20 @@ function refreshPrestadorSelect() {
     .map(p => `<option value="${p.id}">${escapeHtml(p.nome)}${Number(p.repassePct) ? ` (${mostraNumeroBR(p.repassePct, 2)}%)` : ''}</option>`).join('');
   sel.value = (state.prestadores || []).some(p => p.id === v) ? v : '';
 }
+/* 3.8.5: mostra, no formulário, o repasse que vai entrar a pagar */
+function notaPrestador(receita) {
+  const nota = document.getElementById('prestNota');
+  if (!nota) return;
+  const p = receita ? prestadorPorId(document.getElementById('fPrestador').value) : null;
+  const pct = p ? Number(p.repassePct) || 0 : 0;
+  if (!p || !(pct > 0)) { nota.hidden = true; return; }
+  const v = currencyDisplayToNumber(document.getElementById('fValor').value) || 0;
+  const cartao = ehFormaCartao(document.getElementById('fFormaPagamento').value);
+  nota.hidden = false;
+  nota.textContent = `Quando for recebido, entra a pagar o repasse de ${mostraNumeroBR(pct, 2)}% a ${p.nome}`
+    + (v > 0 ? ` (${cartao ? 'sobre o que sobrar da taxa do cartão' : formatCurrency(Math.round(v * pct) / 100)})` : '')
+    + ', com vencimento no último dia do mês.';
+}
 function fimDoMes(iso) { const [y, m] = iso.split('-').map(Number); return dateToISO(new Date(y, m, 0)); }
 function baseRepasse(r) {
   const taxa = state.lancamentos.filter(x => x.taxaDe === r.id).reduce((a, x) => a + (Number(x.valor) || 0), 0);
@@ -6445,6 +6468,7 @@ function atualizarInfoPagamento(opts) {
     document.getElementById('fJaPago').checked = false;
   }
   document.getElementById('campoPrestador').hidden = !(receita && (state.prestadores || []).length); /* 3.7.2 */
+  notaPrestador(receita);
   /* 3.8.0: um campo de valor só. Com Convênio, o que se digita no Valor é o total do
      relatório do convênio (guardado em fChaves); ao sair do campo, o Valor vira
      total × valor da chave, e o total fica no histórico do lançamento. */
@@ -6513,6 +6537,7 @@ function atualizarInfoPagamento(opts) {
 }
 document.getElementById('fFormaPagamento').addEventListener('change', () => atualizarInfoPagamento({ convenioMudou: true }));
 document.getElementById('fConvenio').addEventListener('change', () => atualizarInfoPagamento({ convenioMudou: true }));
+document.getElementById('fPrestador').addEventListener('change', () => atualizarInfoPagamento()); /* 3.8.5 */
 document.getElementById('fDataAtend').addEventListener('change', () => atualizarInfoPagamento({ convenioMudou: true, atendMudou: true }));
 document.getElementById('fChaves').addEventListener('input', (e) => {
   const el = e.target, doFim = el.value.length - el.selectionStart;
@@ -11472,6 +11497,7 @@ const AJUDA = [
     <ul>
       <li>Numa receita, escolha em <strong>Quem atendeu</strong> o prestador. "Consultório (sem repasse)" é quando não há repasse.</li>
       <li>Quando o cliente paga (no Caixa ou marcando "Já foi recebido"), o sistema cria sozinho a conta a pagar do repasse, em "Repasse a prestadores", vencendo no último dia do mês.</li>
+      <li>Ao escolher o prestador, aparece embaixo quanto será o repasse. Ao salvar, o aviso confirma o repasse lançado e a data. Como ele vence no fim do mês, não aparece com o período <strong>Hoje</strong>: veja em <strong>Lançamentos</strong> com o mês, ou na tela do prestador.</li>
       <li>O repasse é calculado sobre o que sobra depois da taxa do cartão. Exemplo: R$ 300,00 no crédito com taxa de 3,2% e repasse de 40% dá R$ 116,16.</li>
       <li>No pagamento parcial, o repasse é só da parte paga. Desfazendo o recebimento, o repasse ainda não pago some.</li>
       <li>O repasse segue a receita: para mudar o valor, corrija a receita; para mudar o %, edite o prestador (vale para os próximos).</li>
@@ -13247,7 +13273,7 @@ function bindMarcaELicenca() {
 }
 
 /* 3.7.6: a versão aparece no pé do menu, no rodapé e na Licença. Mudar só aqui a cada versão. */
-const APP_VERSAO = '3.8.4';
+const APP_VERSAO = '3.8.5';
 document.querySelectorAll('[data-versao]').forEach(el => { el.textContent = 'Versão ' + APP_VERSAO; });
 function abrirLicenca() { aplicarMarca(); document.getElementById('licModal').classList.add('open'); }
 function fecharLicenca() { document.getElementById('licModal').classList.remove('open'); }
