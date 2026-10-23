@@ -1184,21 +1184,22 @@
   .menu-recolhido .nav .tab-badge { position: absolute; top: 1px; right: 3px; margin: 0; font-size: 9.5px; min-width: 16px; padding: 0 4px; }
   .menu-recolhido .side-toggle .ico { transform: rotate(180deg); }
   /* 3.9.0: pagar de mais de um jeito */
-  .btn-dividir { font: inherit; font-size: 13.5px; font-weight: 600; color: var(--brand-ink); background: var(--brand-soft); border: 1.5px dashed var(--brass); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+  .btn-dividir { align-self: flex-start; font: inherit; font-size: 14px; font-weight: 600; color: var(--brass-deep); background: var(--brand-soft); border: 1.5px dashed var(--brass); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
   .btn-dividir:hover { border-style: solid; }
   #lancForm.dividindo .so-uma-forma { display: none !important; }
+  .pchip.pchip-dividir { border-style: dashed; color: var(--brass-deep); font-weight: 600; }
   #ocForm [hidden] { display: none !important; } /* campos que só valem para uma condição de pagamento */
   .partes { display: flex; flex-direction: column; gap: 8px; }
   .parte-linha { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: flex-end; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
   .parte-linha > label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); min-width: 0; }
   .parte-linha input, .parte-linha select { font: inherit; font-size: 14px; height: 36px; text-transform: none; letter-spacing: 0; font-weight: 400; }
-  .parte-letra { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--brand-soft); color: var(--brand-ink); font-weight: 700; align-self: center; flex: none; }
+  .parte-letra { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--brand-soft); color: var(--brass-deep); font-weight: 700; align-self: center; flex: none; }
   .parte-linha .p-valor { width: 120px; text-align: right; font-variant-numeric: tabular-nums; }
-  .parte-linha .p-forma { width: 180px; }
-  .parte-linha .p-conta { width: 160px; }
+  .parte-linha .p-forma { width: 160px; }
+  .parte-linha .p-conta { width: 150px; }
   .parte-linha .p-vezes { width: 70px; }
-  .parte-linha .p-venc { width: 150px; }
-  .parte-linha .p-pago { width: 150px; }
+  .parte-linha .p-venc { width: 140px; }
+  .parte-linha .p-pago { width: 165px; }
   .parte-info { font-size: 12.5px; color: var(--ink-soft); align-self: center; font-variant-numeric: tabular-nums; }
   .parte-x { margin-left: auto; align-self: center; background: none; border: 0; color: var(--ink-soft); font-size: 18px; line-height: 1; padding: 4px 6px; border-radius: 6px; cursor: pointer; }
   .parte-x:hover { color: var(--despesa); background: var(--despesa-bg); }
@@ -1717,7 +1718,7 @@
         <div class="bv-hoje" id="bvAtalhos"></div>
         <div class="bv-aniv" id="bvAniv" hidden></div>
         <div class="bv-acoes">
-          <button type="button" class="btn btn-brass btn-ic" data-bv-tab="cadastro"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v10M3 8h10"/></svg>Novo lançamento</button>
+          <button type="button" class="btn btn-brass btn-ic" data-bv-tab="cadastro" hidden style="display:none"><!-- 3.9.1: a tela de entrada não tem botão de novo lançamento --><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v10M3 8h10"/></svg>Novo lançamento</button>
           <p class="bv-ajuda">Dúvidas sobre como usar? <button type="button" class="link-btn" id="bvAjuda">Veja a Ajuda</button></p>
         </div>
       </section>
@@ -1839,10 +1840,11 @@
 
           <div class="form-secao"><span class="num">3</span><span id="fSecaoPag">Como será o pagamento?</span></div>
           <div class="form-grid">
-            <div class="field" id="campoForma" style="grid-column: 1 / -1">
-              <label id="fFormaLabel">Forma de pagamento</label>
-              <div class="forma-chips" id="formaChips" role="group" aria-labelledby="fFormaLabel"></div>
-              <select id="fFormaPagamento" hidden aria-hidden="true" tabindex="-1"></select>
+            <!-- 3.10.0: padrão do Orçamento: toda escolha é uma lista, numa linha só -->
+            <div class="field" id="campoForma">
+              <label id="fFormaLabel" for="fFormaPagamento">Forma de pagamento</label>
+              <div class="forma-chips" id="formaChips" role="group" aria-labelledby="fFormaLabel" hidden></div>
+              <select id="fFormaPagamento"></select>
             </div>
 
             <!-- 3.9.0: pagar de mais de um jeito (ex.: parte no cartão agora, o resto no Pix em 5 vezes) -->
@@ -1886,9 +1888,15 @@
               <input type="date" id="fData" required>
             </div>
 
-            <div class="field span-2" id="campoRecorrente">
-              <label id="fCondLabel">Como é</label>
-              <div class="cond-toggle" role="group" aria-labelledby="fCondLabel">
+            <div class="field" id="campoRecorrente">
+              <label id="fCondLabel" for="fCondicao">Condição</label>
+              <select id="fCondicao">
+                <option value="unica">Uma vez</option>
+                <option value="parcelado">Parcelado</option>
+                <option value="recorrente">Repete todo mês</option>
+                <option value="dividido">Mais de um jeito</option>
+              </select>
+              <div class="cond-toggle" role="group" aria-labelledby="fCondLabel" hidden>
                 <button type="button" class="cond-btn" data-cond="unica" aria-pressed="true">Uma vez</button>
                 <button type="button" class="cond-btn" data-cond="parcelado" aria-pressed="false">Parcelado</button>
                 <button type="button" class="cond-btn" data-cond="recorrente" aria-pressed="false">Repete todo mês</button>
@@ -1915,14 +1923,18 @@
               </div>
             </div>
 
-            <div class="field span-2" id="campoJaPago">
-              <label id="fJaPagoLabel">Já foi pago?</label>
-              <div class="cond-toggle" role="group" aria-labelledby="fJaPagoLabel">
+            <div class="field" id="campoJaPago">
+              <label id="fJaPagoLabel" for="fJaPagoSel">Já foi pago?</label>
+              <select id="fJaPagoSel">
+                <option value="0" id="fJaPagoOptNao">Não, fica a pagar</option>
+                <option value="1">Sim</option>
+              </select>
+              <div class="cond-toggle" role="group" aria-labelledby="fJaPagoLabel" hidden>
                 <button type="button" class="cond-btn" data-japago="1" aria-pressed="false" id="fJaPagoSim">Sim</button>
                 <button type="button" class="cond-btn" data-japago="0" aria-pressed="true" id="fJaPagoNao">Não, fica a pagar</button>
               </div>
               <input type="checkbox" id="fJaPago" hidden>
-              <span class="muted" style="font-size:12px" id="fJaPagoTexto">Fica como pago na data do vencimento</span>
+              <span class="muted" style="font-size:12px" id="fJaPagoTexto" hidden>Fica como pago na data do vencimento</span>
             </div>
 
             <div class="field" id="campoParceladoDia" style="display:none">
@@ -1955,18 +1967,19 @@
               </div>
 
               <div class="field" id="campoCompetencia">
-                <label for="fCompetencia">Pertence a outro mês? <span class="hint">(competência)</span></label>
+                <label for="fUsaCompSel">Pertence a outro mês? <span class="hint">(competência)</span></label>
                 <div class="competencia-row">
-                  <input type="checkbox" id="fUsaCompetencia" title="Usar mês de competência diferente do vencimento">
+                  <select id="fUsaCompSel" style="width:auto"><option value="0">Não</option><option value="1">Sim, ao mês</option></select>
+                  <input type="checkbox" id="fUsaCompetencia" hidden title="Usar mês de competência diferente do vencimento">
                   <input type="month" id="fCompetencia" disabled>
                 </div>
               </div>
 
               <div class="field" id="campoPessoal">
-                <label for="fPessoal">Conta pessoal?</label>
+                <label for="fPessoalSel">Conta pessoal?</label>
                 <div class="competencia-row">
-                  <input type="checkbox" id="fPessoal">
-                  <span class="muted" style="font-size:12.5px">É do sócio, não da empresa (Pessoa Física)</span>
+                  <select id="fPessoalSel"><option value="0">Não, é da empresa</option><option value="1">Sim, é do sócio (Pessoa Física)</option></select>
+                  <input type="checkbox" id="fPessoal" hidden>
                 </div>
               </div>
 
@@ -3838,6 +3851,7 @@ function syncTipoUI() {
   document.getElementById('fFormaLabel').textContent = tipo === 'receita' ? 'Forma de recebimento' : 'Forma de pagamento';
   document.getElementById('fJaPagoLabel').textContent = tipo === 'receita' ? 'Já foi recebido?' : 'Já foi pago?';
   document.getElementById('fJaPagoNao').textContent = tipo === 'receita' ? 'Não, fica a receber' : 'Não, fica a pagar';
+  document.getElementById('fJaPagoOptNao').textContent = tipo === 'receita' ? 'Não, fica a receber' : 'Não, fica a pagar';
   document.getElementById('fJaPagoTexto').textContent = tipo === 'receita' ? 'Sim: fica como recebido na data do vencimento.' : 'Sim: fica como pago na data do vencimento.';
   syncMaisDetalhes();
 }
@@ -3930,7 +3944,7 @@ function syncMaisDetalhes() {
   const mostraComp = !!editingId && !parcOuRec;
   campoCompetencia.style.display = mostraComp ? '' : 'none';
   if (!mostraComp && !editingId) {
-    document.getElementById('fUsaCompetencia').checked = false;
+    document.getElementById('fUsaCompetencia').checked = false; syncSelsOutros();
     document.getElementById('fCompetencia').disabled = true;
     document.getElementById('fCompetencia').value = '';
   }
@@ -4142,7 +4156,7 @@ document.getElementById('fRecorrente').addEventListener('change', (e) => {
   document.getElementById('fData').required = !on;
   if (on) {
     document.getElementById('fRecInicio').value = document.getElementById('fData').value || todayISO();
-    document.getElementById('fUsaCompetencia').checked = false;
+    document.getElementById('fUsaCompetencia').checked = false; syncSelsOutros();
     document.getElementById('fCompetencia').disabled = true;
     document.getElementById('fCompetencia').value = '';
     syncRecFim();
@@ -4330,12 +4344,33 @@ document.getElementById('fPessoal').addEventListener('change', (e) => {
   document.getElementById('fNatureza').value = e.target.checked ? 'PF' : 'PJ';
 });
 
-/* 3.6.12: "Como é": uma vez, parcelado ou repete todo mês (um exclui o outro, e só aparece o que vale) */
+/* 3.6.12: "Como é": uma vez, parcelado ou repete todo mês (um exclui o outro, e só aparece o que vale)
+   3.10.0: virou a lista Condição, que também tem "Mais de um jeito" */
 function syncCondicao() {
   const parc = document.getElementById('fParcelado').checked, rec = document.getElementById('fRecorrente').checked;
   const atual = parc ? 'parcelado' : rec ? 'recorrente' : 'unica';
   document.querySelectorAll('.cond-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cond === atual)));
+  const sel = document.getElementById('fCondicao');
+  if (sel) sel.value = (typeof divLanc !== 'undefined' && divLanc.ativa) ? 'dividido' : atual;
 }
+/* 3.10.0: as listas "Pertence a outro mês?" e "Conta pessoal?" mostram as caixinhas escondidas */
+function syncSelsOutros() {
+  document.getElementById('fUsaCompSel').value = document.getElementById('fUsaCompetencia').checked ? '1' : '0';
+  document.getElementById('fPessoalSel').value = document.getElementById('fPessoal').checked ? '1' : '0';
+}
+['fUsaCompSel', 'fPessoalSel'].forEach(id => document.getElementById(id).addEventListener('change', (e) => {
+  const cb = document.getElementById(id === 'fUsaCompSel' ? 'fUsaCompetencia' : 'fPessoal');
+  cb.checked = e.target.value === '1';
+  cb.dispatchEvent(new Event('change'));
+}));
+document.getElementById('fCondicao').addEventListener('change', (e) => {
+  const v = e.target.value;
+  if (v === 'dividido') { entrarDivisao(); if (!divLanc.ativa) syncCondicao(); return; }
+  if (divLanc.ativa) sairDivisao();
+  const b = document.querySelector(`.cond-btn[data-cond="${v}"]`);
+  if (b) b.click();
+  syncCondicao();
+});
 document.querySelectorAll('.cond-btn').forEach(b => b.addEventListener('click', () => {
   const parc = document.getElementById('fParcelado'), rec = document.getElementById('fRecorrente');
   const quer = b.dataset.cond;
@@ -4425,7 +4460,7 @@ document.getElementById('fParcelado').addEventListener('change', (e) => {
   document.getElementById('fData').required = !on;
   if (on) {
     document.getElementById('fParceladoDia').value = todayISO();
-    document.getElementById('fUsaCompetencia').checked = false;
+    document.getElementById('fUsaCompetencia').checked = false; syncSelsOutros();
     document.getElementById('fCompetencia').disabled = true;
     document.getElementById('fCompetencia').value = '';
     updateParceladoPreview();
@@ -4518,7 +4553,7 @@ function clearForm(opts) {
       }
     }
   }
-  document.getElementById('fPessoal').checked = document.getElementById('fNatureza').value === 'PF';
+  document.getElementById('fPessoal').checked = document.getElementById('fNatureza').value === 'PF'; syncSelsOutros();
   syncCondicao();
   document.getElementById('fChaves').value = '';
   convDigitando = false;
@@ -4797,7 +4832,7 @@ function startEdit(id) {
   document.getElementById('fData').value = l.data || '';
   document.getElementById('fValor').value = numberToCurrencyDisplay(l.valor);
   const diff = l.competencia && l.competencia !== l.data;
-  document.getElementById('fUsaCompetencia').checked = !!diff;
+  document.getElementById('fUsaCompetencia').checked = !!diff; syncSelsOutros();
   document.getElementById('fCompetencia').disabled = !diff;
   document.getElementById('fCompetencia').value = diff ? l.competencia.slice(0, 7) : '';
   document.getElementById('campoJaPago').style.display = 'none';
@@ -6704,7 +6739,11 @@ function aplicarModoDivisao() {
   const pode = !editingId && !modoTransf && !!document.getElementById('fOrigem').value && !formEraConvenio;
   if (divLanc.ativa && !pode) divLanc.ativa = false;
   form.classList.toggle('dividindo', divLanc.ativa);
-  document.getElementById('campoDividirBtn').hidden = !pode || divLanc.ativa;
+  document.getElementById('campoDividirBtn').hidden = true; /* 3.9.1: virou botão junto das formas */
+  const chipDiv = document.getElementById('chipDividir');
+  if (chipDiv) chipDiv.hidden = true; /* 3.10.0: "Mais de um jeito" é uma opção da Condição */
+  const optDiv = document.querySelector('#fCondicao option[value="dividido"]');
+  if (optDiv) optDiv.hidden = !pode;
   document.getElementById('campoDivisao').hidden = !divLanc.ativa;
   if (divLanc.ativa && divLanc.receita !== receita) { divLanc.receita = receita; renderPartes(divLanc, optsDivLanc()); }
 }
@@ -6714,6 +6753,7 @@ function entrarDivisao() {
   const forma = document.getElementById('fFormaPagamento').value;
   const formaA = forma && !ehFormaConvenio(forma) ? forma : '';
   const hoje = todayISO();
+  if (document.getElementById('fParcelado').checked || document.getElementById('fRecorrente').checked) document.querySelector('.cond-btn[data-cond="unica"]').click();
   divLanc.ativa = true;
   divLanc.total = total;
   divLanc.receita = document.getElementById('fOrigem').value === 'RECEITAS';
@@ -6728,7 +6768,7 @@ function entrarDivisao() {
   const v = document.querySelector('#divisaoPartes [data-parte="0"] [data-p="valor"]');
   if (v) { v.focus(); v.select(); }
 }
-function sairDivisao() { divLanc.ativa = false; divLanc.partes = []; aplicarModoDivisao(); }
+function sairDivisao() { divLanc.ativa = false; divLanc.partes = []; aplicarModoDivisao(); syncCondicao(); }
 document.getElementById('btnDividir').addEventListener('click', entrarDivisao);
 document.getElementById('divisaoSair').addEventListener('click', sairDivisao);
 document.getElementById('divisaoAdd').addEventListener('click', () => {
@@ -6741,7 +6781,11 @@ fValorInput.addEventListener('input', () => {
   atualizarConfPartes(divLanc, optsDivLanc());
 });
 ligarPartes(document.getElementById('divisaoPartes'), () => divLanc, optsDivLanc);
-['campoForma', 'campoLocal', 'campoConvenio', 'campoDataAtend', 'pagInfo', 'campoData', 'campoRecorrente', 'campoRecInicio', 'campoRecFim',
+(function ordemParte3() { /* 3.10.0 */
+  const ordem = ['campoForma', 'campoRecorrente', 'campoData', 'campoJaPago', 'campoDivisao'].map(id => document.getElementById(id));
+  for (let i = 1; i < ordem.length; i++) ordem[i - 1].after(ordem[i]);
+})();
+['campoForma', 'campoLocal', 'campoConvenio', 'campoDataAtend', 'pagInfo', 'campoData', 'campoRecInicio', 'campoRecFim',
   'campoJaPago', 'campoParceladoDia', 'campoParceladoQtd', 'campoParceladoPreview'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('so-uma-forma'); });
 function salvarDivisaoLanc() {
   divLanc.total = totalDoFormLanc();
@@ -6800,9 +6844,12 @@ function sincronizarCamposForma(receita, forma) {
     chips.dataset.chave = chave;
     chips.innerHTML = opcoes.length
       ? opcoes.map(v => `<button type="button" class="pchip" data-forma="${escapeHtml(v)}" aria-pressed="false">${escapeHtml(v)}</button>`).join('')
+        + '<button type="button" class="pchip pchip-dividir" id="chipDividir" data-dividir hidden>+ Mais de um jeito</button>' /* 3.9.1 */
       : '<span class="muted" style="font-size:12.5px">Cadastre as formas de pagamento em Configurações › Financeiro.</span>';
   }
   chips.querySelectorAll('[data-forma]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.forma === forma)));
+  /* 3.10.0: na lista, Convênio só em receita */
+  [...document.getElementById('fFormaPagamento').options].forEach(o => { o.hidden = !!o.value && !receita && ehFormaConvenio(o.value) && o.value !== forma; });
   document.getElementById('campoLocal').hidden = !forma && !document.getElementById('fLocal').value;
   const cartao = ehFormaCartao(forma), dinheiro = /dinheiro|esp[eé]cie/i.test(forma || '');
   document.getElementById('fLocalLabel').textContent = cartao ? (receita ? 'Máquina / conta que recebe' : 'Cartão / conta que paga')
@@ -6812,6 +6859,7 @@ function syncJaPago() {
   const on = document.getElementById('fJaPago').checked;
   document.getElementById('fJaPagoSim').setAttribute('aria-pressed', String(on));
   document.getElementById('fJaPagoNao').setAttribute('aria-pressed', String(!on));
+  document.getElementById('fJaPagoSel').value = on ? '1' : '0'; /* 3.10.0 */
 }
 function historicoLancHtml(l) {
   return (l.historico || []).map(h => `<div>${escapeHtml(formatDateBR(String(h.em || '').slice(0, 10)))} ${escapeHtml(String(h.em || '').slice(11, 16))} · ${escapeHtml(h.texto || '')}</div>`).join('');
@@ -6938,6 +6986,7 @@ fValorInput.addEventListener('blur', () => {
   atualizarInfoPagamento();
 });
 document.getElementById('formaChips').addEventListener('click', (e) => {
+  if (e.target.closest('[data-dividir]')) { entrarDivisao(); return; } /* 3.9.1 */
   const b = e.target.closest('[data-forma]');
   if (!b) return;
   const sel = document.getElementById('fFormaPagamento');
@@ -6948,12 +6997,20 @@ document.getElementById('formaChips').addEventListener('click', (e) => {
   }
   sel.dispatchEvent(new Event('change'));
 });
+document.getElementById('fJaPagoSel').addEventListener('change', (e) => { document.getElementById(e.target.value === '1' ? 'fJaPagoSim' : 'fJaPagoNao').click(); });
 document.querySelectorAll('[data-japago]').forEach(b => b.addEventListener('click', () => {
   document.getElementById('fJaPago').checked = b.dataset.japago === '1';
   jaPagoManual = true;
   syncJaPago();
 }));
 ['fOrigem', 'fParcelado', 'fRecorrente'].forEach(id => document.getElementById(id).addEventListener('change', () => atualizarInfoPagamento()));
+/* 3.10.0: escolher na lista de formas faz o mesmo que clicar na pílula */
+document.getElementById('fFormaPagamento').addEventListener('change', (e) => {
+  if (!editingId && !jaPagoManual && document.getElementById('campoJaPago').style.display !== 'none') {
+    document.getElementById('fJaPago').checked = /pix|dinheiro|esp[eé]cie/i.test(e.target.value || '');
+    syncJaPago();
+  }
+});
 
 async function settleLancamento(id, dataEfetivado, valorPago) {
   const l = state.lancamentos.find(x => x.id === id);
@@ -11795,7 +11852,7 @@ const AJUDA = [
     <h3>Telas que começam limpas</h3>
     <p>Quando você entra numa tela pelo menu, pelos atalhos do Início ou pelo <strong>+ Novo</strong>, ela começa do zero: o formulário de lançamento vem em branco (uma edição não salva é descartada) e as buscas e filtros de Lançamentos, Pendências, Tarefas, Clientes e Fornecedores vêm vazios. O período escolhido na barra do alto (mês ou ano) continua o mesmo.</p>` },
   { id: 'lancar', titulo: 'Lançar receitas e despesas', ir: 'cadastro', html: `
-    <p class="aj-lead">Para lançar, clique em <strong>+ Novo lançamento</strong>, no alto da tela (ou no atalho do Início). O formulário tem três perguntas, de cima para baixo, e só mostra os campos que precisam ser respondidos.</p>
+    <p class="aj-lead">Para lançar, clique em <strong>+ Novo lançamento</strong>, no alto da tela (a tela de entrada não tem esse botão). O formulário tem três perguntas, de cima para baixo, e só mostra os campos que precisam ser respondidos.</p>
     <h3>1. O que é?</h3>
     <ul>
       <li>Escolha <strong>Receita</strong>, <strong>Despesa</strong> ou <strong>Transferência</strong> (dinheiro de uma conta para outra, que não conta como receita nem despesa).</li>
@@ -11810,11 +11867,12 @@ const AJUDA = [
     </ul>
     <h3>3. Como será o pagamento?</h3>
     <ul>
-      <li>Clique na <strong>forma de pagamento</strong>. Depois disso aparecem só os campos daquela forma: a <strong>conta</strong> que recebe ou paga (no cartão, a máquina), o <strong>convênio</strong> e a <strong>data do atendimento</strong>, e assim por diante.</li>
-      <li><strong>Vencimento</strong> e <strong>Como é:</strong> <strong>Uma vez</strong>, <strong>Parcelado</strong> ou <strong>Repete todo mês</strong>.</li>
-      <li><strong>Já foi pago / recebido?</strong> <strong>Sim</strong> grava como pago na data do vencimento. <strong>Não</strong> deixa o lançamento no Caixa, para confirmar depois. Em Pix e Dinheiro já vem marcado <strong>Sim</strong>; dá para trocar.</li>
-      <li><strong>Convênio</strong> só aparece em receita. Com ele, o formulário pede só o convênio, a data do atendimento e o valor; o vencimento é calculado pelas regras do convênio e o lançamento fica a receber, numa vez só (sem as perguntas "Já foi recebido?" e "Como é").</li>
-      <li><strong>Pagar de mais de um jeito:</strong> digite o valor total na parte 2 e clique em <strong>+ Pagar de mais de um jeito</strong>. Cada parte (A, B...) tem valor, forma, conta, em quantas vezes e o 1º vencimento; a parte de uma vez só pergunta se já foi paga. A última parte recebe sozinha o que falta para o total. Exemplo: R$ 1.000,00 com A = R$ 500,00 no cartão, já recebido, e B = R$ 500,00 no Pix em 5 vezes. Em <strong>Ajustar parcelas</strong> dá para mudar a data e o valor de cada parcela. Só salva quando a soma bate com o total. A taxa do cartão e o repasse ao prestador saem de cada parte. Para desistir, clique em <strong>Voltar para uma forma só</strong>. Vale para receita e despesa.</li>
+      <li>A parte 3 fica numa linha, como no Orçamento: <strong>Forma de pagamento</strong>, <strong>Condição</strong>, <strong>Vencimento</strong> e <strong>Já foi pago?</strong>, todas em listas.</li>
+      <li>Escolha a <strong>forma de pagamento</strong>. Depois disso aparecem só os campos daquela forma: a <strong>conta</strong> que recebe ou paga (no cartão, a máquina), o <strong>convênio</strong> e a <strong>data do atendimento</strong>, e assim por diante.</li>
+      <li><strong>Condição:</strong> <strong>Uma vez</strong>, <strong>Parcelado</strong>, <strong>Repete todo mês</strong> ou <strong>Mais de um jeito</strong>.</li>
+      <li><strong>Já foi pago / recebido?</strong> <strong>Sim</strong> grava como pago na data do vencimento. <strong>Não</strong> deixa o lançamento no Caixa, para confirmar depois. Em Pix e Dinheiro já vem <strong>Sim</strong>; dá para trocar.</li>
+      <li><strong>Convênio</strong> só aparece em receita. Com ele, o formulário pede só o convênio, a data do atendimento e o valor; o vencimento é calculado pelas regras do convênio e o lançamento fica a receber, numa vez só (sem as perguntas "Já foi recebido?" e "Condição").</li>
+      <li><strong>Pagar de mais de um jeito:</strong> digite o valor total na parte 2 e escolha <strong>Mais de um jeito</strong> na Condição. Cada parte (A, B...) tem valor, forma, conta, em quantas vezes e o 1º vencimento; a parte de uma vez só pergunta se já foi paga. A última parte recebe sozinha o que falta para o total. Exemplo: R$ 1.000,00 com A = R$ 500,00 no cartão, já recebido, e B = R$ 500,00 no Pix em 5 vezes. Em <strong>Ajustar parcelas</strong> dá para mudar a data e o valor de cada parcela. Só salva quando a soma bate com o total. A taxa do cartão e o repasse ao prestador saem de cada parte. Para desistir, escolha outra Condição ou clique em <strong>Voltar para uma forma só</strong>. Vale para receita e despesa.</li>
       <li><strong>Nº do documento</strong> (nota, boleto, fatura): só em despesas.</li>
       <li><strong>Parcelado:</strong> informe a data da 1ª parcela e o número de parcelas. Aparece a lista de todas, com data e valor, que podem ser mudados antes de salvar. A soma tem de fechar com o total; se não fechar, use <strong>Ajustar na última parcela</strong>. Quando não divide exato, a 1ª fica com os centavos (400,00 em 3 = 133,34 + 133,33 + 133,33).</li>
       <li><strong>Repete todo mês:</strong> para contas fixas, como aluguel. Os meses seguintes entram sozinhos.</li>
@@ -13645,7 +13703,7 @@ function bindMarcaELicenca() {
 }
 
 /* 3.7.6: a versão aparece no pé do menu, no rodapé e na Licença. Mudar só aqui a cada versão. */
-const APP_VERSAO = '3.9.0';
+const APP_VERSAO = '3.10.0';
 document.querySelectorAll('[data-versao]').forEach(el => { el.textContent = 'Versão ' + APP_VERSAO; });
 function abrirLicenca() { aplicarMarca(); document.getElementById('licModal').classList.add('open'); }
 function fecharLicenca() { document.getElementById('licModal').classList.remove('open'); }
@@ -13672,6 +13730,7 @@ function atualizarBotaoNovo(tela) {
   novoBtn.dataset.acao = tipo;
   novoBtn.textContent = rotuloNovo(tipo);
   novoMais.hidden = !tipo;
+  novoBtn.parentElement.style.display = tela === 'inicio' ? 'none' : ''; /* 3.9.1: pedido do Kleber, nada de Novo na tela de entrada */
   if (tipo) novoBtn.removeAttribute('aria-haspopup'); else novoBtn.setAttribute('aria-haspopup', 'true');
 }
 function fecharNovoMenu() { novoMenu.hidden = true; novoBtn.setAttribute('aria-expanded', 'false'); novoMais.setAttribute('aria-expanded', 'false'); }
