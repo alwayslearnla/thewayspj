@@ -1546,6 +1546,12 @@
   .lc-sep, .lc-desc { color: var(--ink-soft); }
   .lc-mais-btn { border: 0; background: none; cursor: pointer; padding: 0 6px 0 0; font: inherit; font-size: 12px; color: var(--brass-deep); }
   .lc-extra { margin: 4px 0 2px 20px; white-space: normal; }
+  /* 3.11.0: recebimento do orçamento numa linha só */
+  .lc-orc { font: inherit; font-weight: 600; padding: 0; }
+  .grp-servs { margin-top: 2px; }
+  .grp-serv { display: flex; gap: 10px; align-items: baseline; font-size: 12.5px; padding: 2px 0; max-width: 560px; }
+  .grp-serv .grp-v { margin-left: auto; white-space: nowrap; }
+  .grp-serv .tag-rec { display: inline; }
   .lc-ic {
     width: 30px; height: 30px; display: inline-grid; place-items: center; padding: 0; vertical-align: middle; cursor: pointer;
     border-radius: 8px; border: 1px solid var(--line); background: var(--paper-raised); color: var(--ink-soft);
@@ -4870,6 +4876,7 @@ function startEdit(id) {
 }
 
 async function deleteLancamento(id) {
+  if (ehGrupoId(id)) { excluirGrupoOrc(id); return; } /* 3.11.0 */
   const l = state.lancamentos.find(x => x.id === id);
   if (!l) return;
   const outros = outrasParcelasAbertas(l);
@@ -5012,7 +5019,7 @@ function getFiltered() {
     .filter(l => !tipo || tipoFluxo(l.origem) === tipo)
     .filter(l => {
       if (!busca) return true;
-      const hay = [l.descricao, l.categoria, l.quem, l.observacao, l.centroDeCusto]
+      const hay = [l.descricao, l.categoria, l.quem, l.observacao, l.centroDeCusto, textoOrcBusca(l)]
         .filter(Boolean).join(' ').toLowerCase();
       return hay.includes(busca);
     })
@@ -5061,6 +5068,7 @@ function extrasLancHtml(l) {
   ].join('');
 }
 function celulaLancHtml(l) {
+  if (l.grupoOrc) return celulaGrupoOrcHtml(l); /* 3.11.0 */
   const tipo = tipoFluxo(l.origem);
   const extras = extrasLancHtml(l).trim();
   const titulo = [l.categoria || l.operacao, l.quem, l.descricao].filter(Boolean).join(' · ');
@@ -5084,16 +5092,18 @@ document.addEventListener('click', (e) => {
 
 function renderTable() {
   const rows = getFiltered();
+  const linhas = agruparOrcamento(rows); /* 3.11.0 */
   const tbody = document.getElementById('tbody');
   const empty = document.getElementById('emptyState');
+  const nTodos = contarLinhas(state.lancamentos);
   document.getElementById('filterCount').textContent =
-    `${rows.length} de ${state.lancamentos.length} lançamento${state.lancamentos.length === 1 ? '' : 's'}`;
+    `${linhas.length} de ${nTodos} lançamento${nTodos === 1 ? '' : 's'}`;
 
   document.querySelector('#viewLancamentos table').classList.toggle('oculta-empresa-lanc', state.config.empresas.length <= 1);
   renderTotaisFiltro(rows, document.getElementById('totaisFiltro'), ['Receitas', 'Despesas']);
 
   // remove da seleção qualquer id que não esteja mais visível no filtro atual
-  const visibleIds = new Set(rows.map(r => r.id));
+  const visibleIds = new Set(linhas.map(r => r.id));
   [...selectedIds].forEach(id => { if (!visibleIds.has(id)) selectedIds.delete(id); });
 
   if (!rows.length) {
@@ -5105,7 +5115,7 @@ function renderTable() {
   }
   empty.style.display = 'none';
 
-  tbody.innerHTML = rows.map(l => {
+  tbody.innerHTML = linhas.map(l => {
     const status = computeStatus(l.data, l.efetivado);
     const tipo = tipoFluxo(l.origem);
     const sinal = tipo === 'despesa' ? '−' : '+';
@@ -5122,13 +5132,17 @@ function renderTable() {
           ${statusTag(status)}${status === 'LIQUIDADO' ? ` <button type="button" class="link-btn" data-undo="${l.id}" title="Volta a ficar em aberto">desfazer</button>` : ''}
         </td>
         <td class="col-actions">
-          <button type="button" class="lc-ic" data-edit="${l.id}" title="Editar" aria-label="Editar">${ICO_EDITAR}</button>
+          <button type="button" class="lc-ic" data-edit="${l.id}" title="${l.grupoOrc ? 'Editar: mostra os serviços, para escolher qual' : 'Editar'}" aria-label="Editar">${ICO_EDITAR}</button>
           <button type="button" class="lc-ic perigo" data-del="${l.id}" title="Excluir" aria-label="Excluir">${ICO_EXCLUIR}</button>
         </td>
       </tr>`;
   }).join('');
 
-  tbody.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => startEdit(b.dataset.edit)));
+  tbody.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => {
+    if (!ehGrupoId(b.dataset.edit)) { startEdit(b.dataset.edit); return; }
+    const mais = b.closest('tr').querySelector('[data-lc-mais]'); /* 3.11.0: o grupo abre a lista dos serviços */
+    if (mais && mais.getAttribute('aria-expanded') !== 'true') mais.click();
+  }));
   tbody.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => deleteLancamento(b.dataset.del)));
   tbody.querySelectorAll('[data-undo]').forEach(b => b.addEventListener('click', () => undoBaixa(b.dataset.undo)));
   tbody.querySelectorAll('[data-select]').forEach(cb => {
@@ -5182,8 +5196,9 @@ document.getElementById('btnBulkDelete').addEventListener('click', () => {
   const n = selectedIds.size;
   if (!n) return;
   if (!confirm(`Excluir ${n} lançamento${n === 1 ? '' : 's'} selecionado${n === 1 ? '' : 's'}? Essa ação não pode ser desfeita.`)) return;
-  state.lancamentos = state.lancamentos.filter(l => !selectedIds.has(l.id) && !(l.ajusteDe && selectedIds.has(l.ajusteDe)) && !(l.parcialDe && selectedIds.has(l.parcialDe)));
-  if (editingId && selectedIds.has(editingId)) clearForm();
+  const alvo = new Set([...selectedIds].flatMap(idsDe)); /* 3.11.0: a linha do orçamento leva os serviços dela */
+  state.lancamentos = state.lancamentos.filter(l => !alvo.has(l.id) && !(l.ajusteDe && alvo.has(l.ajusteDe)) && !(l.parcialDe && alvo.has(l.parcialDe)));
+  if (editingId && alvo.has(editingId)) clearForm();
   selectedIds.clear();
   markDirty();
   renderTable();
@@ -5245,7 +5260,7 @@ function getPendentes() {
     })
     .filter(l => {
       if (!busca) return true;
-      const hay = [l.descricao, l.categoria, l.quem, l.observacao, l.centroDeCusto].filter(Boolean).join(' ').toLowerCase();
+      const hay = [l.descricao, l.categoria, l.quem, l.observacao, l.centroDeCusto, textoOrcBusca(l)].filter(Boolean).join(' ').toLowerCase();
       return hay.includes(busca);
     })
     .sort((a, b) => (dataNoCaixa(a) || '').localeCompare(dataNoCaixa(b) || '') || (a.efetivado ? 1 : 0) - (b.efetivado ? 1 : 0));
@@ -5271,7 +5286,8 @@ function renderCaixaTopo(rows) {
   faixa.hidden = !atr.length;
   if (atr.length) {
     const ar = somar(atr, 'receita'), ap = somar(atr, 'despesa');
-    faixa.innerHTML = `<span>${svgIco('alerta')}<strong>${atr.length} conta${atr.length === 1 ? '' : 's'} atrasada${atr.length === 1 ? '' : 's'}</strong>, de antes deste período: `
+    const nAtr = contarLinhas(atr);
+    faixa.innerHTML = `<span>${svgIco('alerta')}<strong>${nAtr} conta${nAtr === 1 ? '' : 's'} atrasada${nAtr === 1 ? '' : 's'}</strong>, de antes deste período: `
       + [ar ? `${formatCurrency(ar)} a receber` : '', ap ? `${formatCurrency(ap)} a pagar` : ''].filter(Boolean).join(' · ') + '</span>'
       + '<button type="button" class="btn btn-outline btn-sm" id="caixaVerAtrasados">Ver atrasados</button>';
     document.getElementById('caixaVerAtrasados').addEventListener('click', () => abrirCaixa({ periodo: 'aberto', status: 'VENCIDO' }));
@@ -5370,7 +5386,7 @@ function renderComposicao() {
   if (!c) return;
   const q = normNome(document.getElementById('compBusca').value.trim());
   const filtrando = !!q;
-  const bate = l => !q || normNome([l.descricao, l.quem, l.categoria, l.operacao, l.empresa, l.convenio].filter(Boolean).join(' ')).includes(q);
+  const bate = l => !q || normNome([l.descricao, l.quem, l.categoria, l.operacao, l.empresa, l.convenio, l.textoBusca].filter(Boolean).join(' ')).includes(q);
   const dataDe = l => l.efetivado || l.data || '';
   let html = '', total = 0, qtd = 0, totalFiltro = 0, qtdFiltro = 0;
   (c.extras || []).forEach(x => {
@@ -5380,7 +5396,7 @@ function renderComposicao() {
       + `<td class="num" style="color:var(--${x.valor < 0 ? 'despesa' : 'receita'})">${formatCurrency(x.valor)}</td><td></td></tr>`;
   });
   c.grupos.forEach(g => {
-    const linhas = g.linhas.slice().sort((a, b) => dataDe(a).localeCompare(dataDe(b)));
+    const linhas = agruparOrcamento(g.linhas).sort((a, b) => dataDe(a).localeCompare(dataDe(b))); /* 3.11.0 */
     const somaG = linhas.reduce((s, l) => s + valorNaComposicao(l, g.sinal), 0);
     total += somaG; qtd += linhas.length;
     const vis = linhas.filter(bate);
@@ -5399,7 +5415,7 @@ function renderComposicao() {
         <td><span class="op-dot ${tipo || ''}"></span>${escapeHtml(l.categoria || l.operacao || '—')}${state.config.empresas.length > 1 ? `<div class="muted">${escapeHtml(l.empresa || '')}</div>` : ''}</td>
         <td>${statusTag(st)}</td>
         <td class="num" style="color:var(--${tipo === 'despesa' ? 'despesa' : 'receita'})">${g.sinal ? (tipo === 'despesa' ? '− ' : '+ ') + formatCurrency(Math.abs(v)) : formatCurrency(v)}</td>
-        <td class="col-actions"><button type="button" class="link-btn" data-comp-abrir="${l.id}">abrir</button></td>
+        <td class="col-actions">${l.grupoOrc ? `<button type="button" class="link-btn" data-abrir-orc="${l.orc.id}" title="Abrir o orçamento">abrir</button>` : `<button type="button" class="link-btn" data-comp-abrir="${l.id}">abrir</button>`}</td>
       </tr>`;
     });
   });
@@ -6085,6 +6101,189 @@ function etiquetaOrcamento(l) {
   return o ? `<div class="tag-rec">orçamento nº ${o.numero}</div>` : '';
 }
 
+/* 3.11.0: O RECEBIMENTO DO ORÇAMENTO NUMA LINHA SÓ
+   Por dentro, cada serviço continua sendo um lançamento (é isso que mostra
+   quanto cada serviço fatura nos relatórios). Nas listas, o que é do mesmo
+   orçamento e vence (ou foi pago) junto aparece numa linha: "Recebimento
+   orçamento nº X". O número abre o orçamento e o ▸ mostra os serviços.
+   Confirmar, receber uma parte, desfazer e excluir valem para a linha toda.
+   Só muda a forma de mostrar: vale também para orçamentos já aprovados. */
+const PREFIXO_GRUPO = 'grp:';
+function ehGrupoId(id) { return typeof id === 'string' && id.indexOf(PREFIXO_GRUPO) === 0; }
+function idsDe(id) { return ehGrupoId(id) ? id.slice(PREFIXO_GRUPO.length).split(',') : [id]; }
+function itensDoGrupo(id) { return idsDe(id).map(x => state.lancamentos.find(l => l.id === x)).filter(Boolean); }
+function valorUnico(lista) { const u = [...new Set(lista.filter(Boolean))]; return u.length === 1 ? u[0] : null; }
+function somaValores(ls) { return ls.reduce((a, l) => a + centavos(l.valor), 0) / 100; }
+function sufixoOrcamento(l, o) {
+  const marca = `orçamento nº ${o.numero}`;
+  const d = l.descricao || '';
+  const i = d.indexOf(marca);
+  return i < 0 ? null : d.slice(i + marca.length);
+}
+function nomeServicoOrc(l, o) {
+  const it = o && (o.itens || []).find(i => i.id === l.orcamentoItemId);
+  if (it && it.nome) return it.nome;
+  const d = l.descricao || '';
+  const i = d.indexOf(' · orçamento nº');
+  return i > 0 ? d.slice(0, i) : (l.categoria || 'Serviço');
+}
+function textoOrcBusca(l) {
+  const o = l.orcamentoId && orcamentoPorId(l.orcamentoId);
+  return o ? `recebimento orçamento nº ${o.numero}` : '';
+}
+function chaveGrupoOrc(l, porId) {
+  let base = l, tipo = 'c';
+  if (l.repasseDe) return null;
+  if (l.taxaDe) { base = porId.get(l.taxaDe); tipo = 't'; }
+  else if (l.ajusteDe) { base = porId.get(l.ajusteDe); tipo = 'a' + (l.origem || '') + (l.categoria || ''); }
+  else if (l.parcialDe) tipo = 'p' + (l.formaPagamento || '');
+  if (!base || !base.orcamentoId || base.repasseDe) return null;
+  const o = orcamentoPorId(base.orcamentoId);
+  if (!o) return null;
+  const suf = sufixoOrcamento(base, o);
+  if (suf === null) return null;
+  return { k: [o.id, tipo, l.data || '', l.efetivado || '', suf, l.empresa || '', l.natureza || '', l.origem || ''].join('|'), o, tipo: tipo.charAt(0), suf };
+}
+/* recebe uma lista de lançamentos e devolve a lista das linhas da tela */
+function agruparOrcamento(rows) {
+  if (!rows.some(l => l.orcamentoId || l.taxaDe || l.ajusteDe)) return rows.slice();
+  const porId = new Map(state.lancamentos.map(x => [x.id, x]));
+  const out = [], mapa = new Map();
+  rows.forEach(l => {
+    const c = chaveGrupoOrc(l, porId);
+    if (!c) { out.push(l); return; }
+    let g = mapa.get(c.k);
+    if (!g) { g = { grupoOrc: c.tipo, orc: c.o, sufixo: c.suf, itens: [] }; mapa.set(c.k, g); out.push(g); }
+    g.itens.push(l);
+  });
+  mapa.forEach(g => {
+    const p = g.itens[0], o = g.orc;
+    const rot = { c: 'Recebimento', p: 'Recebimento parcial', t: 'Taxa do cartão do', a: 'Diferença na baixa do' }[g.grupoOrc];
+    Object.assign(g, {
+      id: PREFIXO_GRUPO + g.itens.map(l => l.id).join(','), rotulo: rot,
+      data: p.data, competencia: p.competencia || p.data, efetivado: p.efetivado || null, empresa: p.empresa, natureza: p.natureza, origem: p.origem,
+      operacao: valorUnico(g.itens.map(l => l.operacao)) || p.operacao, categoria: valorUnico(g.itens.map(l => l.categoria)) || 'Vários serviços',
+      quem: p.quem || (g.grupoOrc === 'c' || g.grupoOrc === 'p' ? o.cliente : null),
+      descricao: `${rot} orçamento nº ${o.numero}${g.sufixo}`,
+      centroDeCusto: valorUnico(g.itens.map(l => l.centroDeCusto)), valor: somaValores(g.itens),
+      formaPagamento: valorUnico(g.itens.map(l => l.formaPagamento)), local: valorUnico(g.itens.map(l => l.local)),
+      fatura: null, observacao: null, parcela: null, totalParcelas: null,
+      textoBusca: g.itens.map(l => `${l.descricao || ''} ${l.categoria || ''}`).join(' '),
+    });
+  });
+  return out;
+}
+function contarLinhas(rows) { return agruparOrcamento(rows).length; }
+function celulaGrupoOrcHtml(g) {
+  const o = g.orc, tipo = tipoFluxo(g.origem);
+  const porId = new Map(state.lancamentos.map(x => [x.id, x]));
+  const desp = tipo === 'despesa';
+  const servs = g.itens.map(l => {
+    const dono = (l.taxaDe && porId.get(l.taxaDe)) || (l.ajusteDe && porId.get(l.ajusteDe)) || l;
+    const prest = g.grupoOrc === 'c' || g.grupoOrc === 'p' ? etiquetaPrestador(dono) : '';
+    return `<div class="grp-serv"><span>${escapeHtml(nomeServicoOrc(dono, o))}</span>${prest ? `<span class="muted">${prest.replace(/<\/?div[^>]*>/g, '')}</span>` : ''}`
+      + `<span class="grp-v">${formatCurrency(l.valor)}</span><button type="button" class="link-btn" data-edit-item="${l.id}" title="Editar só este serviço">editar</button></div>`;
+  }).join('');
+  let hist = '';
+  if (g.grupoOrc === 'c') {
+    const pagos = new Map();
+    g.itens.forEach(l => partesDe(l.id).forEach(x => {
+      const k = (x.efetivado || '') + '|' + (x.formaPagamento || '');
+      const a = pagos.get(k) || { data: x.efetivado, forma: x.formaPagamento, v: 0 };
+      a.v += centavos(x.valor); pagos.set(k, a);
+    }));
+    if (pagos.size) {
+      const itens = [...pagos.values()].sort((a, b) => (a.data || '').localeCompare(b.data || ''))
+        .map(x => `<strong>${formatCurrency(x.v / 100)}</strong> em ${formatDateBR(x.data).slice(0, 5)}${x.forma ? ` (${escapeHtml(x.forma)})` : ''}`);
+      hist = `<div class="hist-parcial">${desp ? 'Pago' : 'Recebido'} ${itens.join(' · ')} · `
+        + (g.efetivado ? `quitado em ${formatDateBR(g.efetivado).slice(0, 5)} com <strong>${formatCurrency(g.valor)}</strong>` : `Falta <strong>${formatCurrency(g.valor)}</strong>`) + '</div>';
+    }
+  }
+  const nota = g.grupoOrc === 't' ? '<div class="tag-rec">taxa do cartão, segue o recebimento</div>'
+    : g.grupoOrc === 'p' ? '<div class="tag-rec">parte recebida, dividida entre os serviços</div>' : '';
+  const extras = `${hist}${nota}<div class="grp-servs"><div class="tag-rec">${g.itens.length === 1 ? 'Serviço' : `${g.itens.length} serviços`} deste ${g.grupoOrc === 't' ? 'recebimento' : 'valor'}:</div>${servs}</div>`;
+  const titulo = [g.descricao, g.quem].filter(Boolean).join(' · ');
+  return `<td class="lc-cel"><div class="lc-linha" title="${escapeHtml(titulo)}">`
+    + '<button type="button" class="lc-mais-btn" data-lc-mais aria-expanded="false" aria-label="Ver os serviços">▸</button>'
+    + `<span class="op-dot ${tipo || ''}"></span>${escapeHtml(g.rotulo)} <button type="button" class="link-btn lc-orc" data-abrir-orc="${o.id}" title="Abrir o orçamento">orçamento nº ${o.numero}</button>`
+    + (g.sufixo ? `<span class="lc-desc">${escapeHtml(g.sufixo)}</span>` : '')
+    + (g.quem ? ` <span class="lc-sep">·</span> ${escapeHtml(g.quem)}` : '')
+    + `</div><div class="lc-extra" hidden>${extras}</div></td>`;
+}
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('[data-abrir-orc]');
+  if (a) { e.preventDefault(); if (document.getElementById('compModal').classList.contains('open')) fecharComposicao(); abrirOrcamento(a.dataset.abrirOrc); return; }
+  const ed = e.target.closest('[data-edit-item]');
+  if (ed) { e.preventDefault(); if (document.getElementById('compModal').classList.contains('open')) fecharComposicao(); startEdit(ed.dataset.editItem); }
+});
+function depoisDeMudarGrupo() {
+  markDirty();
+  renderPendencias();
+  renderTable();
+  renderKpis();
+  renderOrcClientes();
+}
+async function receberGrupoOrc(id, data, valorPago) {
+  const itens = itensDoGrupo(id).filter(l => !l.efetivado);
+  if (!itens.length) return;
+  const total = somaValores(itens);
+  const desp = tipoFluxo(itens[0].origem) === 'despesa';
+  const pesos = itens.map(l => Number(l.valor) || 0);
+  let dif = 0;
+  if (valorPago !== undefined && valorPago > 0.004 && Math.abs(valorPago - total) > 0.004) {
+    if (valorPago < total) {
+      const resp = await perguntarParcial({ valor: total, origem: itens[0].origem, formaPagamento: valorUnico(itens.map(l => l.formaPagamento)) }, valorPago);
+      if (!resp) return;
+      if (resp.tipo === 'parte') {
+        const partes = ratear(valorPago, pesos);
+        itens.forEach((l, i) => { if (partes[i] > 0) registrarParcial(l, partes[i], data, resp.forma); });
+        depoisDeMudarGrupo();
+        toast(`${desp ? 'Pago' : 'Recebido'} ${formatCurrency(valorPago)}, dividido entre os serviços. Falta ${formatCurrency(Math.round((total - valorPago) * 100) / 100)}, que continua em aberto.`);
+        return;
+      }
+    }
+    const partes = ratear(valorPago, pesos);
+    itens.forEach((l, i) => { l.efetivado = data; criarAjusteBaixa(l, partes[i], data); });
+    dif = Math.round((valorPago - total) * 100) / 100;
+  } else itens.forEach(l => { l.efetivado = data; });
+  depoisDeMudarGrupo();
+  toast(dif ? `Baixa feita. A diferença de ${formatCurrency(Math.abs(dif))} foi lançada, dividida entre os serviços.` : `${desp ? 'Pagamento' : 'Recebimento'} de ${formatCurrency(total)} confirmado.`);
+}
+function desfazerGrupoOrc(id) {
+  const itens = itensDoGrupo(id);
+  if (!itens.length) return;
+  const total = somaValores(itens);
+  if (itens.every(l => l.parcialDe)) {
+    if (!confirm(`Desfazer este recebimento parcial de ${formatCurrency(total)}? O valor volta a ficar em aberto.`)) return;
+    const fora = new Set(itens.map(l => l.id));
+    state.lancamentos = state.lancamentos.filter(x => !fora.has(x.id));
+    depoisDeMudarGrupo();
+    toast('Recebimento parcial desfeito.');
+    return;
+  }
+  const ids = new Set(itens.map(l => l.id));
+  const ajustes = state.lancamentos.filter(x => x.ajusteDe && ids.has(x.ajusteDe));
+  if (!confirm(`Desfazer a baixa deste valor de ${formatCurrency(total)}? Ele volta a ficar em aberto no Caixa.`
+    + (ajustes.length ? ` A diferença lançada na baixa (${formatCurrency(somaValores(ajustes))}) também será excluída.` : ''))) return;
+  itens.forEach(l => { l.efetivado = null; });
+  if (ajustes.length) state.lancamentos = state.lancamentos.filter(x => !(x.ajusteDe && ids.has(x.ajusteDe)));
+  depoisDeMudarGrupo();
+  toast('Baixa desfeita.');
+}
+function excluirGrupoOrc(id) {
+  const itens = itensDoGrupo(id);
+  if (!itens.length) return;
+  const pago = itens.reduce((a, l) => a + valorPagoEmPartes(l.id), 0);
+  if (!confirm(`Excluir este lançamento de ${formatCurrency(somaValores(itens))} (${itens.length} serviço${itens.length === 1 ? '' : 's'} do orçamento)?`
+    + (pago ? ` Os recebimentos parciais dele (${formatCurrency(pago)}) também serão excluídos.` : ''))) return;
+  const apagar = new Set(itens.map(l => l.id));
+  state.lancamentos.forEach(x => { if ((x.ajusteDe && apagar.has(x.ajusteDe)) || (x.parcialDe && apagar.has(x.parcialDe))) apagar.add(x.id); });
+  state.lancamentos = state.lancamentos.filter(x => !apagar.has(x.id));
+  if (editingId && apagar.has(editingId)) clearForm();
+  depoisDeMudarGrupo();
+  toast('Lançamento excluído.');
+}
+
 /* ---- impressão / PDF ---- */
 function imprimirOrcamento(o) {
   if (!o) return;
@@ -6444,17 +6643,18 @@ document.getElementById('parcialModal').addEventListener('click', (e) => { if (e
 
 function renderPendencias() {
   const rows = getPendentes();
+  const linhas = agruparOrcamento(rows); /* 3.11.0 */
   const tbody = document.getElementById('tbodyPend');
   const empty = document.getElementById('emptyStatePend');
-  const totalPend = state.lancamentos.filter(l => !l.taxaDe && computeStatus(l.data, l.efetivado) !== 'LIQUIDADO').length;
+  const totalPend = contarLinhas(state.lancamentos.filter(l => !l.taxaDe && computeStatus(l.data, l.efetivado) !== 'LIQUIDADO'));
   const ivCx = caixaIntervalo();
   document.getElementById('filterCountPend').textContent = ivCx
-    ? `${rows.length} lançamento${rows.length === 1 ? '' : 's'} no período`
-    : `${rows.length} de ${totalPend} em aberto`;
+    ? `${linhas.length} lançamento${linhas.length === 1 ? '' : 's'} no período`
+    : `${linhas.length} de ${totalPend} em aberto`;
   renderCaixaTopo(rows);
 
   const badge = document.getElementById('tabBadgePendencias');
-  const urgentes = state.lancamentos.filter(l => { if (l.taxaDe) return false; const st = computeStatus(l.data, l.efetivado); return st === 'VENCIDO' || st === 'PAGAR/RECEBER'; }).length;
+  const urgentes = contarLinhas(state.lancamentos.filter(l => { if (l.taxaDe) return false; const st = computeStatus(l.data, l.efetivado); return st === 'VENCIDO' || st === 'PAGAR/RECEBER'; }));
   if (urgentes > 0) { badge.style.display = ''; badge.textContent = urgentes; badge.title = `${urgentes} ${urgentes === 1 ? 'conta vence hoje ou já venceu' : 'contas vencem hoje ou já venceram'}`; }
   else { badge.style.display = 'none'; badge.title = ''; }
   document.querySelector('#viewPendencias table').classList.toggle('oculta-empresa-pend', state.config.empresas.length <= 1);
@@ -6474,7 +6674,7 @@ function renderPendencias() {
   empty.style.display = 'none';
 
   const hoje = todayISO();
-  tbody.innerHTML = rows.map(l => {
+  tbody.innerHTML = linhas.map(l => {
     const status = computeStatus(l.data, l.efetivado);
     const tipo = tipoFluxo(l.origem);
     const sinal = tipo === 'despesa' ? '−' : '+';
@@ -6551,7 +6751,7 @@ document.getElementById('btnBulkSettle').addEventListener('click', () => {
   if (!n) return;
   const data = document.getElementById('bulkPendData').value || todayISO();
   if (!confirm(`Marcar ${n} lançamento${n === 1 ? '' : 's'} como pago${n === 1 ? '' : 's'}/recebido${n === 1 ? '' : 's'} em ${formatDateBR(data)}, pelo valor integral?`)) return;
-  [...selectedPend].forEach(id => { const l = state.lancamentos.find(x => x.id === id); if (l && !l.efetivado) l.efetivado = data; });
+  [...selectedPend].flatMap(idsDe).forEach(id => { const l = state.lancamentos.find(x => x.id === id); if (l && !l.efetivado) l.efetivado = data; });
   selectedPend.clear();
   markDirty();
   renderPendencias();
@@ -7013,6 +7213,7 @@ document.getElementById('fFormaPagamento').addEventListener('change', (e) => {
 });
 
 async function settleLancamento(id, dataEfetivado, valorPago) {
+  if (ehGrupoId(id)) { await receberGrupoOrc(id, dataEfetivado, valorPago); return; } /* 3.11.0 */
   const l = state.lancamentos.find(x => x.id === id);
   if (!l) return;
   /* 3.7.1: valor menor pode ser só uma parte; a pessoa escolhe */
@@ -7039,6 +7240,7 @@ async function settleLancamento(id, dataEfetivado, valorPago) {
 }
 
 function undoBaixa(id) {
+  if (ehGrupoId(id)) { desfazerGrupoOrc(id); return; } /* 3.11.0 */
   const l = state.lancamentos.find(x => x.id === id);
   if (!l) return;
   if (l.parcialDe) {
@@ -7779,7 +7981,7 @@ function renderClientesDevendo() {
     return `<tr>
       <td><strong>${escapeHtml(c.nome)}</strong></td>
       <td>${pc && pc.whatsapp ? escapeHtml(pc.whatsapp) : '<span class="muted">—</span>'}</td>
-      <td class="num">${c.vencidos.length + c.aVencer.length}</td>
+      <td class="num">${contarLinhas(c.vencidos) + contarLinhas(c.aVencer)}</td>
       <td class="num" style="color:var(--despesa)">${clic(c.vencido, 'devv' + i, () => ({ titulo: `Vencido: ${c.nome}`, sub, grupos: [{ linhas: c.vencidos }] }))}</td>
       <td class="num">${clic(c.aVencerV, 'deva' + i, () => ({ titulo: `A vencer: ${c.nome}`, sub, grupos: [{ linhas: c.aVencer }] }))}</td>
       <td class="num"><strong>${clic(c.total, 'devt' + i, () => ({ titulo: `Em aberto: ${c.nome}`, sub, grupos: [{ rot: 'Vencido', linhas: c.vencidos }, { rot: 'A vencer', linhas: c.aVencer }] }))}</strong></td>
@@ -7788,7 +7990,7 @@ function renderClientesDevendo() {
       <td class="col-actions">${cobrar}</td>
     </tr>`;
   }).join('');
-  document.getElementById('relTfoot').innerHTML = `<tr class="rel-total"><td>Total</td><td></td><td class="num">${lista.reduce((a, c) => a + c.vencidos.length + c.aVencer.length, 0)}</td>`
+  document.getElementById('relTfoot').innerHTML = `<tr class="rel-total"><td>Total</td><td></td><td class="num">${lista.reduce((a, c) => a + contarLinhas(c.vencidos) + contarLinhas(c.aVencer), 0)}</td>`
     + `<td class="num">${formatCurrency(tVenc)}</td><td class="num">${formatCurrency(tAv)}</td><td class="num">${formatCurrency(tVenc + tAv)}</td><td></td><td></td><td class="col-actions"></td></tr>`;
   document.querySelectorAll('#relTbody [data-dev-cobrar]').forEach(b => b.addEventListener('click', () => {
     window.open('https://wa.me/?text=' + encodeURIComponent(textoCobranca(lista[Number(b.dataset.devCobrar)])), '_blank');
@@ -7878,12 +8080,12 @@ function renderRelDiaADia(p, tipo, lado) {
     const sub = `${nome}: em aberto, com vencimento em ${p.rotulo}.`;
     document.getElementById('relAnoLabel').textContent = `Vencimento em ${p.rotulo}`;
     document.getElementById('relChartWrap').innerHTML = '<div class="kpis" style="margin-bottom:0">'
-      + kpi(nome, soma(rows), cls, qtd(rows.length), 'relAbT', () => ({ titulo: nome, sub, grupos: [{ linhas: rows }] }))
-      + kpi('Já venceu', soma(venc), venc.length ? 'despesa' : '', qtd(venc.length), 'relAbV', () => ({ titulo: `${nome}: já venceu`, sub, grupos: [{ linhas: venc }] }))
-      + kpi('Ainda vai vencer', soma(aVenc), '', qtd(aVenc.length), 'relAbA', () => ({ titulo: `${nome}: ainda vai vencer`, sub, grupos: [{ linhas: aVenc }] }))
+      + kpi(nome, soma(rows), cls, qtd(contarLinhas(rows)), 'relAbT', () => ({ titulo: nome, sub, grupos: [{ linhas: rows }] }))
+      + kpi('Já venceu', soma(venc), venc.length ? 'despesa' : '', qtd(contarLinhas(venc)), 'relAbV', () => ({ titulo: `${nome}: já venceu`, sub, grupos: [{ linhas: venc }] }))
+      + kpi('Ainda vai vencer', soma(aVenc), '', qtd(contarLinhas(aVenc)), 'relAbA', () => ({ titulo: `${nome}: ainda vai vencer`, sub, grupos: [{ linhas: aVenc }] }))
       + '</div>';
     th.innerHTML = `<th>Vencimento</th><th>${quemRot}</th><th>Categoria</th><th>Descrição</th><th>Situação</th><th class="num">Valor</th>`;
-    tb.innerHTML = rows.length ? rows.map(l => `<tr><td>${formatDateBR(l.data)}</td><td>${cel(l.quem)}</td><td>${cel(l.categoria)}</td><td>${cel(l.descricao)}</td>`
+    tb.innerHTML = rows.length ? agruparOrcamento(rows).map(l => `<tr><td>${formatDateBR(l.data)}</td><td>${cel(l.quem)}</td><td>${cel(l.categoria)}</td><td>${cel(l.descricao)}</td>`
       + `<td>${statusTag(computeStatus(l.data, null))}</td>${valorTd(l)}</tr>`).join('') : vazio(6, `Nada ${desp ? 'a pagar' : 'a receber'} com vencimento em ${p.rotulo}.`);
     tf.innerHTML = rows.length ? `<tr class="rel-total"><td>Total</td><td></td><td></td><td></td><td></td><td class="num">${formatCurrency(soma(rows))}</td></tr>` : '';
     return;
@@ -7895,10 +8097,10 @@ function renderRelDiaADia(p, tipo, lado) {
     const sub = `${desp ? 'Pagamentos' : 'Recebimentos'} confirmados em ${p.rotulo}.`;
     document.getElementById('relAnoLabel').textContent = `${desp ? 'Pago' : 'Recebido'} em ${p.rotulo}`;
     document.getElementById('relChartWrap').innerHTML = '<div class="kpis" style="margin-bottom:0">'
-      + kpi(nome, soma(rows), cls, qtd(rows.length), 'relReT', () => ({ titulo: nome, sub, grupos: [{ linhas: rows }] }))
+      + kpi(nome, soma(rows), cls, qtd(contarLinhas(rows)), 'relReT', () => ({ titulo: nome, sub, grupos: [{ linhas: rows }] }))
       + '</div>';
     th.innerHTML = `<th>${desp ? 'Pago em' : 'Recebido em'}</th><th>${quemRot}</th><th>Categoria</th><th>Descrição</th><th>Forma</th><th>Conta</th><th class="num">Valor</th>`;
-    tb.innerHTML = rows.length ? rows.map(l => `<tr><td>${formatDateBR(l.efetivado)}</td><td>${cel(l.quem)}</td><td>${cel(l.categoria)}</td><td>${cel(l.descricao)}</td>`
+    tb.innerHTML = rows.length ? agruparOrcamento(rows).map(l => `<tr><td>${formatDateBR(l.efetivado)}</td><td>${cel(l.quem)}</td><td>${cel(l.categoria)}</td><td>${cel(l.descricao)}</td>`
       + `<td>${cel(l.formaPagamento)}</td><td>${cel(l.local)}</td>${valorTd(l)}</tr>`).join('') : vazio(7, `Nada ${desp ? 'pago' : 'recebido'} em ${p.rotulo}.`);
     tf.innerHTML = rows.length ? `<tr class="rel-total"><td>Total</td><td></td><td></td><td></td><td></td><td></td><td class="num">${formatCurrency(soma(rows))}</td></tr>` : '';
     return;
@@ -11949,7 +12151,7 @@ const AJUDA = [
     </ul>
     <h3>Aprovar</h3>
     <ul>
-      <li>Quando o cliente aceitar, abra o orçamento e clique em <strong>Aprovar e lançar</strong>. O sistema lança as receitas a receber: <strong>uma por serviço</strong> em cada vencimento, na categoria do serviço. Assim dá para saber quanto cada serviço fatura.</li>
+      <li>Quando o cliente aceitar, abra o orçamento e clique em <strong>Aprovar e lançar</strong>. O sistema lança as receitas a receber. Por dentro, fica <strong>uma por serviço</strong> em cada vencimento, na categoria do serviço, para os relatórios mostrarem quanto cada serviço fatura. Nas listas, cada vencimento aparece numa linha só: <strong>Recebimento orçamento nº X</strong>.</li>
       <li>O desconto e as parcelas são divididos entre os serviços na proporção do valor de cada um. A taxa do cartão e o repasse do prestador seguem as regras de sempre.</li>
       <li>Se o cliente não aceitar, clique em <strong>Cliente recusou</strong>. Para usar de novo, <strong>Reabrir</strong>.</li>
       <li>Errou algo depois de aprovar? Enquanto nada foi recebido, <strong>Desfazer aprovação</strong> apaga as receitas lançadas e o orçamento volta a ficar em aberto.</li>
@@ -11958,7 +12160,9 @@ const AJUDA = [
     <ul>
       <li>Clique em <strong>Receber</strong> na linha do orçamento. Informe o valor, a data e a forma.</li>
       <li>O valor quita primeiro os vencimentos mais antigos. Se não cobrir um vencimento inteiro, é <strong>dividido entre os serviços</strong> em aberto, na proporção do valor de cada um; o resto continua em aberto, com o histórico do que foi pago.</li>
-      <li>Também dá para receber cada serviço pelo Caixa, como qualquer receita. Os lançamentos mostram "orçamento nº" para identificar.</li>
+      <li>No <strong>Caixa</strong> e em <strong>Lançamentos</strong>, o que vence junto aparece numa linha: <strong>Recebimento orçamento nº X</strong>, com a parte ou parcela ao lado. Clique no <strong>número</strong> para abrir o orçamento e no <strong>▸</strong> para ver os serviços e quanto cabe a cada um.</li>
+      <li>Confirmar, receber só uma parte, desfazer e excluir valem para a linha toda. A parte recebida é dividida entre os serviços sozinha. Para mudar um serviço só, abra o ▸ e clique em <strong>editar</strong> ao lado dele.</li>
+      <li>A taxa do cartão do orçamento também aparece numa linha só, e a planilha de Lançamentos sai do mesmo jeito que a tela.</li>
     </ul>` },
   { id: 'clientes', titulo: 'Clientes e fornecedores', ir: 'clientes', html: `
     <p class="aj-lead">No menu, em <strong>Cadastros</strong>, ficam <strong>Clientes</strong> e <strong>Fornecedores</strong>. É ali que se inclui, edita, exclui e pesquisa. Configurações não tem mais cadastro de nomes.</p>
@@ -12165,7 +12369,7 @@ function renderInicio() {
   const nAg = state.agenda.filter(a => a.data === hoje && a.tipo !== 'bloqueio' && AG_STATUS_ATIVOS.includes(a.status)).length;
   const nTarHoje = state.tarefas.filter(t => !t.concluida && t.prazo === hoje).length;
   const nTarAtras = state.tarefas.filter(t => !t.concluida && t.prazo && t.prazo < hoje).length;
-  const nPend = state.lancamentos.filter(l => { if (l.taxaDe) return false; const st = computeStatus(l.data, l.efetivado); return st === 'VENCIDO' || st === 'PAGAR/RECEBER'; }).length;
+  const nPend = contarLinhas(state.lancamentos.filter(l => { if (l.taxaDe) return false; const st = computeStatus(l.data, l.efetivado); return st === 'VENCIDO' || st === 'PAGAR/RECEBER'; }));
   /* 3.6.11: só o que importa hoje; o resto está no menu */
   const plural = (n, um, varios) => (n === 1 ? um : varios);
   const aniv = aniversariantesDoDia(hoje);
@@ -12255,6 +12459,14 @@ function renderPainel() {
     else if (l.data <= em7) { if (t === 'receita') { rec7 += v; n7r++; } else { pag7 += v; n7p++; } }
     if (l.data <= fimMes) proj += t === 'receita' ? v : -v;
   });
+  { /* 3.11.0: o recebimento do orçamento conta como uma conta */
+    const ab = state.lancamentos.filter(l => !l.efetivado && l.data && noFiltro(l, f) && ehFluxo(l));
+    const vc = ab.filter(l => computeStatus(l.data, l.efetivado) === 'VENCIDO');
+    const prox = ab.filter(l => computeStatus(l.data, l.efetivado) !== 'VENCIDO' && l.data <= em7);
+    vq = contarLinhas(vc);
+    n7r = contarLinhas(prox.filter(l => tipoFluxo(l.origem) === 'receita'));
+    n7p = contarLinhas(prox.filter(l => tipoFluxo(l.origem) === 'despesa'));
+  }
   const saldoFim = saldoHoje + proj;
   const contas = (n, txt) => n ? `${n} conta${n === 1 ? '' : 's'} até ${formatDateBR(em7)}` : `nada até ${formatDateBR(em7)}`;
   /* 3.7.2.3: clicar no número mostra os lançamentos; o botão da lista leva à tela, como o quadro */
@@ -12644,9 +12856,10 @@ function exportarLancamentosXl() {
   return xlExecutar(async () => {
     const wb = xlNovo();
     const cols = [...XL_LANC, { k: 'situacao', titulo: 'Situação', larg: 16 }];
-    xlAba(wb, 'Lançamentos', cols, rows.slice().sort((a, b) => (a.data || '').localeCompare(b.data || '')).map(linhaLancXl));
+    const linhas = agruparOrcamento(rows); /* 3.11.0: a planilha segue a tela */
+    xlAba(wb, 'Lançamentos', cols, linhas.sort((a, b) => (a.data || '').localeCompare(b.data || '')).map(linhaLancXl));
     await xlBaixar(wb, xlNomeArquivo('lancamentos'));
-    toast(`Planilha com ${rows.length} lançamento${rows.length === 1 ? '' : 's'} baixada.`);
+    toast(`Planilha com ${linhas.length} lançamento${linhas.length === 1 ? '' : 's'} baixada.`);
   });
 }
 function xlLerTextoTela(t) {
@@ -13703,7 +13916,7 @@ function bindMarcaELicenca() {
 }
 
 /* 3.7.6: a versão aparece no pé do menu, no rodapé e na Licença. Mudar só aqui a cada versão. */
-const APP_VERSAO = '3.10.0';
+const APP_VERSAO = '3.11.0';
 document.querySelectorAll('[data-versao]').forEach(el => { el.textContent = 'Versão ' + APP_VERSAO; });
 function abrirLicenca() { aplicarMarca(); document.getElementById('licModal').classList.add('open'); }
 function fecharLicenca() { document.getElementById('licModal').classList.remove('open'); }
