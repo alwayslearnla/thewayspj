@@ -993,6 +993,7 @@
   .pc-fin .vazio { color: var(--ink-soft); font-size: 13px; padding: 10px 0; }
   .pn-cliente { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .pn-cliente input { width: min(320px, 100%); }
+  .bv-cliente { margin: 0 0 18px; }
   .pc-subtitulo { font-size: 13px; font-weight: 600; margin: 4px 0 4px; }
   .pc-pessoa {
     display: grid; grid-template-columns: 2fr 1.25fr 1.35fr 1.4fr auto;
@@ -1752,6 +1753,7 @@
             <button class="btn btn-brass btn-sm" type="submit">Salvar</button>
           </div>
         </form>
+        <div class="pn-cliente bv-cliente"><input type="search" id="pnClienteBusca" list="pnClientesLista" placeholder="Nome do cliente…" aria-label="Cliente"><datalist id="pnClientesLista"></datalist><button type="button" class="btn btn-brass btn-sm" id="pnClienteBtn">Cliente</button></div><!-- 3.14.0: busca do cliente no Início -->
         <h3 class="bv-hoje-tit">Hoje</h3>
         <div class="bv-hoje" id="bvAtalhos"></div>
         <div class="bv-aniv" id="bvAniv" hidden></div>
@@ -1773,8 +1775,7 @@
     </div>
 
     <div id="viewPainel" style="display:none">
-      <div class="painel-topo" id="pnTopo">
-        <div class="pn-cliente"><input type="search" id="pnClienteBusca" list="pnClientesLista" placeholder="Nome do cliente…" aria-label="Cliente"><datalist id="pnClientesLista"></datalist><button type="button" class="btn btn-brass btn-sm" id="pnClienteBtn">Cliente</button></div>
+      <div class="painel-topo" id="pnTopo" style="display:none">
         <select id="pnEmpresa" aria-label="Empresa"></select>
       </div>
       <div class="painel-grid" id="pnKpis"></div>
@@ -10165,6 +10166,9 @@ function restoreBackup(file) {
       switchTab(abaAtual, { doHistorico: true });
       if (document.getElementById('drawer').classList.contains('open')) renderDrawer();
       toast('Backup restaurado com sucesso.');
+      /* 3.14.0: diz o que entrou; as telas abrem em Hoje e podiam parecer vazias */
+      const qtd = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
+      alert(`Backup restaurado: ${qtd(state.lancamentos.length, 'lançamento', 'lançamentos')}, ${qtd((state.pacientes || []).length, 'cliente', 'clientes')}, ${qtd((state.orcamentos || []).length, 'orçamento', 'orçamentos')} e ${qtd((state.tarefas || []).length, 'tarefa', 'tarefas')}.\n\nAs telas abrem no período Hoje. Para ver tudo, clique em Todos no período.`);
     } catch (e) {
       console.error(e);
       alert('Não foi possível ler esse arquivo. Confirme que é um backup gerado por este sistema.');
@@ -13318,7 +13322,7 @@ const AJUDA = [
       <li><strong>Buscar:</strong> pelo nome, celular, CPF ou cidade.</li>
       <li><strong>Agendar:</strong> o botão da linha abre um compromisso já com o nome preenchido.</li>
       <li><strong>Recebido:</strong> soma o que cada cliente já pagou (receitas marcadas como recebidas).</li>
-      <li><strong>Ficha com Financeiro:</strong> clique no <strong>nome</strong> do cliente. A ficha abre na aba <strong>Financeiro</strong>; a aba <strong>Cadastro</strong> tem os dados de sempre. No Painel, o campo <strong>Cliente</strong> abre a mesma ficha: digite o nome, escolha na lista e clique em Cliente.</li>
+      <li><strong>Ficha com Financeiro:</strong> clique no <strong>nome</strong> do cliente. A ficha abre na aba <strong>Financeiro</strong>; a aba <strong>Cadastro</strong> tem os dados de sempre. No Início, o campo <strong>Cliente</strong> abre a mesma ficha: digite o nome, escolha na lista e clique em Cliente.</li>
       <li>No Financeiro aparecem os quadros <strong>Em aberto</strong> (vencido e a vencer), <strong>Recebido</strong> (este ano ou tudo) e <strong>Crédito</strong>; clique num quadro para ver os lançamentos. Embaixo, a lista do que está em aberto, uma linha por vencimento, como no Caixa: informe o valor e a data e clique em <strong>Receber</strong>. Valor menor pergunta se foi só uma parte. Para receber vários de uma vez, marque as linhas (ou todas, no alto) e clique em <strong>Receber os marcados</strong>.</li>
       <li>Ainda no Financeiro: o histórico do que foi recebido (com <strong>desfazer</strong>), os orçamentos do cliente com total, pago e falta, e os botões <strong>Lembrar no WhatsApp</strong> (quando há valor vencido), <strong>Imprimir extrato</strong> (uma folha com o que está em aberto e o que foi pago, para entregar ao cliente) e <strong>+ Novo orçamento</strong>.</li>
       <li>Nomes digitados num lançamento ou na agenda entram aqui sozinhos, só com o nome. Use <strong>Editar</strong> para completar.</li>
@@ -13433,7 +13437,7 @@ const AJUDA = [
     </ol>
     <p>Funciona no Google Chrome e no Microsoft Edge, no computador. No celular e em outros navegadores, o backup continua indo para a pasta de downloads. Os arquivos antigos não são apagados; limpe a pasta quando quiser.</p>
     <h3>Recuperar os dados</h3>
-    <p>Num computador novo, em outro navegador ou depois de limpar o histórico: clique em <strong>↥ Restaurar backup</strong> e escolha o arquivo <code>.dat</code> mais recente.</p>` },
+    <p>Num computador novo, em outro navegador ou depois de limpar o histórico: clique em <strong>↥ Restaurar backup</strong> e escolha o arquivo <code>.dat</code> mais recente. Ao terminar, o sistema diz quantos lançamentos, clientes, orçamentos e tarefas entraram. Como as telas abrem no período <strong>Hoje</strong>, clique em <strong>Todos</strong> para ver tudo.</p>` },
   { id: 'atualizar', titulo: 'Quando chegar uma versão nova', ir: null, html: `
     <p class="aj-lead">Cada versão nova converte sozinha os dados das anteriores. Você não perde nada do que já lançou.</p>
     <ol>
@@ -13521,6 +13525,7 @@ function saudacaoDoHorario(d) {
   return h >= 5 && h < 12 ? 'Bom dia' : h >= 12 && h < 18 ? 'Boa tarde' : 'Boa noite';
 }
 function renderInicio() {
+  document.getElementById('pnClientesLista').innerHTML = nomesDeClientes().map(n => `<option value="${escapeHtml(n)}"></option>`).join(''); /* 3.14.0: busca do cliente no Início */
   const agora = new Date();
   const hoje = todayISO();
   const nome = (state.config.usuarioNome || '').trim();
@@ -13619,8 +13624,7 @@ document.getElementById('pnClienteBusca').addEventListener('keydown', (e) => { i
 document.getElementById('pnClienteBusca').addEventListener('change', (e) => { if (nomesDeClientes().some(n => n === e.target.value)) abrirClienteDoPainel(); });
 function renderPainel() {
   const emps = state.config.empresas;
-  document.getElementById('pnEmpresa').style.display = emps.length > 1 ? '' : 'none'; /* 3.14.0: o topo sempre aparece, por causa do botão Cliente */
-  document.getElementById('pnClientesLista').innerHTML = nomesDeClientes().map(n => `<option value="${escapeHtml(n)}"></option>`).join('');
+  document.getElementById('pnTopo').style.display = emps.length > 1 ? '' : 'none';
   const selEmp = document.getElementById('pnEmpresa');
   if (!emps.includes(painelEmpresa)) painelEmpresa = '';
   selEmp.innerHTML = '<option value="">Todas as empresas</option>' + emps.map(e => `<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
