@@ -475,6 +475,10 @@
   .filters .search { flex: 1; min-width: 180px; }
   .filter-count { font-size: 12px; color: var(--ink-soft); margin-left: auto; white-space: nowrap; }
 
+  .sel-col { width: 32px; } /* 3.11.2: marcar vários */
+  .sel-col input { width: auto; }
+  .appt-sel { width: auto; margin: 0 8px 0 0; vertical-align: middle; }
+  .ag-selbar { margin: 0 0 10px; }
   .bulkbar {
     display: flex; align-items: center; gap: 14px;
     padding: 10px 20px;
@@ -965,6 +969,30 @@
   .campo-novo:hover { text-decoration: underline; }
   .campo-novo[hidden] { display: none; }
   .pc-modal { width: min(760px, 100%); }
+  .pc-modal.largo { width: min(1080px, 100%); } /* 3.14.0: aba Financeiro */
+  .login-tela { position: fixed; inset: 0; z-index: 300; background: var(--paper); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .login-tela[hidden] { display: none; }
+  .login-caixa { width: min(380px, 100%); background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px 24px; display: flex; flex-direction: column; gap: 12px; }
+  .login-caixa .field { margin: 0 0 10px; }
+  .login-caixa .btn-brass { width: 100%; margin-top: 4px; }
+  .login-caixa .link-btn { margin-top: 10px; align-self: flex-start; }
+  .login-marca { font-size: 22px; font-weight: 700; color: var(--brand, var(--ink)); }
+  .login-pe { font-size: 11px; color: var(--ink-soft); margin: 8px 0 0; }
+  .chave-texto { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 22px; letter-spacing: .08em; text-align: center; padding: 12px; border: 1px dashed var(--line); border-radius: 8px; user-select: all; }
+  .usuario-btn[hidden], #altModal .field[hidden], #senhaModal .field[hidden], .login-caixa [hidden] { display: none; }
+  .reg-itens div + div { margin-top: 3px; }
+  .usr-tab { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .usr-tab td, .usr-tab th { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+  .usr-tab .col-actions { text-align: right; white-space: nowrap; }
+  .pc-abas { margin-bottom: 16px; }
+  .pc-fin h3 { font-size: 14px; margin: 22px 0 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .pc-fin h3 select { width: auto; font-size: 12.5px; padding: 4px 8px; }
+  .pc-fin .kpis { margin-bottom: 12px; }
+  .pc-fin-acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+  .pc-fin table { width: 100%; }
+  .pc-fin .vazio { color: var(--ink-soft); font-size: 13px; padding: 10px 0; }
+  .pn-cliente { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .pn-cliente input { width: min(320px, 100%); }
   .pc-subtitulo { font-size: 13px; font-weight: 600; margin: 4px 0 4px; }
   .pc-pessoa {
     display: grid; grid-template-columns: 2fr 1.25fr 1.35fr 1.4fr auto;
@@ -1041,6 +1069,8 @@
     .tr-tabela td[data-r]:not(:first-child)::before { content: attr(data-r) ": "; color: var(--ink-soft); }
   }
   @media print {
+    @page { margin: 0 12mm; } /* 3.11.1: sem margem em cima e embaixo o navegador não imprime data, endereço e nº da página */
+    html.imprime-tarefas body { padding-top: 12mm; }
     html.imprime-tarefas body > *:not(#rtModal) { display: none !important; }
     html.imprime-tarefas #rtModal { position: static; display: block; padding: 0; background: none; overflow: visible; }
     html.imprime-tarefas .tr-modal { width: 100%; border: none; box-shadow: none; background: #fff; color: #000; }
@@ -1342,7 +1372,8 @@
   .valor-clicavel:hover, .valor-clicavel:focus-visible { color: var(--brass); }
   .modal.oc-modal { width: min(860px, 100%); }
   .oc-sec { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-soft); margin: 16px 0 6px; font-weight: 600; }
-  .oc-item { display: grid; grid-template-columns: 22px minmax(160px, 2fr) minmax(130px, 1.3fr) 120px 34px; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .oc-item { display: grid; grid-template-columns: 22px minmax(150px, 1.8fr) minmax(110px, 1.2fr) minmax(130px, 1.3fr) 120px 34px; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .oc-cat { font-size: 12px; color: var(--ink-soft); background: var(--paper); border: 1px dashed var(--line); border-radius: 8px; padding: 7px 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: default; } /* 3.11.1 */
   .oc-item select, .oc-item input { width: 100%; }
   .oc-item .del { border: none; background: none; color: var(--ink-soft); cursor: pointer; padding: 4px; border-radius: 6px; }
   .oc-item .del:hover { color: var(--despesa); background: var(--paper); }
@@ -1363,7 +1394,7 @@
   table.oc-lancs th, table.oc-lancs td { padding: 6px 8px; }
   @media (max-width: 640px) {
     .oc-item { grid-template-columns: 22px 1fr 34px; }
-    .oc-item [data-oc="prestador"], .oc-item [data-oc="valor"] { grid-column: 2 / 3; }
+    .oc-item [data-oc="prestador"], .oc-item [data-oc="valor"], .oc-item .oc-cat { grid-column: 2 / 3; }
   }
   .campo-erro { font-size: 12px; color: var(--despesa); margin-top: 4px; }
   .campo-erro[hidden] { display: none; }
@@ -1659,6 +1690,7 @@
         <p class="page-desc" id="pageDesc">Registre uma nova entrada ou saída.</p>
       </div>
       <div class="topbar-actions">
+        <button type="button" class="btn btn-ghost btn-sm usuario-btn" id="btnUsuario" hidden title="Sair do sistema"></button>
         <div class="backup-banner" id="backupBanner">
           <span><span class="backup-dot"></span><span id="backupBannerText">Tudo salvo neste backup.</span></span>
           <span id="backupBannerTime" class="muted"></span>
@@ -1741,7 +1773,8 @@
     </div>
 
     <div id="viewPainel" style="display:none">
-      <div class="painel-topo" id="pnTopo" style="display:none">
+      <div class="painel-topo" id="pnTopo">
+        <div class="pn-cliente"><input type="search" id="pnClienteBusca" list="pnClientesLista" placeholder="Nome do cliente…" aria-label="Cliente"><datalist id="pnClientesLista"></datalist><button type="button" class="btn btn-brass btn-sm" id="pnClienteBtn">Cliente</button></div>
         <select id="pnEmpresa" aria-label="Empresa"></select>
       </div>
       <div class="painel-grid" id="pnKpis"></div>
@@ -2080,6 +2113,8 @@
       </div>
       <div class="bulkbar" id="bulkBar" style="display:none">
         <span id="bulkCount"></span>
+        <span>em <input type="date" id="bulkLancData" style="width:auto; padding:4px 7px; font-size:12px"></span>
+        <button class="btn btn-brass btn-sm" id="btnBulkLancSettle" type="button">Confirmar selecionados</button>
         <button class="btn btn-danger-text btn-sm" id="btnBulkDelete" type="button">Excluir selecionados</button>
         <button class="link-btn" id="btnBulkClear" type="button">limpar seleção</button>
       </div>
@@ -2152,6 +2187,7 @@
           <span id="bulkCountPend"></span>
           <span>em <input type="date" id="bulkPendData" style="width:auto; padding:4px 7px; font-size:12px"></span>
           <button class="btn btn-brass btn-sm" id="btnBulkSettle" type="button">Confirmar selecionados</button>
+          <button class="btn btn-danger-text btn-sm" id="btnBulkPendDelete" type="button">Excluir selecionados</button>
           <button class="link-btn" id="btnBulkPendClear" type="button">limpar seleção</button>
         </div>
         <div class="table-wrap">
@@ -2326,6 +2362,7 @@
             <option value="centro">Agrupar por centro de custo</option>
             <option value="quem">Agrupar por cliente / fornecedor</option>
           </select>
+          <input type="text" id="relBusca" class="search" placeholder="Buscar cliente, categoria ou descrição…" aria-label="Buscar no relatório" style="max-width:280px">
           <strong id="relAnoLabel" style="margin-left:auto"></strong>
           <button class="btn btn-outline btn-sm" id="btnXlRel" type="button" title="Baixa o relatório como aparece na tela">Exportar Excel</button>
           <button class="btn btn-outline btn-sm" id="btnRelToggle" type="button">Recolher tudo</button>
@@ -2367,6 +2404,7 @@
               <option value="bloqueio">Bloqueios</option>
             </select>
             <select id="agFiltroProf" aria-label="Profissional" style="display:none"></select>
+            <input type="text" id="agBusca" class="search" placeholder="Buscar cliente, profissional ou assunto…" aria-label="Buscar na agenda" style="max-width:260px">
             <button class="btn btn-brass btn-sm" id="agNovo" type="button" hidden style="margin-left:auto">+ Novo compromisso</button>
           </div>
           <div class="cal-grid" id="calGrid"></div>
@@ -2589,7 +2627,7 @@
           <select id="tFiltroResp" aria-label="Responsável"></select>
           <input type="text" id="tBusca" class="search" placeholder="Buscar tarefa…">
           <span class="filter-count" id="tCount"></span>
-          <button type="button" class="btn btn-outline btn-sm" id="tSelecionar">Concluir várias</button>
+          <button type="button" class="btn btn-outline btn-sm" id="tSelecionar">Marcar várias</button>
           <button type="button" class="btn btn-outline btn-sm" id="tRelatorio">Relatório</button>
           <div class="seg t-visoes" role="group" aria-label="Visão">
             <button type="button" class="seg-btn active" data-t-visao="lista">Lista</button>
@@ -2600,6 +2638,7 @@
           <span class="t-sel-qtd" id="tSelQtd">Marque as tarefas que foram feitas</span>
           <button type="button" class="link-btn" id="tSelTodas">Marcar todas</button>
           <button type="button" class="btn btn-outline btn-sm" id="tSelCancelar">Cancelar</button>
+          <button type="button" class="btn btn-danger-text btn-sm" id="tSelExcluir" disabled>Excluir</button>
           <button type="button" class="btn btn-brass btn-sm" id="tSelConcluir" disabled>Concluir</button>
         </div>
         <div id="tLista"></div>
@@ -2726,6 +2765,11 @@
         <button class="icon-btn" id="pcModalFechar" type="button" aria-label="Fechar">✕</button>
       </div>
       <div class="card-body">
+        <div class="seg pc-abas" id="pcAbas" role="group" aria-label="Partes da ficha" hidden>
+          <button type="button" class="seg-btn" data-pc-aba="cad">Cadastro</button>
+          <button type="button" class="seg-btn" data-pc-aba="fin">Financeiro</button>
+        </div>
+        <div class="pc-fin" id="pcFin" hidden></div>
         <form id="pcForm" autocomplete="off">
           <div class="form-grid">
             <div class="field span-2">
@@ -2915,10 +2959,6 @@
               <label for="ocDesconto">Desconto (R$) <span class="hint">(opcional)</span></label>
               <input type="text" inputmode="decimal" id="ocDesconto" placeholder="0,00">
             </div>
-            <div class="field" id="ocCampoForma">
-              <label for="ocForma">Forma de pagamento</label>
-              <select id="ocForma"></select>
-            </div>
             <div class="field">
               <label for="ocCondicao">Condição</label>
               <select id="ocCondicao">
@@ -2927,6 +2967,10 @@
                 <option value="entrada">Entrada + parcelas</option>
                 <option value="dividido">Mais de um jeito</option>
               </select>
+            </div>
+            <div class="field" id="ocCampoForma"><!-- 3.11.1: a forma vem depois da condição -->
+              <label for="ocForma">Forma de pagamento</label>
+              <select id="ocForma"></select>
             </div>
             <div class="field" id="ocCampoEntrada" hidden>
               <label for="ocEntrada">Entrada (R$) <span class="hint">(vence na aprovação)</span></label>
@@ -2951,6 +2995,7 @@
               <input type="text" id="ocObs">
             </div>
           </div>
+          <div class="pag-info" id="ocCredito" hidden></div>
           <div class="oc-total" id="ocTotal"></div>
           <div id="ocHistorico" hidden></div>
           <div class="form-actions oc-botoes">
@@ -2959,6 +3004,9 @@
             <button type="button" class="btn btn-danger-text" id="ocRecusar">Cliente recusou</button>
             <button type="button" class="btn btn-outline" id="ocReabrir">Reabrir</button>
             <button type="button" class="btn btn-danger-text" id="ocDesaprovar">Desfazer aprovação</button>
+            <button type="button" class="btn btn-outline" id="ocAjustar">Ajustar orçamento</button>
+            <button type="button" class="btn btn-outline" id="ocAjusteCancelar">Cancelar ajuste</button>
+            <button type="button" class="btn btn-brass" id="ocAjusteSalvar">Salvar ajuste</button>
             <button type="button" class="btn btn-outline" id="ocSalvar">Salvar</button>
             <button type="button" class="btn btn-brass" id="ocAprovar">Aprovar e lançar</button>
             <button type="button" class="btn btn-brass" id="ocReceberBtn">Receber</button>
@@ -3138,6 +3186,104 @@
     </div>
   </div>
 
+  <div class="login-tela" id="loginTela" hidden><!-- 3.14.0 -->
+    <form class="login-caixa" id="loginForm" autocomplete="off">
+      <div class="login-marca" id="loginMarca">The Ways</div>
+      <p class="sub-note" id="loginSub">Entre com o seu usuário e a sua senha.</p>
+      <div id="loginEntrar">
+        <div class="field"><label for="loginUsuario">Usuário</label><select id="loginUsuario"></select></div>
+        <div class="field"><label for="loginSenha">Senha</label><input type="password" id="loginSenha" autocomplete="current-password"></div>
+        <div class="campo-erro" id="loginErro" hidden></div>
+        <button type="submit" class="btn btn-brass" id="loginBtn">Entrar</button>
+        <button type="button" class="link-btn" id="loginEsqueci">Esqueci a senha</button>
+      </div>
+      <div id="loginRecuperar" hidden>
+        <p class="sub-note">Digite a <strong>chave de recuperação</strong> (a que apareceu ao criar o primeiro usuário) e a senha nova. Quem não tem a chave pede ao Master para trocar a senha.</p>
+        <div class="field"><label for="recChave">Chave de recuperação</label><input type="text" id="recChave" placeholder="XXXX-XXXX-XXXX" autocomplete="off"></div>
+        <div class="field"><label for="recSenha">Senha nova</label><input type="password" id="recSenha" autocomplete="new-password"></div>
+        <div class="field"><label for="recSenha2">Repita a senha nova</label><input type="password" id="recSenha2" autocomplete="new-password"></div>
+        <div class="campo-erro" id="recErro" hidden></div>
+        <button type="button" class="btn btn-brass" id="recBtn">Trocar a senha e entrar</button>
+        <button type="button" class="link-btn" id="recVoltar">Voltar</button>
+      </div>
+      <p class="login-pe">© 2026 The Ways · Desenvolvido por The Ways</p>
+    </form>
+  </div>
+  <div class="modal-overlay" id="senhaModal"><!-- 3.14.0: criar usuário ou trocar senha -->
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="senhaTitulo" style="width:min(480px,100%)">
+      <div class="card-head"><h2 id="senhaTitulo">Senha</h2><button class="icon-btn" id="senhaFechar" type="button" aria-label="Fechar">✕</button></div>
+      <div class="card-body">
+        <p class="sub-note" id="senhaTexto"></p>
+        <div class="field" id="senhaCampoNome"><label for="senhaNome">Nome</label><input type="text" id="senhaNome" autocomplete="off"></div>
+        <div class="field" id="senhaCampoPerfil"><label for="senhaPerfil">Perfil</label><select id="senhaPerfil"><option value="Master">Master</option><option value="Gerencial">Gerencial</option></select></div>
+        <div class="field" id="senhaCampoAtual"><label for="senhaAtual">Senha atual</label><input type="password" id="senhaAtual" autocomplete="current-password"></div>
+        <div class="field"><label for="senhaNova" id="senhaNovaLabel">Senha nova</label><input type="password" id="senhaNova" autocomplete="new-password"></div>
+        <div class="field"><label for="senhaNova2">Repita a senha</label><input type="password" id="senhaNova2" autocomplete="new-password"></div>
+        <div class="campo-erro" id="senhaErro" hidden></div>
+        <div class="form-actions"><button type="button" class="btn btn-outline" id="senhaCancelar">Cancelar</button><button type="button" class="btn btn-brass" id="senhaSalvar">Salvar</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="chaveModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="chaveTitulo" style="width:min(480px,100%)">
+      <div class="card-head"><h2 id="chaveTitulo">Chave de recuperação</h2></div>
+      <div class="card-body">
+        <p>Anote esta chave e guarde fora do computador (num papel ou no seu celular). Com ela, dá para trocar a senha de qualquer usuário na tela de entrada, se a senha for esquecida.</p>
+        <p class="chave-texto" id="chaveTexto"></p>
+        <p class="sub-note">Ela não aparece de novo. Se perder, o Master gera outra em Configurações › Usuários.</p>
+        <div class="form-actions"><button type="button" class="btn btn-brass" id="chaveOk">Já anotei</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="regModal"><!-- 3.14.0: registro de alterações -->
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="regTitulo" style="width:min(980px,100%)">
+      <div class="card-head"><h2 id="regTitulo">Registro de alterações</h2><button class="icon-btn" id="regFechar" type="button" aria-label="Fechar">✕</button></div>
+      <div class="card-body">
+        <p class="sub-note">Tudo o que foi lançado, alterado, recebido, pago ou excluído, com a data, a hora e quem fez. Os mais recentes primeiro.</p>
+        <div class="add-row" style="flex-wrap:wrap; gap:8px">
+          <input type="search" id="regBusca" class="search" placeholder="Buscar por cliente, valor, orçamento…" style="flex:1; min-width:200px">
+          <select id="regUsuario" aria-label="Quem" style="width:auto"></select>
+          <input type="date" id="regDe" aria-label="De" style="width:auto"><input type="date" id="regAte" aria-label="Até" style="width:auto">
+        </div>
+        <div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Quando</th><th>Quem</th><th>O que foi feito</th></tr></thead><tbody id="regTbody"></tbody></table></div>
+        <p class="sub-note" id="regNota"></p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="altModal"><!-- 3.14.0: alterar data ou valor de qualquer tela -->
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="altTitulo" style="width:min(560px,100%)">
+      <div class="card-head">
+        <h2 id="altTitulo">Alterar data ou valor</h2>
+        <button class="icon-btn" id="altFechar" type="button" aria-label="Fechar">✕</button>
+      </div>
+      <div class="card-body">
+        <p class="sub-note" id="altDesc"></p>
+        <div class="form-grid">
+          <div class="field"><label for="altData">Vencimento</label><input type="date" id="altData"></div>
+          <div class="field"><label for="altValor" id="altValorLabel">Valor (R$)</label><input type="text" inputmode="decimal" id="altValor"></div>
+          <div class="field" id="altCampoEfet"><label for="altEfet" id="altEfetLabel">Recebido em</label><input type="date" id="altEfet"></div>
+        </div>
+        <p class="sub-note" id="altNota"></p>
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" id="altCancelar">Cancelar</button>
+          <button type="button" class="btn btn-brass" id="altSalvar">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="excModal"><!-- 3.13.0: ajuste com valor pago a mais -->
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="excTitulo" style="max-width:520px">
+      <div class="card-head"><h2 id="excTitulo">O cliente pagou a mais</h2></div>
+      <div class="card-body">
+        <p id="excTexto" style="margin-top:0"></p>
+        <div class="form-actions" style="justify-content:flex-start; flex-wrap:wrap">
+          <button type="button" class="btn btn-brass" data-exc="devolucao">Lançar devolução</button>
+          <button type="button" class="btn btn-outline" data-exc="credito">Guardar como crédito</button>
+          <button type="button" class="link-btn" data-exc="">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal-overlay" id="parcialModal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="parcialTitulo" style="width:min(500px,100%)">
       <div class="card-head">
@@ -3328,6 +3474,10 @@ function ensureDefaults(st) {
   if (!Array.isArray(st.orcamentos)) st.orcamentos = [];
   st.orcamentos.forEach(o => { if (!Array.isArray(o.itens)) o.itens = []; });
   if (!Array.isArray(st.agendaRepeticoes)) st.agendaRepeticoes = [];
+  if (!Array.isArray(st.creditos)) st.creditos = [];
+  if (!Array.isArray(st.usuarios)) st.usuarios = []; /* 3.14.0 */
+  if (!Array.isArray(st.registro)) st.registro = [];
+  if (st.chaveRecuperacao === undefined) st.chaveRecuperacao = null;
   if (!Array.isArray(st.config.profissionais)) st.config.profissionais = [];
   if (!st.config.tarefas || typeof st.config.tarefas !== 'object') st.config.tarefas = {};
   if (!Array.isArray(st.config.tarefas.responsaveis)) st.config.tarefas.responsaveis = ['Secretária', 'Profissional'];
@@ -3672,6 +3822,7 @@ function markDirty(n = 1) {
   let mudou = true;
   try { mudou = assinaturaGravada === null || assinaturaDados() !== assinaturaGravada; } catch (e) {}
   if (!mudou) { updateBackupBanner(); return; }
+  try { registrarAlteracoes(); } catch (e) { console.error(e); } /* 3.14.0 */
   state.dirtyCount += n;
   persist();
   try { mostrarBarraDesfazer(); } catch (e) {} /* 3.6.11: outra alteração tira o Desfazer da tela */
@@ -5019,7 +5170,7 @@ function getFiltered() {
     .filter(l => !tipo || tipoFluxo(l.origem) === tipo)
     .filter(l => {
       if (!busca) return true;
-      const hay = [l.descricao, l.categoria, l.quem, l.observacao, l.centroDeCusto, textoOrcBusca(l)]
+      const hay = [l.descricao, l.categoria, l.quem, l.observacao, l.centroDeCusto, textoOrcBusca(l), l.convenio ? 'convênio ' + l.convenio : '']
         .filter(Boolean).join(' ').toLowerCase();
       return hay.includes(busca);
     })
@@ -5056,6 +5207,8 @@ const selectedIds = new Set();
    repasse, histórico...) fica escondido e abre no ▸. */
 const ICO_EDITAR = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 13l.9-3.4L10.8 2.7l2.5 2.5-6.9 6.9z"/></svg>';
 const ICO_EXCLUIR = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.2 4.5V3h3.6v1.5M4.5 4.5l.7 9h5.6l.7-9"/></svg>';
+const ICO_ALTERAR = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3M6 10h4"/></svg>';
+function botaoAlterar(id) { return `<button type="button" class="lc-ic" data-alterar="${id}" title="Alterar data ou valor" aria-label="Alterar data ou valor">${ICO_ALTERAR}</button>`; }
 function extrasLancHtml(l) {
   const temHist = Array.isArray(l.historico) && l.historico.length;
   return [
@@ -5132,6 +5285,7 @@ function renderTable() {
           ${statusTag(status)}${status === 'LIQUIDADO' ? ` <button type="button" class="link-btn" data-undo="${l.id}" title="Volta a ficar em aberto">desfazer</button>` : ''}
         </td>
         <td class="col-actions">
+          ${botaoAlterar(l.id)}
           <button type="button" class="lc-ic" data-edit="${l.id}" title="${l.grupoOrc ? 'Editar: mostra os serviços, para escolher qual' : 'Editar'}" aria-label="Editar">${ICO_EDITAR}</button>
           <button type="button" class="lc-ic perigo" data-del="${l.id}" title="Excluir" aria-label="Excluir">${ICO_EXCLUIR}</button>
         </td>
@@ -5260,7 +5414,7 @@ function getPendentes() {
     })
     .filter(l => {
       if (!busca) return true;
-      const hay = [l.descricao, l.categoria, l.quem, l.observacao, l.centroDeCusto, textoOrcBusca(l)].filter(Boolean).join(' ').toLowerCase();
+      const hay = [l.descricao, l.categoria, l.quem, l.observacao, l.centroDeCusto, textoOrcBusca(l), l.convenio ? 'convênio ' + l.convenio : ''].filter(Boolean).join(' ').toLowerCase();
       return hay.includes(busca);
     })
     .sort((a, b) => (dataNoCaixa(a) || '').localeCompare(dataNoCaixa(b) || '') || (a.efetivado ? 1 : 0) - (b.efetivado ? 1 : 0));
@@ -5415,7 +5569,7 @@ function renderComposicao() {
         <td><span class="op-dot ${tipo || ''}"></span>${escapeHtml(l.categoria || l.operacao || '—')}${state.config.empresas.length > 1 ? `<div class="muted">${escapeHtml(l.empresa || '')}</div>` : ''}</td>
         <td>${statusTag(st)}</td>
         <td class="num" style="color:var(--${tipo === 'despesa' ? 'despesa' : 'receita'})">${g.sinal ? (tipo === 'despesa' ? '− ' : '+ ') + formatCurrency(Math.abs(v)) : formatCurrency(v)}</td>
-        <td class="col-actions">${l.grupoOrc ? `<button type="button" class="link-btn" data-abrir-orc="${l.orc.id}" title="Abrir o orçamento">abrir</button>` : `<button type="button" class="link-btn" data-comp-abrir="${l.id}">abrir</button>`}</td>
+        <td class="col-actions">${botaoAlterar(l.id)} ${l.grupoOrc && l.orc ? `<button type="button" class="link-btn" data-abrir-orc="${l.orc.id}" title="Abrir o orçamento">abrir</button>` : l.grupoOrc ? '' : `<button type="button" class="link-btn" data-comp-abrir="${l.id}">abrir</button>`}</td>
       </tr>`;
     });
   });
@@ -5658,6 +5812,8 @@ function opcoesServico(sel) {
 }
 function abrirOrcamento(id, opts) {
   const o = id ? orcamentoPorId(id) : null;
+  ocUI.ajustando = false;
+  ocUI.creditoUsar = o && o.status === 'rascunho' && Array.isArray(o.creditoIds) && o.creditoIds.length ? o.creditoIds.slice() : null;
   ocUI.editandoId = o ? o.id : null;
   const aprovado = !!o && o.status === 'aprovado';
   ocUI.itens = o ? o.itens.map(i => ({ ...i })) : [];
@@ -5681,29 +5837,44 @@ function abrirOrcamento(id, opts) {
   document.querySelectorAll('#ocForm input, #ocForm select, #ocForm textarea').forEach(el => { el.disabled = aprovado || (o && o.status === 'recusado'); });
   document.getElementById('ocBloqueado').hidden = !(aprovado || (o && o.status === 'recusado'));
   document.getElementById('ocBloqueado').innerHTML = aprovado
-    ? `Aprovado em ${formatDateBR(o.aprovadoEm)}. As receitas já foram lançadas, uma por serviço. Para mudar, use <strong>Desfazer aprovação</strong> (só enquanto nada foi recebido).`
+    ? `Aprovado em ${formatDateBR(o.aprovadoEm)}. As receitas já foram lançadas (no Caixa, uma linha por vencimento). Para tirar, trocar ou acrescentar serviços, use <strong>Ajustar orçamento</strong>, no pé desta janela.`
+      + (Array.isArray(o.ajustes) && o.ajustes.length ? `<div class="pc-mini" style="margin-top:6px">${o.ajustes.map(a => `Ajustado em ${formatDateBR(a.em)}: ${escapeHtml(a.texto)}`).join('<br>')}</div>` : '')
     : 'Orçamento recusado. Para usar de novo, clique em <strong>Reabrir</strong>.';
   renderItensOrcamento();
   atualizarBotoesOrcamento(o);
+  pintarCreditoOrcamento(); /* 3.13.0 */
   document.getElementById('ocModal').classList.add('open');
 }
 function atualizarBotoesOrcamento(o) {
   const st = o ? o.status : 'novo';
   const t = o ? totaisOrcamento(o) : null;
   const pagoAlgo = !!t && st === 'aprovado' && t.pago > 0.004;
+  const aj = !!ocUI.ajustando; /* 3.13.0 */
   const vis = { ocSalvar: st === 'novo' || st === 'rascunho', ocAprovar: st === 'novo' || st === 'rascunho', ocRecusar: st === 'rascunho',
-    ocReabrir: st === 'recusado', ocDesaprovar: st === 'aprovado' && !pagoAlgo, ocReceberBtn: st === 'aprovado' && t.falta > 0.004, ocImprimirBtn: true };
+    ocReabrir: st === 'recusado', ocDesaprovar: st === 'aprovado' && !pagoAlgo && !aj, ocReceberBtn: st === 'aprovado' && t.falta > 0.004 && !aj, ocImprimirBtn: !aj,
+    ocAjustar: st === 'aprovado' && !aj, ocAjusteCancelar: aj, ocAjusteSalvar: aj };
   Object.entries(vis).forEach(([id, v]) => { document.getElementById(id).hidden = !v; });
   const hist = document.getElementById('ocHistorico');
   hist.hidden = st !== 'aprovado';
   if (st === 'aprovado') {
-    const linhas = lancamentosDoOrcamento(o).sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+    /* 3.11.1: uma linha por vencimento, como no Caixa; os serviços aparecem embaixo, menores */
+    const venc = new Map();
+    lancamentosDoOrcamento(o).sort((a, b) => (a.data || '').localeCompare(b.data || '')).forEach(l => {
+      const suf = sufixoOrcamento(l, o);
+      const k = (l.data || '') + '|' + (suf === null ? l.id : suf);
+      if (!venc.has(k)) venc.set(k, { data: l.data, suf: suf === null ? (l.descricao || '') : suf, itens: [] });
+      venc.get(k).itens.push(l);
+    });
     hist.innerHTML = `<div class="oc-resumo">Total ${formatCurrency(t.total)} · Pago <strong>${formatCurrency(t.pago)}</strong> · Falta <strong>${formatCurrency(t.falta)}</strong></div>`
-      + `<table class="oc-lancs"><thead><tr><th>Vencimento</th><th>Serviço</th><th class="num">Valor</th><th>Situação</th></tr></thead><tbody>`
-      + linhas.map(l => {
-        const pp = valorPagoEmPartes(l.id);
-        const sit = l.efetivado ? `recebido em ${formatDateBR(l.efetivado)}` : pp ? `recebido ${formatCurrency(pp)}, falta ${formatCurrency(l.valor)}` : 'em aberto';
-        return `<tr><td>${formatDateBR(l.data)}</td><td>${escapeHtml(l.descricao || l.categoria)}</td><td class="num">${formatCurrency(Number(l.valorTotal != null ? l.valorTotal : l.valor) || 0)}</td><td>${sit}</td></tr>`;
+      + `<table class="oc-lancs"><thead><tr><th>Vencimento</th><th>Pagamento</th><th class="num">Valor</th><th>Situação</th></tr></thead><tbody>`
+      + [...venc.values()].map(g => {
+        const total = g.itens.reduce((a, l) => a + centavos(l.valorTotal != null ? l.valorTotal : l.valor), 0) / 100;
+        const pp = g.itens.reduce((a, l) => a + valorPagoEmPartes(l.id), 0);
+        const falta = g.itens.filter(l => !l.efetivado).reduce((a, l) => a + centavos(l.valor), 0) / 100;
+        const datas = [...new Set(g.itens.filter(l => l.efetivado).map(l => l.efetivado))].sort();
+        const sit = !falta ? `recebido em ${datas.map(formatDateBR).join(', ')}` : pp || falta < total - 0.004 ? `recebido ${formatCurrency(Math.round((total - falta) * 100) / 100)}, falta ${formatCurrency(falta)}` : 'em aberto';
+        const rot = `Recebimento orçamento nº ${o.numero}${g.suf}`.replace(/ · /, ' · ');
+        return `<tr><td>${formatDateBR(g.data)}</td><td>${escapeHtml(rot)}<div class="pc-mini">${escapeHtml(g.itens.map(l => `${nomeServicoOrc(l, o)} ${formatCurrency(Number(l.valorTotal != null ? l.valorTotal : l.valor) || 0)}`).join(' · '))}</div></td><td class="num">${formatCurrency(total)}</td><td>${sit}</td></tr>`;
       }).join('') + '</tbody></table>';
   }
 }
@@ -5718,10 +5889,11 @@ function lerItensDoForm() {
 function renderItensOrcamento() {
   const box = document.getElementById('ocItens');
   const o = orcamentoPorId(ocUI.editandoId);
-  const travado = !!o && o.status !== 'rascunho';
+  const travado = !!o && o.status !== 'rascunho' && !ocUI.ajustando; /* 3.13.0 */
   box.innerHTML = ocUI.itens.map((it, n) => `<div class="oc-item" data-id="${it.id}">
       <span class="oc-n">${n + 1}</span>
       <select data-oc="servico" aria-label="Serviço"${travado ? ' disabled' : ''}>${opcoesServico(it.servicoId)}${it.servicoId && !servicoPorId(it.servicoId) ? `<option value="${it.servicoId}" selected>${escapeHtml(it.nome)}</option>` : ''}</select>
+      <span class="oc-cat" title="Categoria do serviço. Para trocar, vá em Cadastros › Serviços.">${it.categoria ? escapeHtml(it.categoria) : '<span class="muted">Categoria</span>'}</span>
       <select data-oc="prestador" aria-label="Quem vai atender"${travado ? ' disabled' : ''}>${opcoesPrestador(it.prestadorId)}</select>
       <input type="text" inputmode="decimal" data-oc="valor" value="${Number(it.valor) ? numberToCurrencyDisplay(Number(it.valor)) : ''}" placeholder="0,00" aria-label="Valor"${travado ? ' disabled' : ''}>
       ${travado ? '<span></span>' : `<button type="button" class="del" data-oc="del" title="Tirar este serviço">${svgIco('lixeira')}</button>`}
@@ -5833,7 +6005,18 @@ function textoCondicao(d, cr) {
   if (d.condicao === 'entrada') return `Entrada de ${formatCurrency(cr.parcelas[0].valor)} + ${parc(cr.parcelas.slice(1))}${f}, a 1ª em ${formatDateBR(d.primeiroVenc)}`;
   return `À vista${f}, em ${formatDateBR(d.primeiroVenc)}`;
 }
+function orcamentoRefeito() {
+  const o = orcamentoPorId(ocUI.editandoId);
+  return !!o && o.status === 'aprovado' && (!!ocUI.ajustando || (Array.isArray(o.ajustes) && o.ajustes.length > 0));
+}
 function atualizarTotalOrcamento() {
+  const refeito = orcamentoRefeito(); /* 3.13.0 */
+  document.getElementById('ocCondicao').closest('.field').hidden = refeito;
+  if (refeito) {
+    ['ocCampoPartes', 'ocCampoForma', 'ocCampoVenc', 'ocCampoParcelas', 'ocCampoEntrada'].forEach(id => { document.getElementById(id).hidden = true; });
+    pintarTotalOrcamento();
+    return;
+  }
   const cond = document.getElementById('ocCondicao').value;
   const div = cond === 'dividido'; /* 3.9.0 */
   document.getElementById('ocCampoPartes').hidden = !div;
@@ -5849,8 +6032,18 @@ function pintarTotalOrcamento() {
   const d = dadosDoFormOrcamento();
   const cr = cronogramaOrcamento(d);
   const box = document.getElementById('ocTotal');
+  if (ocUI.ajustando) { /* 3.13.0 */
+    const o = orcamentoPorId(ocUI.editandoId);
+    const pago = o ? totaisOrcamento(o).pago : 0;
+    const falta = Math.round((cr.total - pago) * 100) / 100;
+    box.innerHTML = `Novo total <strong>${formatCurrency(cr.total)}</strong> · Já recebido ${formatCurrency(pago)} · `
+      + (falta >= 0 ? `<strong>Falta ${formatCurrency(falta)}</strong><div class="pc-mini">O que falta é dividido nas datas que ainda estão em aberto.</div>`
+        : `<strong style="color:var(--despesa)">Pago a mais ${formatCurrency(-falta)}</strong><div class="pc-mini">Ao salvar, você escolhe entre lançar a devolução ou guardar como crédito do cliente.</div>`);
+    return;
+  }
+
   if (!d.itens.length) { box.innerHTML = '<span class="muted">Escolha os serviços para ver o total.</span>'; return; }
-  box.innerHTML = `Serviços ${formatCurrency(cr.bruto)}${d.desconto ? ` · Desconto ${formatCurrency(d.desconto)}` : ''} · <strong>Total ${formatCurrency(cr.total)}</strong><div class="pc-mini">${textoCondicao(d, cr)}</div>`;
+  box.innerHTML = `Serviços ${formatCurrency(cr.bruto)}${d.desconto ? ` · Desconto ${formatCurrency(d.desconto)}` : ''} · <strong>Total ${formatCurrency(cr.total)}</strong><div class="pc-mini">${orcamentoRefeito() ? 'O pagamento foi refeito no ajuste. Os vencimentos estão logo abaixo.' : textoCondicao(d, cr)}</div>`;
 }
 function validarOrcamento(d) {
   if (!d.cliente) return 'Informe o cliente.';
@@ -5870,6 +6063,7 @@ function salvarOrcamento(status) {
   let o = orcamentoPorId(ocUI.editandoId);
   if (o) Object.assign(o, d);
   else { o = { id: uid(), numero: proximoNumeroOrcamento(), status: 'rascunho', aprovadoEm: null, ...d }; state.orcamentos.push(o); ocUI.editandoId = o.id; }
+  o.creditoIds = ocUI.creditoUsar ? ocUI.creditoUsar.slice() : null; /* 3.13.0 */
   garantirPaciente(o.cliente);
   if (status) o.status = status;
   return o;
@@ -5920,13 +6114,203 @@ function aprovarOrcamento(o) {
   registrarQuem('RECEITAS', o.cliente);
   o.status = 'aprovado';
   o.aprovadoEm = todayISO();
+  const usar = ocUI.editandoId === o.id ? ocUI.creditoUsar : o.creditoIds; /* 3.13.0 */
+  if (Array.isArray(usar) && usar.length) {
+    (state.creditos || []).forEach(c => { if (usar.includes(c.id) && !c.usadoEm) c.usadoEm = o.id; });
+    if (ocUI.editandoId === o.id) ocUI.creditoUsar = null;
+  }
   return novos.length;
 }
+/* =========================================================================
+   3.13.0: AJUSTAR ORÇAMENTO APROVADO
+   Tira, troca ou acrescenta serviços depois de aprovado. O que já foi
+   recebido não muda. O que falta (novo total menos o recebido) é refeito nas
+   mesmas datas que ainda estão em aberto, na proporção do que cada data tinha,
+   e dividido entre os serviços pelo que falta a cada um. Uma conta com parte
+   já recebida fica encerrada no que foi pago. Se o cliente pagou a mais, a
+   sobra vira devolução (despesa a pagar) ou crédito para o próximo orçamento.
+   ========================================================================= */
+function entrarAjusteOrcamento() {
+  const o = orcamentoPorId(ocUI.editandoId);
+  if (!o || o.status !== 'aprovado') return;
+  ocUI.ajustando = true;
+  ocUI.itens = o.itens.map(i => ({ ...i }));
+  document.querySelectorAll('#ocItens select, #ocItens input').forEach(el => { el.disabled = false; });
+  document.getElementById('ocDesconto').disabled = false;
+  document.getElementById('ocBloqueado').innerHTML = '<strong>Ajustando o orçamento.</strong> Tire, troque ou acrescente serviços e mude o desconto, se precisar. O que já foi recebido não muda; o que falta é refeito nas datas que ainda estão em aberto.';
+  renderItensOrcamento();
+  atualizarBotoesOrcamento(o);
+}
+function recebidoDoLanc(l) { return (l.efetivado ? centavos(l.valorTotal != null ? l.valorTotal : l.valor) : centavos(valorPagoEmPartes(l.id)) + 0) / 100; }
+function textoDoAjuste(o, itens, desconto) {
+  const nomes = l => l.map(i => i.nome).join(', ');
+  const saiu = o.itens.filter(i => !itens.some(n => n.id === i.id));
+  const entrou = itens.filter(n => !o.itens.some(i => i.id === n.id));
+  const mudou = itens.filter(n => { const i = o.itens.find(x => x.id === n.id); return i && (centavos(i.valor) !== centavos(n.valor) || i.servicoId !== n.servicoId); });
+  const partes = [];
+  if (saiu.length) partes.push(`tirou ${nomes(saiu)}`);
+  if (entrou.length) partes.push(`acrescentou ${nomes(entrou)}`);
+  if (mudou.length) partes.push(`mudou ${nomes(mudou)}`);
+  if (centavos(desconto) !== centavos(o.desconto)) partes.push(`desconto ${formatCurrency(desconto)}`);
+  return partes.join('; ') || 'sem mudança nos serviços';
+}
+let excResolver = null;
+function perguntarExcedente(o, valor) {
+  document.getElementById('excTexto').innerHTML = `Com o ajuste, o orçamento nº ${o.numero} ficou menor do que ${escapeHtml(o.cliente)} já pagou. Sobram <strong>${formatCurrency(valor)}</strong>. `
+    + 'A <strong>devolução</strong> vira uma conta a pagar ao cliente, no Caixa. O <strong>crédito</strong> fica guardado e é oferecido como desconto no próximo orçamento dele.';
+  document.getElementById('excModal').classList.add('open');
+  return new Promise(res => { excResolver = res; });
+}
+document.querySelectorAll('#excModal [data-exc]').forEach(b => b.addEventListener('click', () => {
+  document.getElementById('excModal').classList.remove('open');
+  if (excResolver) { const r = excResolver; excResolver = null; r(b.dataset.exc || null); }
+}));
+function lancarDevolucao(o, valor) {
+  const op = operacaoDaLinha('DESPESAS', 'outraDespesa', 'Outras Despesas');
+  const cat = 'Devoluções a clientes';
+  if (!state.config.categorias[op].includes(cat)) state.config.categorias[op].push(cat);
+  const empresa = state.config.empresas[0] || '';
+  const l = { id: uid(), devolucaoDe: o.id, competencia: todayISO(), data: todayISO(), efetivado: null, empresa, natureza: 'PJ', origem: 'DESPESAS',
+    operacao: op, categoria: cat, quem: o.cliente, descricao: `Devolução ao cliente · orçamento nº ${o.numero} (ajuste)`, centroDeCusto: null,
+    valor: Math.round(valor * 100) / 100, fatura: null, parcela: null, totalParcelas: null, formaPagamento: null, observacao: null,
+    local: ((state.config.localPorEmpresa || {})[empresa] || [])[0] || null };
+  state.lancamentos.push(l);
+  return l;
+}
+function creditosDoCliente(nome) { return (state.creditos || []).filter(c => !c.usadoEm && normNome(c.cliente) === normNome(nome || '')); }
+async function salvarAjusteOrcamento() {
+  const o = orcamentoPorId(ocUI.editandoId);
+  if (!o || !ocUI.ajustando) return;
+  const d = dadosDoFormOrcamento();
+  const itens = d.itens;
+  if (!itens.length) { toast('Deixe pelo menos um serviço. Para cancelar tudo, use Excluir na lista de orçamentos.'); return; }
+  if (itens.some(i => !(Number(i.valor) > 0))) { toast('Informe o valor de cada serviço.'); return; }
+  const bruto = itens.reduce((a, i) => a + centavos(i.valor), 0) / 100;
+  const desconto = Math.round((Number(d.desconto) || 0) * 100) / 100;
+  const novoTotal = Math.round((bruto - desconto) * 100) / 100;
+  if (!(novoTotal > 0)) { toast('O desconto não pode ser maior que os serviços.'); return; }
+  const linhas = lancamentosDoOrcamento(o);
+  const recebidoTotal = totaisOrcamento(o).pago;
+  const falta = Math.round((novoTotal - recebidoTotal) * 100) / 100;
+  const texto = textoDoAjuste(o, itens, desconto);
+  let destino = null;
+  if (falta < -0.004) {
+    destino = await perguntarExcedente(o, -falta);
+    if (!destino) return;
+  } else if (!confirm(`Ajustar o orçamento nº ${o.numero} (${texto})? Novo total ${formatCurrency(novoTotal)}, já recebido ${formatCurrency(recebidoTotal)}, falta ${formatCurrency(falta)}.`)) return;
+  /* o que já foi recebido por serviço, antes de mexer */
+  const recItem = {};
+  linhas.forEach(l => { recItem[l.orcamentoItemId] = (recItem[l.orcamentoItemId] || 0) + recebidoDoLanc(l); });
+  /* as datas em aberto, com o valor de cada uma e um modelo (forma, parcela, conta) */
+  const abertas = linhas.filter(l => !l.efetivado && centavos(l.valor) > 0).sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+  const venc = [];
+  abertas.forEach(l => {
+    const suf = sufixoOrcamento(l, o) || '';
+    let v = venc.find(x => x.data === l.data && x.suf === suf);
+    if (!v) { v = { data: l.data, suf, cent: 0, modelos: [] }; venc.push(v); }
+    v.cent += centavos(l.valor);
+    v.modelos.push(l);
+  });
+  /* encerra as contas em aberto: as que têm parte recebida ficam no que foi pago */
+  const sai = new Set();
+  abertas.forEach(l => {
+    const pago = valorPagoEmPartes(l.id);
+    if (pago > 0.004) {
+      const ult = partesDe(l.id).map(x => x.efetivado).sort().pop() || todayISO();
+      l.valorTotal = pago; l.valor = 0; l.efetivado = ult;
+    } else sai.add(l.id);
+    state.lancamentos.filter(x => x.taxaDe === l.id).forEach(x => sai.add(x.id));
+  });
+  state.lancamentos = state.lancamentos.filter(x => !sai.has(x.id));
+  /* refaz o que falta */
+  const novos = [];
+  if (falta > 0.004) {
+    const empresa = state.config.empresas[0] || '';
+    const conta = ((state.config.localPorEmpresa || {})[empresa] || [])[0] || null;
+    if (!venc.length) venc.push({ data: todayISO(), suf: ' (ajuste)', cent: 100, modelos: [] });
+    const porVenc = ratear(falta, venc.map(v => v.cent));
+    const liquido = ratear(novoTotal, itens.map(i => i.valor));
+    let pesos = itens.map((it, i) => Math.max(0, Math.round((liquido[i] - (recItem[it.id] || 0)) * 100) / 100));
+    if (!pesos.some(x => x > 0)) pesos = liquido;
+    const series = {};
+    venc.forEach((v, k) => {
+      if (!(porVenc[k] > 0)) return;
+      const partes = ratear(porVenc[k], pesos);
+      itens.forEach((it, i) => {
+        if (!(partes[i] > 0)) return;
+        const m = v.modelos.find(x => x.orcamentoItemId === it.id) || v.modelos[0] || null;
+        let serie = null;
+        if (m && m.serie) {
+          if (m.orcamentoItemId === it.id) serie = m.serie;
+          else { const ch = it.id + '|' + m.serie; serie = series[ch] || (series[ch] = novaSerieId()); }
+        }
+        const op = findOperacaoForCategoria('RECEITAS', it.categoria) || (state.config.operacaoPorOrigem.RECEITAS || [])[0];
+        novos.push({
+          id: uid(), serie, competencia: v.data, data: v.data, efetivado: null, empresa: m ? m.empresa : empresa, natureza: m ? m.natureza : 'PJ', origem: 'RECEITAS',
+          operacao: op, categoria: it.categoria, quem: o.cliente, descricao: `${it.nome} · orçamento nº ${o.numero}${v.suf}`,
+          centroDeCusto: centroDaCategoria(it.categoria), valor: partes[i], fatura: null,
+          parcela: m ? m.parcela || null : null, totalParcelas: m ? m.totalParcelas || null : null,
+          formaPagamento: m ? m.formaPagamento || null : o.forma || null, observacao: null, local: m ? m.local || null : conta,
+          prestadorId: it.prestadorId || null, servicoId: it.servicoId, orcamentoId: o.id, orcamentoItemId: it.id,
+        });
+      });
+    });
+    state.lancamentos.push(...novos);
+    novos.forEach(l => aplicarTaxaCartao(l, l.totalParcelas || 1));
+  }
+  let fim = '';
+  if (destino === 'devolucao') { lancarDevolucao(o, -falta); fim = ` Devolução de ${formatCurrency(-falta)} lançada no Caixa, a pagar.`; }
+  else if (destino === 'credito') {
+    if (!state.creditos) state.creditos = [];
+    state.creditos.push({ id: uid(), cliente: o.cliente, valor: Math.round(-falta * 100) / 100, em: todayISO(), origem: `orçamento nº ${o.numero}`, usadoEm: null });
+    fim = ` Crédito de ${formatCurrency(-falta)} guardado para ${o.cliente}.`;
+  }
+  o.itens = itens.map(i => ({ ...i }));
+  o.desconto = desconto;
+  if (!Array.isArray(o.ajustes)) o.ajustes = [];
+  o.ajustes.push({ em: todayISO(), texto: texto + (destino === 'devolucao' ? `; devolução de ${formatCurrency(-falta)}` : destino === 'credito' ? `; crédito de ${formatCurrency(-falta)}` : '') });
+  ocUI.ajustando = false;
+  markDirty();
+  renderOrcClientes(); renderTable(); renderPendencias(); renderKpis();
+  abrirOrcamento(o.id);
+  toast(`Orçamento nº ${o.numero} ajustado. ${falta > 0.004 ? `Falta ${formatCurrency(falta)}, nas datas em aberto.` : 'Nada mais a receber.'}${fim}`);
+}
+document.getElementById('ocAjustar').addEventListener('click', entrarAjusteOrcamento);
+document.getElementById('ocAjusteCancelar').addEventListener('click', () => { const id = ocUI.editandoId; abrirOrcamento(id); });
+document.getElementById('ocAjusteSalvar').addEventListener('click', () => { salvarAjusteOrcamento(); });
+/* crédito do cliente: aparece no orçamento novo e pode virar desconto */
+function pintarCreditoOrcamento() {
+  const box = document.getElementById('ocCredito');
+  if (!box) return;
+  const o = orcamentoPorId(ocUI.editandoId);
+  const livre = !o || o.status === 'rascunho';
+  const cs = livre ? creditosDoCliente(document.getElementById('ocCliente').value.trim()) : [];
+  const soma = cs.reduce((a, c) => a + centavos(c.valor), 0) / 100;
+  box.hidden = !soma;
+  if (!soma) return;
+  box.innerHTML = ocUI.creditoUsar ? `Crédito de ${formatCurrency(soma)} usado como desconto. Ele é baixado quando o orçamento for aprovado. <button type="button" class="link-btn" id="ocCreditoTirar">não usar</button>`
+    : `Este cliente tem <strong>crédito de ${formatCurrency(soma)}</strong> (${escapeHtml(cs.map(c => c.origem).join(', '))}). <button type="button" class="btn btn-outline btn-sm" id="ocCreditoUsar">Usar como desconto</button>`;
+  const usar = document.getElementById('ocCreditoUsar');
+  if (usar) usar.addEventListener('click', () => {
+    ocUI.creditoUsar = cs.map(c => c.id);
+    const atual = currencyDisplayToNumber(document.getElementById('ocDesconto').value || '0');
+    document.getElementById('ocDesconto').value = numberToCurrencyDisplay(Math.round((atual + soma) * 100) / 100);
+    atualizarTotalOrcamento(); pintarCreditoOrcamento();
+  });
+  const tirar = document.getElementById('ocCreditoTirar');
+  if (tirar) tirar.addEventListener('click', () => {
+    const atual = currencyDisplayToNumber(document.getElementById('ocDesconto').value || '0');
+    document.getElementById('ocDesconto').value = numberToCurrencyDisplay(Math.max(0, Math.round((atual - soma) * 100) / 100));
+    ocUI.creditoUsar = null; atualizarTotalOrcamento(); pintarCreditoOrcamento();
+  });
+}
+document.getElementById('ocCliente').addEventListener('change', () => { ocUI.creditoUsar = null; pintarCreditoOrcamento(); });
 function desfazerAprovacao(o) {
   const t = totaisOrcamento(o);
   if (t.pago > 0.004) { toast('Já há valor recebido neste orçamento. Desfaça os recebimentos no Caixa antes.'); return false; }
   const ids = new Set(lancamentosDoOrcamento(o).map(l => l.id));
   state.lancamentos = state.lancamentos.filter(l => !ids.has(l.id) && !ids.has(l.taxaDe));
+  (state.creditos || []).forEach(c => { if (c.usadoEm === o.id) c.usadoEm = null; }); /* 3.13.0: o crédito volta */
   o.status = 'rascunho';
   o.aprovadoEm = null;
   return true;
@@ -5946,7 +6330,7 @@ function excluirOrcamento(id) {
   renderTable(); renderPendencias(); renderKpis();
   toast('Orçamento excluído.');
 }
-function fecharOrcamento() { document.getElementById('ocModal').classList.remove('open'); ocUI.editandoId = null; }
+function fecharOrcamento() { document.getElementById('ocModal').classList.remove('open'); ocUI.editandoId = null; ocUI.ajustando = false; atualizarFichaFinSeAberta(); }
 document.getElementById('ocForm').addEventListener('submit', (e) => e.preventDefault());
 document.getElementById('ocAddItem').addEventListener('click', () => {
   lerItensDoForm();
@@ -6137,6 +6521,11 @@ function chaveGrupoOrc(l, porId) {
   if (l.taxaDe) { base = porId.get(l.taxaDe); tipo = 't'; }
   else if (l.ajusteDe) { base = porId.get(l.ajusteDe); tipo = 'a' + (l.origem || '') + (l.categoria || ''); }
   else if (l.parcialDe) tipo = 'p' + (l.formaPagamento || '');
+  /* 3.12.0: convênio, uma linha por convênio e ciclo (o ciclo é o mesmo vencimento) */
+  const raiz = l.parcialDe ? porId.get(l.parcialDe) : base;
+  if (raiz && raiz.convenio && !raiz.orcamentoId && !raiz.repasseDe) {
+    return { conv: raiz.convenio, raiz, k: ['conv', raiz.convenio, tipo, l.data || '', l.efetivado || '', l.empresa || '', l.natureza || '', l.origem || ''].join('|'), tipo: tipo.charAt(0), suf: '' };
+  }
   if (!base || !base.orcamentoId || base.repasseDe) return null;
   const o = orcamentoPorId(base.orcamentoId);
   if (!o) return null;
@@ -6146,17 +6535,18 @@ function chaveGrupoOrc(l, porId) {
 }
 /* recebe uma lista de lançamentos e devolve a lista das linhas da tela */
 function agruparOrcamento(rows) {
-  if (!rows.some(l => l.orcamentoId || l.taxaDe || l.ajusteDe)) return rows.slice();
+  if (!rows.some(l => l.orcamentoId || l.taxaDe || l.ajusteDe || l.convenio || l.parcialDe)) return rows.slice();
   const porId = new Map(state.lancamentos.map(x => [x.id, x]));
   const out = [], mapa = new Map();
   rows.forEach(l => {
     const c = chaveGrupoOrc(l, porId);
     if (!c) { out.push(l); return; }
     let g = mapa.get(c.k);
-    if (!g) { g = { grupoOrc: c.tipo, orc: c.o, sufixo: c.suf, itens: [] }; mapa.set(c.k, g); out.push(g); }
+    if (!g) { g = { grupoOrc: c.tipo, orc: c.o || null, conv: c.conv || null, raiz: c.raiz || null, sufixo: c.suf, itens: [] }; mapa.set(c.k, g); out.push(g); }
     g.itens.push(l);
   });
   mapa.forEach(g => {
+    if (g.conv) { montarGrupoConvenio(g); return; }
     const p = g.itens[0], o = g.orc;
     const rot = { c: 'Recebimento', p: 'Recebimento parcial', t: 'Taxa do cartão do', a: 'Diferença na baixa do' }[g.grupoOrc];
     Object.assign(g, {
@@ -6173,13 +6563,42 @@ function agruparOrcamento(rows) {
   });
   return out;
 }
+function textoCicloConvenio(nome, atend, venc) {
+  const c = (state.config.convenios || []).find(x => x.nome === nome);
+  if (c && c.modo === 'corte' && atend) {
+    const fech = fechamentoCorte(c, atend);
+    return ` · ciclo até ${formatDateBR(fech).slice(0, 5)}, ${todayISO() <= fech ? 'aberto' : 'fechado'}`;
+  }
+  return venc ? ` · pagamento em ${formatDateBR(venc).slice(0, 5)}` : '';
+}
+function montarGrupoConvenio(g) {
+  const p = g.itens[0];
+  const rot = { c: 'Recebimento', p: 'Recebimento parcial', t: 'Taxa do', a: 'Diferença na baixa do' }[g.grupoOrc];
+  g.sufixo = textoCicloConvenio(g.conv, g.raiz && g.raiz.dataAtendimento, (g.raiz && g.raiz.data) || p.data);
+  Object.assign(g, {
+    id: PREFIXO_GRUPO + g.itens.map(l => l.id).join(','), rotulo: rot,
+    data: p.data, competencia: p.competencia || p.data, efetivado: p.efetivado || null, empresa: p.empresa, natureza: p.natureza, origem: p.origem,
+    operacao: valorUnico(g.itens.map(l => l.operacao)) || p.operacao, categoria: valorUnico(g.itens.map(l => l.categoria)) || 'Vários serviços',
+    quem: g.conv, descricao: `${rot} convênio ${g.conv}${g.sufixo}`,
+    centroDeCusto: valorUnico(g.itens.map(l => l.centroDeCusto)), valor: somaValores(g.itens),
+    formaPagamento: valorUnico(g.itens.map(l => l.formaPagamento)), local: valorUnico(g.itens.map(l => l.local)),
+    fatura: null, observacao: null, parcela: null, totalParcelas: null,
+    textoBusca: g.itens.map(l => `${l.quem || ''} ${l.descricao || ''} ${l.categoria || ''} convênio ${g.conv}`).join(' '),
+  });
+}
 function contarLinhas(rows) { return agruparOrcamento(rows).length; }
 function celulaGrupoOrcHtml(g) {
   const o = g.orc, tipo = tipoFluxo(g.origem);
   const porId = new Map(state.lancamentos.map(x => [x.id, x]));
   const desp = tipo === 'despesa';
+  const conv = !!g.conv; /* 3.12.0 */
+  const palavra = conv ? ['Cliente', 'clientes', 'este cliente'] : ['Serviço', 'serviços', 'este serviço'];
   const servs = g.itens.map(l => {
-    const dono = (l.taxaDe && porId.get(l.taxaDe)) || (l.ajusteDe && porId.get(l.ajusteDe)) || l;
+    const dono = (l.taxaDe && porId.get(l.taxaDe)) || (l.ajusteDe && porId.get(l.ajusteDe)) || (conv && l.parcialDe && porId.get(l.parcialDe)) || l;
+    if (conv) {
+      return `<div class="grp-serv"><span>${escapeHtml(dono.quem || '(sem nome)')}</span>${dono.dataAtendimento ? `<span class="muted">atendido em ${formatDateBR(dono.dataAtendimento).slice(0, 5)}</span>` : ''}`
+        + `<span class="grp-v">${formatCurrency(l.valor)}</span><button type="button" class="link-btn" data-edit-item="${l.id}" title="Editar só ${palavra[2]}">editar</button></div>`;
+    }
     const prest = g.grupoOrc === 'c' || g.grupoOrc === 'p' ? etiquetaPrestador(dono) : '';
     return `<div class="grp-serv"><span>${escapeHtml(nomeServicoOrc(dono, o))}</span>${prest ? `<span class="muted">${prest.replace(/<\/?div[^>]*>/g, '')}</span>` : ''}`
       + `<span class="grp-v">${formatCurrency(l.valor)}</span><button type="button" class="link-btn" data-edit-item="${l.id}" title="Editar só este serviço">editar</button></div>`;
@@ -6200,9 +6619,16 @@ function celulaGrupoOrcHtml(g) {
     }
   }
   const nota = g.grupoOrc === 't' ? '<div class="tag-rec">taxa do cartão, segue o recebimento</div>'
-    : g.grupoOrc === 'p' ? '<div class="tag-rec">parte recebida, dividida entre os serviços</div>' : '';
-  const extras = `${hist}${nota}<div class="grp-servs"><div class="tag-rec">${g.itens.length === 1 ? 'Serviço' : `${g.itens.length} serviços`} deste ${g.grupoOrc === 't' ? 'recebimento' : 'valor'}:</div>${servs}</div>`;
+    : g.grupoOrc === 'p' ? `<div class="tag-rec">parte recebida, dividida entre os ${palavra[1]}</div>` : '';
+  const extras = `${hist}${nota}<div class="grp-servs"><div class="tag-rec">${g.itens.length === 1 ? palavra[0] : `${g.itens.length} ${palavra[1]}`} deste ${g.grupoOrc === 't' ? 'recebimento' : 'valor'}:</div>${servs}</div>`;
   const titulo = [g.descricao, g.quem].filter(Boolean).join(' · ');
+  if (conv) {
+    return `<td class="lc-cel"><div class="lc-linha" title="${escapeHtml(g.descricao)}">`
+      + `<button type="button" class="lc-mais-btn" data-lc-mais aria-expanded="false" aria-label="Ver os clientes">▸</button>`
+      + `<span class="op-dot ${tipo || ''}"></span>${escapeHtml(g.rotulo)} convênio <strong>${escapeHtml(g.conv)}</strong>`
+      + (g.sufixo ? `<span class="lc-desc">${escapeHtml(g.sufixo)}</span>` : '')
+      + `</div><div class="lc-extra" hidden>${extras}</div></td>`;
+  }
   return `<td class="lc-cel"><div class="lc-linha" title="${escapeHtml(titulo)}">`
     + '<button type="button" class="lc-mais-btn" data-lc-mais aria-expanded="false" aria-label="Ver os serviços">▸</button>'
     + `<span class="op-dot ${tipo || ''}"></span>${escapeHtml(g.rotulo)} <button type="button" class="link-btn lc-orc" data-abrir-orc="${o.id}" title="Abrir o orçamento">orçamento nº ${o.numero}</button>`
@@ -6238,7 +6664,7 @@ async function receberGrupoOrc(id, data, valorPago) {
         const partes = ratear(valorPago, pesos);
         itens.forEach((l, i) => { if (partes[i] > 0) registrarParcial(l, partes[i], data, resp.forma); });
         depoisDeMudarGrupo();
-        toast(`${desp ? 'Pago' : 'Recebido'} ${formatCurrency(valorPago)}, dividido entre os serviços. Falta ${formatCurrency(Math.round((total - valorPago) * 100) / 100)}, que continua em aberto.`);
+        toast(`${desp ? 'Pago' : 'Recebido'} ${formatCurrency(valorPago)}, dividido entre os ${itens.some(l => l.orcamentoId) ? 'serviços' : 'clientes'}. Falta ${formatCurrency(Math.round((total - valorPago) * 100) / 100)}, que continua em aberto.`);
         return;
       }
     }
@@ -6247,7 +6673,7 @@ async function receberGrupoOrc(id, data, valorPago) {
     dif = Math.round((valorPago - total) * 100) / 100;
   } else itens.forEach(l => { l.efetivado = data; });
   depoisDeMudarGrupo();
-  toast(dif ? `Baixa feita. A diferença de ${formatCurrency(Math.abs(dif))} foi lançada, dividida entre os serviços.` : `${desp ? 'Pagamento' : 'Recebimento'} de ${formatCurrency(total)} confirmado.`);
+  toast(dif ? `Baixa feita. A diferença de ${formatCurrency(Math.abs(dif))} foi lançada, dividida entre os ${itens.some(l => l.orcamentoId) ? 'serviços' : 'clientes'}.` : `${desp ? 'Pagamento' : 'Recebimento'} de ${formatCurrency(total)} confirmado.`);
 }
 function desfazerGrupoOrc(id) {
   const itens = itensDoGrupo(id);
@@ -6274,7 +6700,8 @@ function excluirGrupoOrc(id) {
   const itens = itensDoGrupo(id);
   if (!itens.length) return;
   const pago = itens.reduce((a, l) => a + valorPagoEmPartes(l.id), 0);
-  if (!confirm(`Excluir este lançamento de ${formatCurrency(somaValores(itens))} (${itens.length} serviço${itens.length === 1 ? '' : 's'} do orçamento)?`
+  const doOrc = itens.some(l => l.orcamentoId);
+  if (!confirm(`Excluir este lançamento de ${formatCurrency(somaValores(itens))} (${itens.length} ${doOrc ? 'serviço' : 'cliente'}${itens.length === 1 ? '' : 's'} ${doOrc ? 'do orçamento' : 'do convênio'})?`
     + (pago ? ` Os recebimentos parciais dele (${formatCurrency(pago)}) também serão excluídos.` : ''))) return;
   const apagar = new Set(itens.map(l => l.id));
   state.lancamentos.forEach(x => { if ((x.ajusteDe && apagar.has(x.ajusteDe)) || (x.parcialDe && apagar.has(x.parcialDe))) apagar.add(x.id); });
@@ -6285,9 +6712,26 @@ function excluirGrupoOrc(id) {
 }
 
 /* ---- impressão / PDF ---- */
+function vencimentosReais(o) { /* 3.13.0: os vencimentos como estão lançados */
+  const m = new Map();
+  lancamentosDoOrcamento(o).sort((a, b) => (a.data || '').localeCompare(b.data || '')).forEach(l => {
+    const suf = sufixoOrcamento(l, o) || '';
+    const k = (l.data || '') + '|' + suf;
+    if (!m.has(k)) m.set(k, { data: l.data, rot: /parte|entrada/.test(suf) ? suf.replace(/^ · /, '') : '', cent: 0, pago: true });
+    const g = m.get(k);
+    g.cent += centavos(l.valorTotal != null ? l.valorTotal : l.valor);
+    if (!l.efetivado) g.pago = false;
+  });
+  return [...m.values()].map(g => ({ ...g, valor: g.cent / 100 }));
+}
 function imprimirOrcamento(o) {
   if (!o) return;
   const cr = cronogramaOrcamento(o);
+  const real = o.status === 'aprovado' && Array.isArray(o.ajustes) && o.ajustes.length ? vencimentosReais(o) : null;
+  const sobraTxt = real ? [
+    ...(state.creditos || []).filter(c => c.origem === `orçamento nº ${o.numero}` && normNome(c.cliente) === normNome(o.cliente)).map(c => `Pago a mais ${formatCurrency(c.valor)}: fica como crédito para o próximo orçamento.`),
+    ...state.lancamentos.filter(l => l.devolucaoDe === o.id).map(l => `Pago a mais ${formatCurrency(l.valor)}: ${l.efetivado ? 'devolvido' : 'a devolver'} ao cliente.`),
+  ].join(' ') : '';
   const m = state.config.marca || {};
   const lic = state.config.licenca || {};
   const emp = (lic.licenciado || '').trim() || (m.nome || '').trim() || state.config.empresas[0] || 'The Ways';
@@ -6298,8 +6742,10 @@ function imprimirOrcamento(o) {
   const esc = escapeHtml;
   const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Orçamento nº ${o.numero} - ${esc(o.cliente)}</title>
 <style>
-  @page { margin: 16mm; }
-  body { font-family: Arial, Helvetica, sans-serif; color: #1d2320; font-size: 12.5px; margin: 0; }
+  @page { margin: 0; } /* 3.11.1: sem margem o navegador não imprime data, endereço e nº da página */
+  body { font-family: Arial, Helvetica, sans-serif; color: #1d2320; font-size: 12.5px; margin: 0; padding: 0 16mm; }
+  table.folha, table.folha > * > tr > td { border: 0; padding: 0; margin: 0; }
+  table.folha > thead td, table.folha > tfoot td { height: 16mm; } /* a margem de cima e de baixo, repetida em cada página */
   .topo { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid ${cor}; padding-bottom: 10px; margin-bottom: 16px; }
   .topo img { max-height: 56px; max-width: 180px; }
   h1 { font-size: 20px; margin: 0 0 2px; color: ${cor}; }
@@ -6314,7 +6760,7 @@ function imprimirOrcamento(o) {
   .assin { display: flex; gap: 40px; margin-top: 56px; }
   .assin div { flex: 1; border-top: 1px solid #1d2320; padding-top: 6px; text-align: center; font-size: 11.5px; }
   .rodape { margin-top: 28px; font-size: 10px; color: #889; text-align: center; }
-</style><\/head><body>
+</style><\/head><body><table class="folha"><thead><tr><td></td></tr></thead><tfoot><tr><td></td></tr></tfoot><tbody><tr><td>
   <div class="topo">
     <div>${m.logo ? `<img src="${m.logo}" alt="">` : ''}<div style="font-size:16px; font-weight:700">${esc(emp)}</div>${doc ? `<div class="muted">${esc(doc)}</div>` : ''}</div>
     <div style="text-align:right"><h1>Orçamento nº ${o.numero}</h1><div class="muted">Emitido em ${formatDateBR(o.data)}${validade ? ` · válido até ${formatDateBR(validade)}` : ''}</div></div>
@@ -6328,13 +6774,15 @@ function imprimirOrcamento(o) {
       <tr class="total"><td colspan="3" class="num">Total</td><td class="num">${formatCurrency(cr.total)}</td></tr>
     </tfoot>
   </table>
-  <div class="bloco"><strong>Forma de pagamento:</strong> ${esc(textoCondicao(o, cr))}</div>
-  ${cr.parcelas.length > 1 ? `<table style="width:auto; min-width:50%"><thead><tr><th>Vencimento</th><th class="num">Valor</th></tr></thead><tbody>${cr.parcelas.map((p, k) =>
+  ${real ? `<div class="bloco"><strong>Pagamento:</strong> ajustado em ${formatDateBR(o.ajustes[o.ajustes.length - 1].em)}, conforme os vencimentos abaixo.</div>
+  <table style="width:auto; min-width:50%"><thead><tr><th>Vencimento</th><th class="num">Valor</th><th>Situação</th></tr></thead><tbody>${real.map(p => `<tr><td>${formatDateBR(p.data)}${p.rot ? `, ${esc(p.rot)}` : ''}</td><td class="num">${formatCurrency(p.valor)}</td><td>${p.pago ? 'pago' : 'a pagar'}</td></tr>`).join('')}</tbody></table>${sobraTxt ? `<div class="bloco muted">${esc(sobraTxt)}</div>` : ''}`
+  : `<div class="bloco"><strong>Forma de pagamento:</strong> ${esc(textoCondicao(o, cr))}</div>`}
+  ${!real && cr.parcelas.length > 1 ? `<table style="width:auto; min-width:50%"><thead><tr><th>Vencimento</th><th class="num">Valor</th></tr></thead><tbody>${cr.parcelas.map((p, k) =>
     `<tr><td>${p.parte ? `Parte ${p.parte}${p.vezes > 1 ? `, ${p.k + 1}ª de ${p.vezes}` : ''} (${esc(p.forma || '')}), ` : p.entrada ? 'Entrada, ' : `${o.condicao === 'entrada' ? k : k + 1}ª parcela, `}${formatDateBR(p.data)}</td><td class="num">${formatCurrency(p.valor)}</td></tr>`).join('')}</tbody></table>` : ''}
   ${o.obs ? `<div class="bloco"><strong>Observações:</strong> ${esc(o.obs)}</div>` : ''}
   <div class="assin"><div>${esc(emp)}</div><div>${esc(o.cliente)}</div></div>
   <div class="rodape">Desenvolvido por The Ways</div>
-<\/body><\/html>`;
+</td></tr></tbody></table><\/body><\/html>`;
   let fr = document.getElementById('ocPrintFrame');
   if (fr) fr.remove();
   fr = document.createElement('iframe');
@@ -6642,6 +7090,7 @@ document.querySelectorAll('#parcialModal [data-parcial]').forEach(b => b.addEven
 document.getElementById('parcialModal').addEventListener('click', (e) => { if (e.target.id === 'parcialModal') fecharParcialModal(null); });
 
 function renderPendencias() {
+  setTimeout(atualizarFichaFinSeAberta, 0); /* 3.14.0 */
   const rows = getPendentes();
   const linhas = agruparOrcamento(rows); /* 3.11.0 */
   const tbody = document.getElementById('tbodyPend');
@@ -6689,11 +7138,12 @@ function renderPendencias() {
         <td class="num" style="color:var(--${valorClass})">${sinal} ${formatCurrency(l.valor)}</td>
         <td>${statusTag(status)}</td>
         <td class="col-actions">
-          ${conf ? `<div class="caixa-ok"><span>${tipo === 'despesa' ? 'Pago' : 'Recebido'} em ${formatDateBR(l.efetivado)}</span><button type="button" class="link-btn" data-undo-caixa="${l.id}">desfazer</button></div>` : `
+          ${conf ? `<div class="caixa-ok"><span>${tipo === 'despesa' ? 'Pago' : 'Recebido'} em ${formatDateBR(l.efetivado)}</span>${botaoAlterar(l.id)}<button type="button" class="link-btn" data-undo-caixa="${l.id}">desfazer</button></div>` : `
           <div class="settle-row">
             <input type="text" inputmode="decimal" class="settle-valor" value="${numberToCurrencyDisplay(l.valor)}" data-settle-valor="${l.id}" title="${tipo === 'despesa' ? 'Valor pago' : 'Valor recebido'}" aria-label="${tipo === 'despesa' ? 'Valor pago' : 'Valor recebido'}">
             <input type="date" value="${dataBaixaPadrao(l, hoje)}" data-settle-date="${l.id}">
             <button class="btn btn-brass btn-sm" data-settle="${l.id}" title="${tipo === 'despesa' ? 'Confirmar que foi pago' : 'Confirmar que foi recebido'}">Confirmar</button>
+            ${botaoAlterar(l.id)}
           </div>`}
         </td>
       </tr>`;
@@ -6984,6 +7434,7 @@ ligarPartes(document.getElementById('divisaoPartes'), () => divLanc, optsDivLanc
 (function ordemParte3() { /* 3.10.0 */
   const ordem = ['campoForma', 'campoRecorrente', 'campoData', 'campoJaPago', 'campoDivisao'].map(id => document.getElementById(id));
   for (let i = 1; i < ordem.length; i++) ordem[i - 1].after(ordem[i]);
+  ordem[0].before(ordem[1]); /* 3.11.1: primeiro como será pago (Condição), depois a forma */
 })();
 ['campoForma', 'campoLocal', 'campoConvenio', 'campoDataAtend', 'pagInfo', 'campoData', 'campoRecInicio', 'campoRecFim',
   'campoJaPago', 'campoParceladoDia', 'campoParceladoQtd', 'campoParceladoPreview'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('so-uma-forma'); });
@@ -7237,6 +7688,455 @@ async function settleLancamento(id, dataEfetivado, valorPago) {
   renderTable();
   renderKpis();
   toast(aj ? `Baixa feita. A diferença de ${formatCurrency(aj.valor)} foi lançada em "${aj.categoria}".` : 'Lançamento marcado como liquidado.');
+}
+
+/* =========================================================================
+   3.14.0: ALTERAR DATA OU VALOR
+   Em toda tela onde o lançamento aparece (Lançamentos, Caixa, ficha do
+   cliente, listas dos quadros), o ícone do calendário abre esta janela.
+   Numa linha que junta vários (orçamento, convênio), a data vale para todos
+   e o valor novo é dividido na proporção de hoje. Fica no Registro.
+   ========================================================================= */
+const altUI = { id: null };
+function itensDaLinha(id) { return idsDe(id).map(x => state.lancamentos.find(l => l.id === x)).filter(Boolean); }
+function abrirAlterar(id) {
+  const itens = itensDaLinha(id);
+  if (!itens.length) return;
+  altUI.id = id;
+  const desp = tipoFluxo(itens[0].origem) === 'despesa';
+  const linha = itens.length > 1 ? (agruparOrcamento(itens)[0] || itens[0]) : itens[0];
+  const efet = itens.every(l => l.efetivado) ? itens[0].efetivado : null;
+  const soma = itens.reduce((a, l) => a + centavos(l.valor), 0) / 100;
+  document.getElementById('altDesc').textContent = [linha.descricao || linha.categoria, linha.quem].filter(Boolean).join(' · ');
+  document.getElementById('altData').value = itens[0].data || '';
+  document.getElementById('altValor').value = numberToCurrencyDisplay(soma);
+  document.getElementById('altCampoEfet').hidden = !efet;
+  document.getElementById('altEfet').value = efet || '';
+  document.getElementById('altEfetLabel').textContent = desp ? 'Pago em' : 'Recebido em';
+  const notas = [];
+  if (itens.length > 1) notas.push(`Esta linha junta ${itens.length} lançamentos. A nova data vale para todos; o novo valor é dividido entre eles na proporção de hoje.`);
+  if (itens.some(l => l.valorTotal != null && !l.efetivado)) notas.push('Já há parte paga: o valor aqui é o que ainda falta.');
+  if (itens.some(l => l.serie && l.totalParcelas)) notas.push('Muda só esta parcela. Para mudar as outras juntas, use Editar no lançamento.');
+  notas.push('A mudança fica anotada no Registro de alterações, com o seu nome.');
+  document.getElementById('altNota').textContent = notas.join(' ');
+  document.getElementById('altModal').classList.add('open');
+  setTimeout(() => { try { document.getElementById('altData').focus(); } catch (e) {} }, 30);
+}
+function fecharAlterar() { document.getElementById('altModal').classList.remove('open'); altUI.id = null; }
+function salvarAlterar() {
+  const itens = itensDaLinha(altUI.id || '');
+  if (!itens.length) { fecharAlterar(); return; }
+  const data = document.getElementById('altData').value;
+  const vTxt = document.getElementById('altValor').value.trim();
+  const valor = vTxt ? currencyDisplayToNumber(finalizeCurrencyDisplay(vTxt, false)) : 0;
+  const efetCampo = !document.getElementById('altCampoEfet').hidden;
+  const efet = document.getElementById('altEfet').value;
+  if (!data) { toast('Informe o vencimento.'); return; }
+  if (!(valor > 0)) { toast('Informe um valor maior que zero.'); return; }
+  if (efetCampo && !efet) { toast('Informe a data do pagamento.'); return; }
+  const somaAnt = itens.reduce((a, l) => a + centavos(l.valor), 0);
+  let mudou = false;
+  if (data !== itens[0].data || itens.some(l => l.data !== itens[0].data)) {
+    itens.forEach(l => { if (!l.competencia || l.competencia === l.data) l.competencia = data; l.data = data; });
+    mudou = true;
+  }
+  if (centavos(valor) !== somaAnt) {
+    const partes = ratear(valor, itens.map(l => Number(l.valor) || 0));
+    itens.forEach((l, i) => {
+      if (l.valorTotal != null) l.valorTotal = Math.round(((Number(l.valorTotal) || 0) + partes[i] - (Number(l.valor) || 0)) * 100) / 100;
+      l.valor = partes[i];
+      if (state.lancamentos.some(x => x.taxaDe === l.id)) aplicarTaxaCartao(l);
+    });
+    mudou = true;
+  }
+  if (efetCampo && itens.some(l => l.efetivado !== efet)) { itens.forEach(l => { l.efetivado = efet; }); mudou = true; }
+  fecharAlterar();
+  if (!mudou) { toast('Nada foi alterado.'); return; }
+  markDirty(); renderTable(); renderPendencias(); renderKpis();
+  if (document.getElementById('compModal').classList.contains('open')) renderComposicao();
+  toast('Alterado. A mudança ficou no Registro de alterações.');
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-alterar]');
+  if (b) { e.preventDefault(); abrirAlterar(b.dataset.alterar); }
+});
+document.getElementById('altFechar').addEventListener('click', fecharAlterar);
+document.getElementById('altCancelar').addEventListener('click', fecharAlterar);
+document.getElementById('altSalvar').addEventListener('click', salvarAlterar);
+document.getElementById('altValor').addEventListener('input', (e) => { e.target.value = liveFormatCurrencyTyping(e.target.value, false); });
+document.getElementById('altValor').addEventListener('blur', (e) => { if (e.target.value.trim()) e.target.value = finalizeCurrencyDisplay(e.target.value, false); });
+
+/* =========================================================================
+   3.14.0: USUÁRIOS
+   Sem usuário cadastrado, o sistema abre direto, como sempre. Com o primeiro
+   usuário (Master), passa a pedir usuário e senha ao abrir (vale até fechar
+   o navegador). Master e Gerencial veem as mesmas telas; só o Master cria
+   usuários e troca a senha dos outros. A senha é guardada embaralhada
+   (SHA-256 com sal). É uma barreira simples: o arquivo continua local.
+   ========================================================================= */
+function sha256Hex(txt) {
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const bytes = Array.from(new TextEncoder().encode(String(txt)));
+  const bitLen = bytes.length * 8;
+  bytes.push(0x80);
+  while (bytes.length % 64 !== 56) bytes.push(0);
+  for (let i = 7; i >= 0; i--) bytes.push(i >= 4 ? 0 : (bitLen >>> (i * 8)) & 0xff);
+  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const r = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let o = 0; o < bytes.length; o += 64) {
+    const w = new Array(64);
+    for (let i = 0; i < 16; i++) w[i] = (bytes[o + i * 4] << 24) | (bytes[o + i * 4 + 1] << 16) | (bytes[o + i * 4 + 2] << 8) | bytes[o + i * 4 + 3];
+    for (let i = 16; i < 64; i++) {
+      const s0 = r(w[i - 15], 7) ^ r(w[i - 15], 18) ^ (w[i - 15] >>> 3), s1 = r(w[i - 2], 17) ^ r(w[i - 2], 19) ^ (w[i - 2] >>> 10);
+      w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+    }
+    let [a, b, c, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++) {
+      const t1 = (h + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) | 0;
+      const t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+      h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+    }
+    H = [H[0] + a, H[1] + b, H[2] + c, H[3] + d, H[4] + e, H[5] + f, H[6] + g, H[7] + h].map(x => x | 0);
+  }
+  return H.map(x => (x >>> 0).toString(16).padStart(8, '0')).join('');
+}
+function salAleatorio() {
+  const a = new Uint8Array(12);
+  try { crypto.getRandomValues(a); } catch (e) { for (let i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 256); }
+  return Array.from(a, x => x.toString(16).padStart(2, '0')).join('');
+}
+function senhaGuardada(senha) { const sal = salAleatorio(); return { sal, hash: sha256Hex(sal + ':' + senha) }; }
+function senhaConfere(reg, senha) { return !!reg && !!reg.sal && sha256Hex(reg.sal + ':' + senha) === reg.hash; }
+const SESSAO_KEY = 'fcpj_usuario_sessao';
+let usuarioSessaoId = null;
+try { usuarioSessaoId = sessionStorage.getItem(SESSAO_KEY); } catch (e) {}
+function usuariosAtivos() { return (state.usuarios || []).filter(u => u.ativo !== false); }
+function exigeSenha() { return usuariosAtivos().length > 0; }
+function usuarioAtual() { return usuariosAtivos().find(u => u.id === usuarioSessaoId) || null; }
+function nomeUsuarioAtual() { const u = usuarioAtual(); return u ? u.nome : (exigeSenha() ? '(sem entrar)' : 'sem usuário'); }
+function ehMaster() { const u = usuarioAtual(); return !exigeSenha() || (!!u && u.perfil === 'Master'); }
+function entrarComo(u) {
+  usuarioSessaoId = u ? u.id : null;
+  try { if (u) sessionStorage.setItem(SESSAO_KEY, u.id); else sessionStorage.removeItem(SESSAO_KEY); } catch (e) {}
+  pintarUsuarioTopo();
+}
+function pintarUsuarioTopo() {
+  const b = document.getElementById('btnUsuario');
+  const u = usuarioAtual();
+  b.hidden = !u;
+  if (u) b.textContent = `${u.nome} · Sair`;
+}
+function verificarEntrada() {
+  const tela = document.getElementById('loginTela');
+  if (!exigeSenha() || usuarioAtual()) { tela.hidden = true; pintarUsuarioTopo(); return; }
+  const m = state.config.marca || {};
+  document.getElementById('loginMarca').textContent = (m.nome || '').trim() || 'The Ways';
+  document.getElementById('loginUsuario').innerHTML = usuariosAtivos().slice().sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')).map(u => `<option value="${u.id}">${escapeHtml(u.nome)}</option>`).join('');
+  document.getElementById('loginSenha').value = '';
+  document.getElementById('loginErro').hidden = true;
+  document.getElementById('loginEntrar').hidden = false;
+  document.getElementById('loginRecuperar').hidden = true;
+  tela.hidden = false;
+  pintarUsuarioTopo();
+  setTimeout(() => { try { document.getElementById('loginSenha').focus(); } catch (e) {} }, 50);
+}
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!document.getElementById('loginRecuperar').hidden) return;
+  const u = usuariosAtivos().find(x => x.id === document.getElementById('loginUsuario').value);
+  const erro = document.getElementById('loginErro');
+  if (!u || !senhaConfere(u, document.getElementById('loginSenha').value)) {
+    erro.textContent = 'Senha não confere. Confira e tente de novo.'; erro.hidden = false;
+    document.getElementById('loginSenha').select();
+    return;
+  }
+  entrarComo(u);
+  document.getElementById('loginTela').hidden = true;
+  toast(`Olá, ${primeiroNome(u.nome)}!`);
+});
+document.getElementById('loginEsqueci').addEventListener('click', () => {
+  document.getElementById('loginEntrar').hidden = true;
+  document.getElementById('loginRecuperar').hidden = false;
+  ['recChave', 'recSenha', 'recSenha2'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('recErro').hidden = true;
+  document.getElementById('recChave').focus();
+});
+document.getElementById('recVoltar').addEventListener('click', verificarEntrada);
+document.getElementById('recBtn').addEventListener('click', () => {
+  const erro = document.getElementById('recErro');
+  const falha = t => { erro.textContent = t; erro.hidden = false; };
+  const u = usuariosAtivos().find(x => x.id === document.getElementById('loginUsuario').value);
+  const chave = document.getElementById('recChave').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const s1 = document.getElementById('recSenha').value, s2 = document.getElementById('recSenha2').value;
+  if (!u) return falha('Escolha o usuário na tela anterior.');
+  if (!senhaConfere(state.chaveRecuperacao, chave)) return falha('A chave não confere.');
+  if (s1.length < 4) return falha('A senha nova precisa ter pelo menos 4 caracteres.');
+  if (s1 !== s2) return falha('As duas senhas novas não são iguais.');
+  Object.assign(u, senhaGuardada(s1));
+  entrarComo(u);
+  anotarRegistro([`Trocou a senha de ${u.nome} com a chave de recuperação`]);
+  markDirty();
+  document.getElementById('loginTela').hidden = true;
+  toast('Senha trocada. Você já entrou no sistema.');
+});
+document.getElementById('btnUsuario').addEventListener('click', () => {
+  const u = usuarioAtual();
+  if (!u || !confirm(`Sair do sistema? Para entrar de novo, será pedida a senha.`)) return;
+  entrarComo(null);
+  try { document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); closeDrawer(); } catch (e) {}
+  verificarEntrada();
+});
+function gerarChaveRecuperacao() {
+  const letras = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const a = new Uint8Array(12);
+  try { crypto.getRandomValues(a); } catch (e) { for (let i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 256); }
+  const txt = Array.from(a, x => letras[x % letras.length]).join('');
+  state.chaveRecuperacao = senhaGuardada(txt);
+  document.getElementById('chaveTexto').textContent = txt.match(/.{4}/g).join('-');
+  document.getElementById('chaveModal').classList.add('open');
+}
+document.getElementById('chaveOk').addEventListener('click', () => { document.getElementById('chaveModal').classList.remove('open'); });
+/* janela de senha: novo usuário, trocar a própria senha ou a de outro */
+const senhaUI = { modo: null, id: null };
+function abrirSenha(modo, id) {
+  senhaUI.modo = modo; senhaUI.id = id || null;
+  const u = id ? (state.usuarios || []).find(x => x.id === id) : null;
+  const primeiro = modo === 'novo' && !exigeSenha();
+  document.getElementById('senhaTitulo').textContent = modo === 'novo' ? (primeiro ? 'Primeiro usuário (Master)' : 'Novo usuário') : modo === 'minha' ? 'Trocar minha senha' : `Nova senha de ${u ? u.nome : ''}`;
+  document.getElementById('senhaTexto').textContent = primeiro ? 'Depois de salvar, o sistema passa a pedir usuário e senha ao abrir. Aparece também uma chave de recuperação: anote e guarde.'
+    : modo === 'novo' ? 'Master e Gerencial veem as mesmas telas. Só o Master cria usuários e troca a senha dos outros.' : modo === 'outro' ? 'Combine a senha nova com a pessoa. Ela pode trocar depois, em Configurações › Usuários.' : '';
+  document.getElementById('senhaCampoNome').hidden = modo !== 'novo';
+  document.getElementById('senhaCampoPerfil').hidden = modo !== 'novo' || primeiro;
+  document.getElementById('senhaCampoAtual').hidden = modo !== 'minha';
+  document.getElementById('senhaNovaLabel').textContent = modo === 'novo' ? 'Senha' : 'Senha nova';
+  ['senhaNome', 'senhaAtual', 'senhaNova', 'senhaNova2'].forEach(x => { document.getElementById(x).value = ''; });
+  document.getElementById('senhaPerfil').value = primeiro ? 'Master' : 'Gerencial';
+  document.getElementById('senhaErro').hidden = true;
+  document.getElementById('senhaModal').classList.add('open');
+  setTimeout(() => { try { document.getElementById(modo === 'novo' ? 'senhaNome' : modo === 'minha' ? 'senhaAtual' : 'senhaNova').focus(); } catch (e) {} }, 30);
+}
+function fecharSenha() { document.getElementById('senhaModal').classList.remove('open'); }
+document.getElementById('senhaFechar').addEventListener('click', fecharSenha);
+document.getElementById('senhaCancelar').addEventListener('click', fecharSenha);
+document.getElementById('senhaSalvar').addEventListener('click', () => {
+  const erro = document.getElementById('senhaErro');
+  const falha = t => { erro.textContent = t; erro.hidden = false; };
+  const s1 = document.getElementById('senhaNova').value, s2 = document.getElementById('senhaNova2').value;
+  if (s1.length < 4) return falha('A senha precisa ter pelo menos 4 caracteres.');
+  if (s1 !== s2) return falha('As duas senhas não são iguais.');
+  if (!Array.isArray(state.usuarios)) state.usuarios = [];
+  if (senhaUI.modo === 'novo') {
+    const nome = document.getElementById('senhaNome').value.trim();
+    if (!nome) return falha('Informe o nome.');
+    if (state.usuarios.some(u => normNome(u.nome) === normNome(nome))) return falha('Já existe um usuário com esse nome.');
+    const primeiro = !exigeSenha();
+    const u = { id: uid(), nome, perfil: primeiro ? 'Master' : document.getElementById('senhaPerfil').value, ativo: true, criadoEm: todayISO(), ...senhaGuardada(s1) };
+    state.usuarios.push(u);
+    anotarRegistro([`Criou o usuário ${u.nome} (${u.perfil})`]);
+    if (primeiro) { entrarComo(u); gerarChaveRecuperacao(); }
+    markDirty(); fecharSenha(); renderUsuariosConfig();
+    toast(primeiro ? `Usuário ${u.nome} criado. Daqui em diante, o sistema pede a senha ao abrir.` : `Usuário ${u.nome} criado.`);
+    return;
+  }
+  const u = senhaUI.modo === 'minha' ? usuarioAtual() : state.usuarios.find(x => x.id === senhaUI.id);
+  if (!u) { fecharSenha(); return; }
+  if (senhaUI.modo === 'minha' && !senhaConfere(u, document.getElementById('senhaAtual').value)) return falha('A senha atual não confere.');
+  Object.assign(u, senhaGuardada(s1));
+  anotarRegistro([senhaUI.modo === 'minha' ? `Trocou a própria senha (${u.nome})` : `Trocou a senha de ${u.nome}`]);
+  markDirty(); fecharSenha(); renderUsuariosConfig();
+  toast('Senha trocada.');
+});
+function renderUsuariosConfig() {
+  const box = document.getElementById('cfgUsuarios');
+  if (!box) return;
+  const us = (state.usuarios || []).slice().sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  const eu = usuarioAtual(), master = ehMaster();
+  if (!us.length) {
+    box.innerHTML = `<h3>Usuários</h3><p class="sub-note">Hoje o sistema abre direto, sem senha. Ao criar o primeiro usuário, ele será o <strong>Master</strong> e o sistema passa a pedir usuário e senha ao abrir neste computador e em todo computador que receber este backup.</p>`
+      + `<button type="button" class="btn btn-brass btn-sm" id="usrNovo">Criar o primeiro usuário (Master)</button>`;
+  } else {
+    box.innerHTML = `<h3>Usuários</h3><p class="sub-note">Master e Gerencial veem as mesmas telas, por enquanto. Só o Master cria usuários, troca a senha dos outros e gera a chave de recuperação.${eu ? ` Você entrou como <strong>${escapeHtml(eu.nome)}</strong> (${eu.perfil}).` : ''}</p>`
+      + `<table class="usr-tab"><thead><tr><th>Nome</th><th>Perfil</th><th>Situação</th><th class="col-actions"></th></tr></thead><tbody>${us.map(u => `<tr>
+          <td>${escapeHtml(u.nome)}${eu && eu.id === u.id ? ' <span class="muted">(você)</span>' : ''}</td><td>${u.perfil}</td><td>${u.ativo === false ? 'desativado' : 'ativo'}</td>
+          <td class="col-actions">${eu && eu.id === u.id ? '<button type="button" class="link-btn" data-usr-minha>trocar minha senha</button>' : ''}
+            ${master && !(eu && eu.id === u.id) ? `<button type="button" class="link-btn" data-usr-senha="${u.id}">trocar senha</button> <button type="button" class="link-btn" data-usr-perfil="${u.id}">mudar para ${u.perfil === 'Master' ? 'Gerencial' : 'Master'}</button> <button type="button" class="link-btn" data-usr-ativo="${u.id}">${u.ativo === false ? 'ativar' : 'desativar'}</button> <button type="button" class="link-btn" style="color:var(--despesa)" data-usr-del="${u.id}">excluir</button>` : ''}</td></tr>`).join('')}</tbody></table>`
+      + (master ? `<div class="add-row" style="margin-top:10px; flex-wrap:wrap"><button type="button" class="btn btn-brass btn-sm" id="usrNovo">+ Novo usuário</button><button type="button" class="btn btn-outline btn-sm" id="usrChave">Gerar nova chave de recuperação</button></div>` : '');
+  }
+  const novo = document.getElementById('usrNovo');
+  if (novo) novo.addEventListener('click', () => abrirSenha('novo'));
+  const ch = document.getElementById('usrChave');
+  if (ch) ch.addEventListener('click', () => {
+    if (!confirm('Gerar uma chave de recuperação nova? A chave anterior deixa de valer.')) return;
+    gerarChaveRecuperacao(); anotarRegistro(['Gerou uma chave de recuperação nova']); markDirty();
+  });
+  box.querySelectorAll('[data-usr-minha]').forEach(b => b.addEventListener('click', () => abrirSenha('minha')));
+  box.querySelectorAll('[data-usr-senha]').forEach(b => b.addEventListener('click', () => abrirSenha('outro', b.dataset.usrSenha)));
+  const mastersAtivos = () => usuariosAtivos().filter(u => u.perfil === 'Master');
+  box.querySelectorAll('[data-usr-perfil]').forEach(b => b.addEventListener('click', () => {
+    const u = state.usuarios.find(x => x.id === b.dataset.usrPerfil);
+    if (!u) return;
+    if (u.perfil === 'Master' && u.ativo !== false && mastersAtivos().length <= 1) { toast('Precisa ficar pelo menos um Master ativo.'); return; }
+    u.perfil = u.perfil === 'Master' ? 'Gerencial' : 'Master';
+    anotarRegistro([`Mudou ${u.nome} para ${u.perfil}`]); markDirty(); renderUsuariosConfig();
+  }));
+  box.querySelectorAll('[data-usr-ativo]').forEach(b => b.addEventListener('click', () => {
+    const u = state.usuarios.find(x => x.id === b.dataset.usrAtivo);
+    if (!u) return;
+    if (u.ativo !== false && u.perfil === 'Master' && mastersAtivos().length <= 1) { toast('Precisa ficar pelo menos um Master ativo.'); return; }
+    u.ativo = u.ativo === false;
+    anotarRegistro([`${u.ativo ? 'Ativou' : 'Desativou'} o usuário ${u.nome}`]); markDirty(); renderUsuariosConfig();
+  }));
+  box.querySelectorAll('[data-usr-del]').forEach(b => b.addEventListener('click', () => {
+    const u = state.usuarios.find(x => x.id === b.dataset.usrDel);
+    if (!u) return;
+    if (u.ativo !== false && u.perfil === 'Master' && mastersAtivos().length <= 1) { toast('Precisa ficar pelo menos um Master ativo.'); return; }
+    if (!confirm(`Excluir o usuário ${u.nome}? O que ele fez continua no Registro de alterações.`)) return;
+    state.usuarios = state.usuarios.filter(x => x.id !== u.id);
+    anotarRegistro([`Excluiu o usuário ${u.nome}`]); markDirty(); renderUsuariosConfig();
+  }));
+}
+/* =========================================================================
+   3.14.0: REGISTRO DE ALTERAÇÕES
+   Toda gravação (markDirty) compara os dados com a foto da gravação
+   anterior e anota o que mudou, com a data, a hora e quem estava no sistema.
+   Funciona em qualquer tela, sem depender de cada botão. Guarda os 3.000
+   registros mais recentes (no backup também).
+   ========================================================================= */
+let fotoRegistro = null;
+function fotoDosDados() {
+  const lanc = new Map(), orc = new Map(), pac = new Map();
+  state.lancamentos.forEach(l => {
+    if (l.taxaDe || l.repasseDe) return;
+    lanc.set(l.id, { id: l.id, data: l.data || null, valor: centavos(l.valorTotal != null ? l.valorTotal : l.valor), aberto: centavos(l.valor), efetivado: l.efetivado || null, categoria: l.categoria || null,
+      quem: l.quem || null, descricao: l.descricao || null, formaPagamento: l.formaPagamento || null, empresa: l.empresa || null, origem: l.origem,
+      orcamentoId: l.orcamentoId || null, parcialDe: l.parcialDe || null, ajusteDe: l.ajusteDe || null, convenio: l.convenio || null });
+  });
+  (state.orcamentos || []).forEach(o => orc.set(o.id, { numero: o.numero, cliente: o.cliente, status: o.status, ajustes: (o.ajustes || []).length, ultimoAjuste: (o.ajustes || []).slice(-1)[0] || null, json: JSON.stringify(o.itens || []) + '|' + o.desconto }));
+  (state.pacientes || []).forEach(p => pac.set(p.id, { nome: p.nome, json: JSON.stringify(p) }));
+  return { st: state, lanc, orc, pac };
+}
+function anotarRegistro(itens) {
+  if (!itens || !itens.length) return;
+  if (!Array.isArray(state.registro)) state.registro = [];
+  const ult = state.registro[state.registro.length - 1];
+  const em = agoraLocal(), usuario = nomeUsuarioAtual();
+  if (ult && ult.em === em && ult.usuario === usuario && ult.itens.length < 40) ult.itens.push(...itens); /* no mesmo minuto, pela mesma pessoa, fica junto */
+  else state.registro.push({ em, usuario, itens });
+  if (state.registro.length > 3000) state.registro.splice(0, state.registro.length - 3000);
+}
+function registrarAlteracoes() {
+  if (!fotoRegistro || fotoRegistro.st !== state) { fotoRegistro = fotoDosDados(); return; }
+  const ant = fotoRegistro, nova = fotoDosDados();
+  fotoRegistro = nova;
+  anotarRegistro(textosDasMudancas(ant, nova));
+}
+function textosDasMudancas(ant, nova) {
+  const out = [];
+  const R = c => formatCurrency(c / 100);
+  const D = d => d ? formatDateBR(d) : '—';
+  const nomeL = r => {
+    const d = r.descricao || r.categoria || 'lançamento';
+    return `"${d}"${r.quem && !d.includes(r.quem) ? ` de ${r.quem}` : ''}`;
+  };
+  const desp = r => tipoFluxo(r.origem) === 'despesa';
+  const doOrc = r => { const o = r.orcamentoId && (nova.orc.get(r.orcamentoId) || ant.orc.get(r.orcamentoId)); return o ? `orçamento nº ${o.numero} de ${o.cliente}` : null; };
+  const grupos = new Map();
+  const juntar = (chave, alvo, r, extra) => {
+    if (!grupos.has(chave)) grupos.set(chave, { alvo, linhas: [], extra });
+    grupos.get(chave).linhas.push(r);
+  };
+  const raizDe = r => r.parcialDe ? (nova.lanc.get(r.parcialDe) || ant.lanc.get(r.parcialDe) || r) : r;
+  nova.lanc.forEach((r, id) => {
+    const a = ant.lanc.get(id);
+    const base = raizDe(r), orcTxt = doOrc(base);
+    const alvo = orcTxt || nomeL(base);
+    const g = orcTxt ? 'o' + base.orcamentoId : 'l' + (r.parcialDe || id);
+    if (!a) { juntar((r.parcialDe ? 'parte|' : r.ajusteDe ? 'ajb|' : 'novo|') + g + '|' + (r.efetivado || ''), alvo, r); return; }
+    const mud = [];
+    if (a.data !== r.data) mud.push(`vencimento ${D(a.data)} → ${D(r.data)}`);
+    if (a.efetivado !== r.efetivado) mud.push(!a.efetivado ? `${desp(r) ? 'pagamento' : 'recebimento'} confirmado em ${D(r.efetivado)}` : !r.efetivado ? 'baixa desfeita (voltou a ficar em aberto)' : `data do ${desp(r) ? 'pagamento' : 'recebimento'} ${D(a.efetivado)} → ${D(r.efetivado)}`);
+    [['categoria', 'categoria'], ['quem', 'nome'], ['descricao', 'descrição'], ['formaPagamento', 'forma'], ['empresa', 'empresa']].forEach(([k, rot]) => {
+      if ((a[k] || '') !== (r[k] || '')) mud.push(`${rot} "${a[k] || '—'}" → "${r[k] || '—'}"`);
+    });
+    const vMud = a.valor !== r.valor;
+    if (!mud.length && !vMud) return;
+    juntar('mud|' + g + '|' + (orcTxt ? a.data : '') + '|' + mud.join(';') + (vMud ? '|v' : ''), alvo, { r, a }, mud);
+  });
+  ant.lanc.forEach((a, id) => {
+    if (nova.lanc.has(id)) return;
+    const base = raizDe(a), orcTxt = doOrc(base);
+    juntar((a.parcialDe ? 'despart|' : 'exc|') + (orcTxt ? 'o' + base.orcamentoId : 'l' + (a.parcialDe || id)), orcTxt || nomeL(base), a);
+  });
+  grupos.forEach((g, chave) => {
+    const tipo = chave.split('|')[0];
+    const n = g.linhas.length;
+    const soma = tipo === 'mud' ? null : g.linhas.reduce((x, r) => x + r.valor, 0);
+    const r0 = tipo === 'mud' ? g.linhas[0].r : g.linhas[0];
+    const verbo = desp(r0) ? 'Pagou' : 'Recebeu';
+    if (tipo === 'novo') out.push(n > 1 ? `Lançou ${n} ${desp(r0) ? 'despesas' : 'receitas'} do ${g.alvo}, total ${R(soma)}${r0.efetivado ? `, já ${desp(r0) ? 'pagas' : 'recebidas'}` : ''}`
+      : `Lançou ${g.alvo.startsWith('orçamento') ? `no ${g.alvo} ` : ''}${nomeL(r0)}, ${R(soma)}, vencimento ${D(r0.data)}${r0.efetivado ? `, já ${desp(r0) ? 'pago' : 'recebido'} em ${D(r0.efetivado)}` : ''}`);
+    else if (tipo === 'parte') out.push(`${verbo} uma parte, ${R(soma)}, em ${D(r0.efetivado)}: ${g.alvo}`);
+    else if (tipo === 'ajb') out.push(`Diferença na baixa, ${R(soma)} (${r0.categoria || ''}): ${g.alvo}`);
+    else if (tipo === 'exc') out.push(`Excluiu ${n > 1 ? `${n} lançamentos do ${g.alvo}` : g.alvo.startsWith('orçamento') ? `${nomeL(r0)} do ${g.alvo}` : g.alvo}, ${R(soma)}`);
+    else if (tipo === 'despart') out.push(`Desfez o pagamento parcial de ${R(soma)}: ${g.alvo}`);
+    else {
+      const partes = g.extra.slice();
+      const va = g.linhas.reduce((x, p) => x + p.a.valor, 0), vn = g.linhas.reduce((x, p) => x + p.r.valor, 0);
+      if (va !== vn) partes.push(`valor ${R(va)} → ${R(vn)}`);
+      else if (g.linhas.some(p => !p.a.efetivado && p.r.efetivado)) partes.push(R(g.linhas.reduce((x, p) => x + p.r.aberto, 0)));
+      if (!partes.length) return;
+      const a0 = g.linhas[0].a;
+      const alvo = g.alvo.startsWith('orçamento') ? `${g.alvo}, vencimento ${D(a0.data)}${n > 1 ? ` (${n} serviços)` : `, ${nomeL(g.linhas[0].r)}`}` : g.alvo;
+      out.push(`Alterou ${alvo}: ${partes.join('; ')}`);
+    }
+  });
+  /* orçamentos */
+  const sit = { rascunho: 'em aberto', aprovado: 'aprovado', recusado: 'recusado' };
+  nova.orc.forEach((o, id) => {
+    const a = ant.orc.get(id);
+    const nome = `orçamento nº ${o.numero} de ${o.cliente}`;
+    if (!a) { out.push(`Criou o ${nome}${o.status === 'aprovado' ? ' e aprovou' : ''}`); return; }
+    if (a.status !== o.status) out.push(a.status === 'aprovado' && o.status === 'rascunho' ? `Desfez a aprovação do ${nome}` : o.status === 'aprovado' ? `Aprovou o ${nome}` : o.status === 'recusado' ? `Marcou como recusado o ${nome}` : `Reabriu o ${nome}`);
+    else if (o.ajustes > a.ajustes) out.push(`Ajustou o ${nome}: ${o.ultimoAjuste ? o.ultimoAjuste.texto : ''}`);
+    else if (a.json !== o.json && o.status !== 'aprovado') out.push(`Alterou os serviços ou o desconto do ${nome} (${sit[o.status] || o.status})`);
+  });
+  ant.orc.forEach((o, id) => { if (!nova.orc.has(id)) out.push(`Excluiu o orçamento nº ${o.numero} de ${o.cliente}`); });
+  /* cadastro de clientes */
+  nova.pac.forEach((p, id) => {
+    const a = ant.pac.get(id);
+    if (!a) out.push(`Cadastrou o cliente ${p.nome}`);
+    else if (a.json !== p.json) out.push(a.nome !== p.nome ? `Alterou o cadastro de ${a.nome} (agora ${p.nome})` : `Alterou o cadastro de ${p.nome}`);
+  });
+  ant.pac.forEach((p, id) => { if (!nova.pac.has(id)) out.push(`Excluiu o cadastro de ${p.nome}`); });
+  return out;
+}
+function abrirRegistro() {
+  const sel = document.getElementById('regUsuario');
+  const nomes = [...new Set((state.registro || []).map(r => r.usuario))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  sel.innerHTML = '<option value="">Todos</option>' + nomes.map(n => `<option>${escapeHtml(n)}</option>`).join('');
+  document.getElementById('regBusca').value = '';
+  document.getElementById('regDe').value = ''; document.getElementById('regAte').value = '';
+  renderRegistro();
+  document.getElementById('regModal').classList.add('open');
+}
+function renderRegistro() {
+  const q = normNome(document.getElementById('regBusca').value.trim());
+  const quem = document.getElementById('regUsuario').value;
+  const de = document.getElementById('regDe').value, ate = document.getElementById('regAte').value;
+  const todos = (state.registro || []).slice().reverse();
+  const lista = todos.filter(r => (!quem || r.usuario === quem) && (!de || r.em.slice(0, 10) >= de) && (!ate || r.em.slice(0, 10) <= ate)
+    && (!q || normNome(r.itens.join(' ') + ' ' + r.usuario).includes(q)));
+  const vis = lista.slice(0, 500);
+  document.getElementById('regTbody').innerHTML = vis.length ? vis.map(r => `<tr><td style="white-space:nowrap">${formatDateBR(r.em.slice(0, 10))} ${escapeHtml(r.em.slice(11, 16))}</td><td>${escapeHtml(r.usuario)}</td>`
+    + `<td class="reg-itens">${r.itens.map(t => `<div>${escapeHtml(t)}</div>`).join('')}</td></tr>`).join('')
+    : `<tr><td colspan="3" class="muted" style="text-align:center; padding:18px">${todos.length ? 'Nada com esse filtro.' : 'Nada registrado ainda. O registro começa a valer a partir desta versão.'}</td></tr>`;
+  document.getElementById('regNota').textContent = lista.length > vis.length ? `Mostrando os 500 mais recentes de ${lista.length}. Use a busca ou as datas para achar os outros.` : '';
+}
+['regBusca', 'regUsuario', 'regDe', 'regAte'].forEach(id => document.getElementById(id).addEventListener(id === 'regBusca' ? 'input' : 'change', renderRegistro));
+document.getElementById('regFechar').addEventListener('click', () => document.getElementById('regModal').classList.remove('open'));
+function iniciarUsuariosERegistro() {
+  fotoRegistro = fotoDosDados();
+  verificarEntrada();
 }
 
 function undoBaixa(id) {
@@ -7912,6 +8812,11 @@ document.getElementById('relRegime').addEventListener('change', renderRelatorios
 document.getElementById('relAgrupar').addEventListener('change', () => { relCollapsed.clear(); renderRelatorios(); });
 document.getElementById('relTipo').addEventListener('change', renderRelatorios);
 document.getElementById('relDevMostrar').addEventListener('change', renderRelatorios);
+document.getElementById('relBusca').addEventListener('input', renderRelatorios);
+function bateBuscaRel(l) {
+  const q = normNome(document.getElementById('relBusca').value.trim());
+  return !q || normNome([l.quem, l.categoria, l.descricao, l.observacao, l.formaPagamento, l.local, l.convenio, textoOrcBusca(l)].filter(Boolean).join(' ')).includes(q);
+}
 
 /* =========================================================================
    3.7.5: CLIENTES DEVENDO
@@ -7923,7 +8828,7 @@ function dadosClientesDevendo() {
   const hoje = todayISO();
   const mapa = new Map();
   state.lancamentos.forEach(l => {
-    if (l.efetivado || !l.data || tipoFluxo(l.origem) !== 'receita' || !noFiltroCtx(l)) return;
+    if (l.efetivado || !l.data || tipoFluxo(l.origem) !== 'receita' || !noFiltroCtx(l) || !bateBuscaRel(l)) return;
     const nome = (l.quem || '').trim() || '(sem cliente informado)';
     if (!mapa.has(nome)) mapa.set(nome, { nome, vencidos: [], aVencer: [], vencido: 0, aVencerV: 0, desde: null });
     const c = mapa.get(nome);
@@ -8042,6 +8947,7 @@ function syncRelUI() {
   document.getElementById('relRegimeSeg').hidden = !usaRegime;
   document.querySelectorAll('[data-rel-regime]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.relRegime === reg.value)));
   document.getElementById('relDevSeg').hidden = item !== 'devendo';
+  document.getElementById('relBusca').hidden = relUI.grupo !== 'dia'; /* 3.11.1: a busca vale nos relatórios com lançamentos */
   document.querySelectorAll('[data-rel-dev]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.relDev === document.getElementById('relDevMostrar').value)));
 }
 document.getElementById('viewRelatorios').addEventListener('click', (e) => {
@@ -8063,7 +8969,7 @@ document.getElementById('viewRelatorios').addEventListener('click', (e) => {
 function renderRelDiaADia(p, tipo, lado) {
   const desp = lado === 'despesa';
   const cls = desp ? 'despesa' : 'receita';
-  const base = state.lancamentos.filter(l => noFiltroCtx(l) && ehFluxo(l) && tipoFluxo(l.origem) === lado);
+  const base = state.lancamentos.filter(l => noFiltroCtx(l) && ehFluxo(l) && tipoFluxo(l.origem) === lado && bateBuscaRel(l));
   const quemRot = desp ? 'Fornecedor' : termoCliente();
   const soma = ls => Math.round(ls.reduce((a, l) => a + (Number(l.valor) || 0), 0) * 100) / 100;
   const kpi = (rot, val, c, subt, ch, fn) => `<div class="kpi"${attrComposicao(ch, fn)}><p class="kpi-label">${rot}</p><p class="kpi-value ${c}">${formatCurrency(val)}</p><p class="kpi-sub">${subt}</p></div>`;
@@ -8666,6 +9572,8 @@ const PESQUISAS_DA_TELA = {
   prestadores: ['prBusca'],
   servicos: ['svBusca'],
   orcclientes: ['ocBusca', 'ocFiltro'],
+  agenda: ['agBusca'],
+  relatorios: ['relBusca'],
   ajuda: ['ajBusca'],
 };
 function limparPesquisas(tela) {
@@ -9086,6 +9994,10 @@ function downloadBackup() {
     servicos: state.servicos || [],
     orcamentos: state.orcamentos || [],
     agendaRepeticoes: state.agendaRepeticoes || [],
+    creditos: state.creditos || [],
+    usuarios: state.usuarios || [],
+    chaveRecuperacao: state.chaveRecuperacao || null,
+    registro: state.registro || [],
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const nome = nomeArquivoBackup();
@@ -9225,12 +10137,18 @@ function restoreBackup(file) {
         servicos: parsed.servicos || [],
         orcamentos: parsed.orcamentos || [],
         agendaRepeticoes: parsed.agendaRepeticoes || [],
+        creditos: parsed.creditos || [],
+        /* 3.14.0: backup sem usuários (de antes da 3.14.0) não tira as senhas deste computador */
+        usuarios: Array.isArray(parsed.usuarios) && parsed.usuarios.length ? parsed.usuarios : (state.usuarios || []),
+        chaveRecuperacao: Array.isArray(parsed.usuarios) && parsed.usuarios.length ? parsed.chaveRecuperacao || null : (state.chaveRecuperacao || null),
+        registro: Array.isArray(parsed.registro) ? parsed.registro : (state.registro || []),
         dirtyCount: 0,
         lastBackupAt: new Date().toISOString(),
       }));
       gerarRecorrencias();
       gerarAgendaRepeticoes();
       persist();
+      try { fotoRegistro = fotoDosDados(); anotarRegistro([`Restaurou o backup ${file && file.name ? file.name : ''}`.trim()]); persist(); verificarEntrada(); } catch (e) { console.error(e); } /* 3.14.0 */
       populateAllDropdowns();
       clearForm();
       renderTable();
@@ -9289,7 +10207,9 @@ document.getElementById('btnCloseDrawer').addEventListener('click', closeDrawer)
 function resetToFactoryDefaults() {
   if (!confirm('Isso vai apagar TODOS os lançamentos, compromissos da agenda, tarefas e configurações salvos neste navegador e recomeçar do zero com as categorias padrão da clínica odontológica. Essa ação não pode ser desfeita, a não ser que você tenha um backup. Continuar?')) return;
   if (!confirm('Tem certeza mesmo? Essa é a última confirmação — tudo que está lançado hoje será perdido.')) return;
+  const usuariosAntes = state.usuarios || [], chaveAntes = state.chaveRecuperacao || null; /* 3.14.0: as senhas continuam */
   state = seedState();
+  state.usuarios = usuariosAntes; state.chaveRecuperacao = chaveAntes;
   selectedIds.clear();
   fcExpandedMonth = null;
   relCollapsed.clear();
@@ -9348,6 +10268,7 @@ function renderDrawer() {
       <button type="button" class="cfg-topico-btn" data-cfg-ir="contabil">${svgIco('contabil')}Plano de contas</button>
       <button type="button" class="cfg-topico-btn" data-cfg-ir="agenda">${svgIco('agenda')}Agenda e tarefas</button>
       <button type="button" class="cfg-topico-btn" data-cfg-ir="dados">${svgIco('dados')}Planilhas e dados</button>
+      <button type="button" class="cfg-topico-btn" data-cfg-ir="usuarios">${svgIco('geral')}Usuários e registro</button>
       <div class="cfg-desfazer" id="cfgDesfazer" hidden style="flex-basis:100%"><span id="cfgDesfazerTxt"></span><button type="button" id="cfgDesfazerBtn">${svgIco('desfazer')}Desfazer</button></div>
     </nav>
     <section class="cfg-topico" data-cfg-topico="geral">
@@ -9487,6 +10408,15 @@ function renderDrawer() {
       <div id="grpTarefaCat"></div>
     </div>
     </section>
+    <section class="cfg-topico" data-cfg-topico="usuarios">
+      <p class="sub-note">Quem pode entrar no sistema, com senha, e o registro de tudo o que foi alterado.</p>
+      <div class="settings-group" id="cfgUsuarios"></div>
+      <div class="settings-group">
+        <h3>Registro de alterações</h3>
+        <p class="sub-note">Lançamentos criados, alterados, recebidos, pagos ou excluídos, orçamentos e cadastros de clientes, com a data, a hora e quem fez.</p>
+        <button type="button" class="btn btn-outline btn-sm" id="cfgAbrirRegistro">Abrir o registro</button>
+      </div>
+    </section>
     <section class="cfg-topico" data-cfg-topico="dados">
       <p class="sub-note">Backup na nuvem, modelos de planilha, importar e exportar, e o recomeço do zero.</p>
     <div class="settings-group">
@@ -9523,6 +10453,8 @@ function renderDrawer() {
     </section>
   `;
   document.getElementById('btnResetFactory').addEventListener('click', resetToFactoryDefaults);
+  renderUsuariosConfig(); /* 3.14.0 */
+  document.getElementById('cfgAbrirRegistro').addEventListener('click', abrirRegistro);
   mostrarTopicoConfig(cfgUI.topico);
   body.querySelectorAll('[data-cfg-ir]').forEach(b => b.addEventListener('click', () => { mostrarTopicoConfig(b.dataset.cfgIr); body.scrollTop = 0; }));
   document.getElementById('cfgDesfazerBtn').addEventListener('click', desfazerExclusaoConfig);
@@ -9925,6 +10857,7 @@ function mountListEditor(target, title, note, listRef, opts) {
 let toastTimer = null;
 /* acao (opcional): { rotulo, fn } vira um botão no aviso, que fica 8 s na tela */
 function toast(msg, acao) {
+  if (loteAvisos) { loteAvisos.push(msg); return; } /* 3.11.2 */
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.toggle('com-acao', !!acao);
@@ -10100,6 +11033,8 @@ function inicioSemana(iso) { return somarDias(iso, -diaDaSemana(iso)); }
 
 function agVisivel(a) {
   if (agendaUI.filtroTipo && a.tipo !== agendaUI.filtroTipo) return false;
+  const q = normNome((document.getElementById('agBusca') || {}).value || ''); /* 3.11.1 */
+  if (q && !normNome([apptTitulo(a), a.paciente, a.titulo, a.profissional, a.observacao, a.obs].filter(Boolean).join(' ')).includes(q)) return false;
   if (agendaUI.filtroProf && a.profissional !== agendaUI.filtroProf && !(a.tipo === 'bloqueio' && !a.profissional)) return false;
   return true;
 }
@@ -10265,7 +11200,7 @@ function renderPacientes() {
     const np = (p.pessoas || []).length;
     const extra = [p.cpf ? `CPF ${escapeHtml(p.cpf)}` : '', np ? `${np} ${np === 1 ? 'pessoa importante' : 'pessoas importantes'}` : '', p.obs ? escapeHtml(p.obs) : ''].filter(Boolean).join(' · ');
     return `<tr>
-      <td><strong>${escapeHtml(p.nome)}</strong>${p.nascimento && p.nascimento.slice(5, 7) === mesAtual ? ' <span class="tag pc-aniv">aniversário este mês</span>' : ''}${extra ? `<div class="pc-mini">${extra}</div>` : ''}</td>
+      <td><button type="button" class="link-btn pc-nome-btn" data-pc-fin="${p.id}" title="Abrir a ficha no Financeiro"><strong>${escapeHtml(p.nome)}</strong></button>${p.nascimento && p.nascimento.slice(5, 7) === mesAtual ? ' <span class="tag pc-aniv">aniversário este mês</span>' : ''}${extra ? `<div class="pc-mini">${extra}</div>` : ''}</td>
       <td>${p.whatsapp ? escapeHtml(p.whatsapp) : '<span class="muted">—</span>'}</td>
       <td>${p.nascimento ? `${formatDateBR(p.nascimento)} <span class="muted">(${idadeDe(p.nascimento)} anos)</span>` : '<span class="muted">—</span>'}</td>
       <td>${p.cidade ? escapeHtml(p.cidade + (p.uf ? ' / ' + p.uf : '')) : '<span class="muted">—</span>'}</td>
@@ -10276,6 +11211,7 @@ function renderPacientes() {
   }).join('')
     : `<tr><td colspan="7" class="muted" style="padding:18px; text-align:center">${n ? `Nenhum ${min} encontrado.` : `Nenhum ${min} cadastrado ainda. Clique em + Novo ${min}.`}</td></tr>`;
   tbody.querySelectorAll('[data-pc-edit]').forEach(b => b.addEventListener('click', () => editarPaciente(b.dataset.pcEdit)));
+  tbody.querySelectorAll('[data-pc-fin]').forEach(b => b.addEventListener('click', () => abrirFichaPaciente(b.dataset.pcFin, { aba: 'fin' }))); /* 3.14.0 */
   tbody.querySelectorAll('[data-pc-del]').forEach(b => b.addEventListener('click', () => excluirPaciente(b.dataset.pcDel)));
   tbody.querySelectorAll('[data-pc-orc]').forEach(b => b.addEventListener('click', () => { /* 3.7.3 */
     const p = state.pacientes.find(x => x.id === b.dataset.pcOrc);
@@ -10345,11 +11281,200 @@ function abrirFichaPaciente(id, opts) {
   document.getElementById('pcEstadoCivil').innerHTML = '<option value=""></option>' + ec.map(u => `<option>${escapeHtml(u)}</option>`).join('');
   Object.entries(PAC_FICHA).forEach(([el, k]) => { document.getElementById(el).value = p ? (p[k] || '') : ''; });
   if (!p && opts.nome) document.getElementById('pcNome').value = opts.nome;
-  document.getElementById('pcFormTitulo').textContent = p ? `Ficha de ${p.nome}` : `Novo ${t.toLowerCase()}`;
+  document.getElementById('pcFormTitulo').textContent = p ? `Ficha de ${p.nome}` : opts.nome && linhasDoCliente(opts.nome).length ? `Ficha de ${opts.nome} (sem cadastro)` : `Novo ${t.toLowerCase()}`;
   document.getElementById('pcSalvar').textContent = p ? 'Salvar alterações' : `Cadastrar ${t.toLowerCase()}`;
   renderPessoasDaFicha();
+  /* 3.14.0: aba Financeiro, para quem já tem nome */
+  pacientesUI.finNome = p ? p.nome : (opts.nome || null);
+  const temFin = !!pacientesUI.finNome && (!!p || linhasDoCliente(pacientesUI.finNome).length > 0 || (state.orcamentos || []).some(o => normNome(o.cliente) === normNome(pacientesUI.finNome)));
+  document.getElementById('pcAbas').hidden = !temFin;
+  mostrarAbaFicha(temFin && opts.aba === 'fin' ? 'fin' : 'cad');
   document.getElementById('pcModal').classList.add('open');
-  setTimeout(() => { try { document.getElementById('pcNome').focus(); } catch (e) {} }, 30);
+  if (!(temFin && opts.aba === 'fin')) setTimeout(() => { try { document.getElementById('pcNome').focus(); } catch (e) {} }, 30);
+}
+function mostrarAbaFicha(aba) {
+  pacientesUI.aba = aba;
+  document.querySelectorAll('[data-pc-aba]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.pcAba === aba)));
+  document.getElementById('pcForm').hidden = aba === 'fin';
+  document.getElementById('pcFin').hidden = aba !== 'fin';
+  document.querySelector('#pcModal .pc-modal').classList.toggle('largo', aba === 'fin');
+  if (aba === 'fin') renderFichaFin();
+}
+document.querySelectorAll('[data-pc-aba]').forEach(b => b.addEventListener('click', () => mostrarAbaFicha(b.dataset.pcAba)));
+/* abre a ficha pelo nome (Painel, Clientes, relatórios) */
+function abrirFichaCliente(nome, aba) {
+  const p = state.pacientes.find(x => normNome(x.nome) === normNome(nome || ''));
+  abrirFichaPaciente(p ? p.id : null, { nome: p ? null : nome, aba: aba || 'fin' });
+}
+/* =========================================================================
+   3.14.0: FICHA DO CLIENTE › FINANCEIRO
+   Junta o que o cliente já pagou, o que está em aberto (recebido ali mesmo,
+   como no Caixa), o crédito dele e os orçamentos. Não grava nada novo: só
+   mostra os lançamentos que já existem, pelo nome do cliente.
+   ========================================================================= */
+const fichaFinUI = { periodo: 'ano' };
+function linhasDoCliente(nome) {
+  const k = normNome(nome || '');
+  if (!k) return [];
+  return state.lancamentos.filter(l => normNome(l.quem || '') === k && !l.taxaDe && !l.repasseDe && (tipoFluxo(l.origem) === 'receita' || l.devolucaoDe));
+}
+function dadosFichaFin(nome) {
+  const hoje = todayISO(), ano = hoje.slice(0, 4);
+  const ls = linhasDoCliente(nome);
+  const rec = l => tipoFluxo(l.origem) === 'receita';
+  const abertas = ls.filter(l => !l.efetivado && centavos(l.valor) > 0);
+  const vencidas = abertas.filter(l => rec(l) && computeStatus(l.data, null) === 'VENCIDO');
+  const aVencer = abertas.filter(l => rec(l) && computeStatus(l.data, null) !== 'VENCIDO');
+  const devolver = abertas.filter(l => !rec(l));
+  const recebidas = ls.filter(l => l.efetivado && rec(l) && centavos(l.valor) > 0 && (fichaFinUI.periodo === 'tudo' || l.efetivado.slice(0, 4) === ano));
+  const soma = a => a.reduce((x, l) => x + centavos(l.valor), 0) / 100;
+  const desde = vencidas.reduce((d, l) => (!d || l.data < d ? l.data : d), null);
+  return { abertas, vencidas, aVencer, devolver, recebidas, vVenc: soma(vencidas), vAv: soma(aVencer), vDev: soma(devolver), vRec: soma(recebidas), desde };
+}
+function renderFichaFin() {
+  const box = document.getElementById('pcFin');
+  const nome = pacientesUI.finNome;
+  if (!box || !nome || box.hidden) return;
+  const d = dadosFichaFin(nome);
+  const cs = creditosDoCliente(nome);
+  const vCred = cs.reduce((a, c) => a + centavos(c.valor), 0) / 100;
+  const periodoTxt = fichaFinUI.periodo === 'tudo' ? 'desde o início' : `em ${todayISO().slice(0, 4)}`;
+  const sub = `Lançamentos de ${nome}.`;
+  const kpi = (rot, val, cls, subt, ch, fn) => `<div class="kpi"${ch ? attrComposicao(ch, fn) : ''}><p class="kpi-label">${rot}</p><p class="kpi-value ${cls}">${val}</p><p class="kpi-sub">${subt}</p></div>`;
+  const pc = state.pacientes.find(x => normNome(x.nome) === normNome(nome));
+  const fone = pc && pc.whatsapp ? normalizePhoneBR(pc.whatsapp) : '';
+  const msg = d.vVenc > 0.004 ? encodeURIComponent(textoCobranca({ nome, vencido: d.vVenc, desde: d.desde })) : '';
+  const orcs = (state.orcamentos || []).filter(o => normNome(o.cliente) === normNome(nome)).sort((a, b) => (b.data || '').localeCompare(a.data || '') || b.numero - a.numero);
+  const sitOrc = { rascunho: 'em aberto', aprovado: 'aprovado', recusado: 'recusado' };
+  const linhaAberta = l => {
+    const tipo = tipoFluxo(l.origem), desp = tipo === 'despesa';
+    return `<tr>
+      <td>${formatDateBR(l.data)}</td>
+      ${celulaLancHtml(l)}
+      <td class="num" style="color:var(--${desp ? 'despesa' : 'receita'})">${desp ? '− ' : ''}${formatCurrency(l.valor)}</td>
+      <td>${desp ? '<span class="tag tag-pendente">a devolver</span>' : statusTag(computeStatus(l.data, null))}</td>
+      <td class="col-actions"><div class="settle-row">
+        <input type="text" inputmode="decimal" class="settle-valor" value="${numberToCurrencyDisplay(l.valor)}" data-fin-valor="${l.id}" aria-label="${desp ? 'Valor pago' : 'Valor recebido'}">
+        <input type="date" value="${todayISO()}" data-fin-data="${l.id}" aria-label="Data">
+        <button class="btn btn-brass btn-sm" type="button" data-fin-receber="${l.id}">${desp ? 'Pagar' : 'Receber'}</button>
+        ${botaoAlterar(l.id)}
+      </div></td>
+    </tr>`;
+  };
+  const abertas = agruparOrcamento(d.abertas).sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+  const recebidas = agruparOrcamento(d.recebidas).sort((a, b) => (b.efetivado || '').localeCompare(a.efetivado || ''));
+  box.innerHTML = `<div class="kpis">`
+    + kpi('Em aberto', formatCurrency(d.vVenc + d.vAv), d.vVenc > 0.004 ? 'despesa' : '', d.vVenc > 0.004 ? `vencido ${formatCurrency(d.vVenc)} · a vencer ${formatCurrency(d.vAv)}` : d.vAv > 0.004 ? 'nada vencido' : 'nada em aberto',
+      'finAb', () => ({ titulo: `Em aberto: ${nome}`, sub, grupos: [{ rot: 'Vencido', linhas: d.vencidas }, { rot: 'A vencer', linhas: d.aVencer }] }))
+    + kpi('Recebido', formatCurrency(d.vRec), 'receita', periodoTxt, 'finRec', () => ({ titulo: `Recebido de ${nome}, ${periodoTxt}`, sub, grupos: [{ linhas: d.recebidas }] }))
+    + kpi('Crédito', formatCurrency(vCred), '', vCred > 0.004 ? `para usar no próximo orçamento (${escapeHtml(cs.map(c => c.origem).join(', '))})` : 'nenhum crédito guardado')
+    + (d.vDev > 0.004 ? kpi('A devolver', formatCurrency(d.vDev), 'despesa', 'devolução ainda não paga', 'finDev', () => ({ titulo: `A devolver a ${nome}`, sub, grupos: [{ linhas: d.devolver }] })) : '')
+    + `</div><div class="pc-fin-acoes">`
+    + (msg ? (fone ? `<a class="btn btn-outline btn-sm" href="https://wa.me/${fone}?text=${msg}" target="_blank" rel="noopener">Lembrar no WhatsApp</a>`
+      : `<button type="button" class="btn btn-outline btn-sm" id="pcFinWhats" title="Sem telefone na ficha: abre o WhatsApp para escolher o contato">Lembrar no WhatsApp</button>`) : '')
+    + `<button type="button" class="btn btn-outline btn-sm" id="pcFinImprimir">Imprimir extrato</button>`
+    + `<button type="button" class="btn btn-outline btn-sm" id="pcFinOrc">+ Novo orçamento</button></div>`
+    + `<h3>Em aberto</h3>`
+    + (abertas.length ? `<div class="table-wrap"><table class="pc-fin-ab"><thead><tr><th>Vencimento</th><th>Lançamento</th><th class="num">Valor</th><th>Situação</th><th class="col-actions">Receber</th></tr></thead><tbody id="pcFinAberto">${abertas.map(linhaAberta).join('')}</tbody></table></div>`
+      : '<div class="vazio">Nada em aberto.</div>')
+    + `<h3>Recebido <select id="pcFinPeriodo" aria-label="Período"><option value="ano">Este ano</option><option value="tudo">Tudo</option></select></h3>`
+    + (recebidas.length ? `<div class="table-wrap"><table><thead><tr><th>Recebido em</th><th>Lançamento</th><th>Forma</th><th class="num">Valor</th><th class="col-actions"></th></tr></thead><tbody>${recebidas.map(l => `<tr>
+        <td>${formatDateBR(l.efetivado)}${l.data && l.data !== l.efetivado ? `<div class="muted">venc. ${formatDateBR(l.data)}</div>` : ''}</td>
+        ${celulaLancHtml(l)}
+        <td>${l.formaPagamento ? escapeHtml(l.formaPagamento) : '<span class="muted">—</span>'}</td>
+        <td class="num" style="color:var(--receita)">${formatCurrency(l.valor)}</td>
+        <td class="col-actions">${botaoAlterar(l.id)} <button type="button" class="link-btn" data-fin-desfazer="${l.id}">desfazer</button></td>
+      </tr>`).join('')}</tbody></table></div>` : `<div class="vazio">Nada recebido ${periodoTxt}.</div>`)
+    + `<h3>Orçamentos</h3>`
+    + (orcs.length ? `<div class="table-wrap"><table><thead><tr><th>Nº</th><th>Data</th><th>Situação</th><th class="num">Total</th><th class="num">Pago</th><th class="num">Falta</th><th class="col-actions"></th></tr></thead><tbody>${orcs.map(o => {
+        const t = totaisOrcamento(o);
+        return `<tr><td>${o.numero}</td><td>${formatDateBR(o.data)}</td><td>${sitOrc[o.status] || escapeHtml(o.status || '')}${(o.ajustes || []).length ? ' <span class="muted">(ajustado)</span>' : ''}</td>`
+          + `<td class="num">${formatCurrency(t.total)}</td><td class="num">${o.status === 'aprovado' ? formatCurrency(t.pago) : '<span class="muted">—</span>'}</td><td class="num">${o.status === 'aprovado' ? formatCurrency(t.falta) : '<span class="muted">—</span>'}</td>`
+          + `<td class="col-actions"><button type="button" class="link-btn" data-fin-orc="${o.id}">abrir</button></td></tr>`;
+      }).join('')}</tbody></table></div>` : '<div class="vazio">Nenhum orçamento.</div>');
+  const per = document.getElementById('pcFinPeriodo');
+  per.value = fichaFinUI.periodo;
+  per.addEventListener('change', () => { fichaFinUI.periodo = per.value; renderFichaFin(); });
+  box.querySelectorAll('[data-fin-receber]').forEach(b => b.addEventListener('click', () => {
+    const id = b.dataset.finReceber;
+    const vi = box.querySelector(`[data-fin-valor="${id}"]`), di = box.querySelector(`[data-fin-data="${id}"]`);
+    const valor = vi && vi.value.trim() ? currencyDisplayToNumber(finalizeCurrencyDisplay(vi.value, false)) : undefined;
+    settleLancamento(id, di.value || todayISO(), valor);
+  }));
+  box.querySelectorAll('[data-fin-valor]').forEach(inp => {
+    inp.addEventListener('input', () => { inp.value = liveFormatCurrencyTyping(inp.value, false); });
+    inp.addEventListener('blur', () => { if (inp.value.trim()) inp.value = finalizeCurrencyDisplay(inp.value, false); });
+  });
+  box.querySelectorAll('[data-fin-desfazer]').forEach(b => b.addEventListener('click', () => undoBaixa(b.dataset.finDesfazer)));
+  box.querySelectorAll('[data-fin-orc]').forEach(b => b.addEventListener('click', () => abrirOrcamento(b.dataset.finOrc)));
+  const w = document.getElementById('pcFinWhats');
+  if (w) w.addEventListener('click', () => window.open('https://wa.me/?text=' + msg, '_blank'));
+  document.getElementById('pcFinImprimir').addEventListener('click', () => imprimirExtratoCliente(nome));
+  document.getElementById('pcFinOrc').addEventListener('click', () => abrirOrcamento(null, { cliente: nome }));
+  if (abertas.length) ligarSelecao({ tbody: 'pcFinAberto', attr: 'data-fin-receber', render: renderFichaFin,
+    acoes: [{ rot: 'Receber os marcados (valor cheio, hoje)', fn: ids => executarEmLote(ids,
+      `Confirmar ${ids.length} recebimento${ids.length === 1 ? '' : 's'} de ${nome}, hoje, pelo valor cheio?`,
+      id => settleLancamento(id, todayISO()), id => idsDe(id).some(x => { const l = state.lancamentos.find(y => y.id === x); return l && !l.efetivado; }),
+      ['recebimento confirmado', 'recebimentos confirmados']) }] });
+}
+/* a ficha aberta acompanha qualquer mudança (o Caixa é redesenhado em toda baixa, ajuste ou exclusão) */
+function atualizarFichaFinSeAberta() {
+  try { if (document.getElementById('pcModal').classList.contains('open') && pacientesUI.aba === 'fin') renderFichaFin(); } catch (e) { console.error(e); }
+}
+function imprimirExtratoCliente(nome) {
+  const d = dadosFichaFin(nome);
+  const m = state.config.marca || {}, lic = state.config.licenca || {};
+  const emp = (lic.licenciado || '').trim() || (m.nome || '').trim() || state.config.empresas[0] || 'The Ways';
+  const doc = (lic.documento || '').trim();
+  const cor = m.cor || COR_PADRAO_THE_WAYS;
+  const esc = escapeHtml;
+  const pc = state.pacientes.find(x => normNome(x.nome) === normNome(nome)) || {};
+  const desc = l => l.grupoOrc ? l.descricao : [l.descricao || l.categoria, l.parcela && l.totalParcelas && !/\(\d+\/\d+\)/.test(l.descricao || '') ? `(${l.parcela}/${l.totalParcelas})` : ''].filter(Boolean).join(' ');
+  const ab = agruparOrcamento([...d.vencidas, ...d.aVencer]).sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+  const rc = agruparOrcamento(d.recebidas).sort((a, b) => (a.efetivado || '').localeCompare(b.efetivado || ''));
+  const periodoTxt = fichaFinUI.periodo === 'tudo' ? 'desde o início' : `em ${todayISO().slice(0, 4)}`;
+  const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Extrato - ${esc(nome)}</title>
+<style>
+  @page { margin: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #1d2320; font-size: 12.5px; margin: 0; padding: 0 16mm; }
+  table.folha, table.folha > * > tr > td { border: 0; padding: 0; margin: 0; }
+  table.folha > thead td, table.folha > tfoot td { height: 16mm; }
+  .topo { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid ${cor}; padding-bottom: 10px; margin-bottom: 16px; }
+  .topo img { max-height: 56px; max-width: 180px; }
+  h1 { font-size: 20px; margin: 0 0 2px; color: ${cor}; }
+  h2 { font-size: 14px; margin: 18px 0 4px; }
+  .muted { color: #667; font-size: 11.5px; }
+  .bloco { margin: 12px 0; }
+  table.l { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  table.l th, table.l td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #dde; }
+  table.l th { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #556; }
+  .num { text-align: right !important; white-space: nowrap; }
+  .total td { font-weight: 700; border-top: 2px solid #1d2320; border-bottom: none; }
+  .rodape { margin-top: 28px; font-size: 10px; color: #889; text-align: center; }
+</style><\/head><body><table class="folha"><thead><tr><td></td></tr></thead><tfoot><tr><td></td></tr></tfoot><tbody><tr><td>
+  <div class="topo">
+    <div>${m.logo ? `<img src="${m.logo}" alt="">` : ''}<div style="font-size:16px; font-weight:700">${esc(emp)}</div>${doc ? `<div class="muted">${esc(doc)}</div>` : ''}</div>
+    <div style="text-align:right"><h1>Extrato do cliente</h1><div class="muted">Emitido em ${formatDateBR(todayISO())}</div></div>
+  </div>
+  <div class="bloco"><strong>Cliente:</strong> ${esc(nome)}${pc.cpf ? ` · CPF ${esc(pc.cpf)}` : ''}</div>
+  <h2>Em aberto</h2>
+  ${ab.length ? `<table class="l"><thead><tr><th>Vencimento</th><th>Descrição</th><th>Situação</th><th class="num">Valor</th></tr></thead><tbody>${ab.map(l => `<tr><td>${formatDateBR(l.data)}</td><td>${esc(desc(l))}</td><td>${computeStatus(l.data, null) === 'VENCIDO' ? 'vencido' : 'a vencer'}</td><td class="num">${formatCurrency(l.valor)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr class="total"><td colspan="3">Total em aberto</td><td class="num">${formatCurrency(d.vVenc + d.vAv)}</td></tr></tfoot></table>` : '<div class="muted">Nada em aberto.</div>'}
+  <h2>Pagamentos recebidos (${periodoTxt})</h2>
+  ${rc.length ? `<table class="l"><thead><tr><th>Data</th><th>Descrição</th><th>Forma</th><th class="num">Valor</th></tr></thead><tbody>${rc.map(l => `<tr><td>${formatDateBR(l.efetivado)}</td><td>${esc(desc(l))}</td><td>${esc(l.formaPagamento || '')}</td><td class="num">${formatCurrency(l.valor)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr class="total"><td colspan="3">Total recebido</td><td class="num">${formatCurrency(d.vRec)}</td></tr></tfoot></table>` : '<div class="muted">Nenhum pagamento no período.</div>'}
+  <div class="rodape">Desenvolvido por The Ways</div>
+</td></tr></tbody></table><\/body><\/html>`;
+  let fr = document.getElementById('ocPrintFrame');
+  if (fr) fr.remove();
+  fr = document.createElement('iframe');
+  fr.id = 'ocPrintFrame';
+  fr.setAttribute('aria-hidden', 'true');
+  fr.style.cssText = 'position:fixed; right:0; bottom:0; width:0; height:0; border:0; visibility:hidden';
+  document.body.appendChild(fr);
+  const w = fr.contentWindow;
+  w.document.open(); w.document.write(html); w.document.close();
+  setTimeout(() => { try { w.focus(); w.print(); } catch (e) { toast('Não foi possível abrir a impressão neste navegador.'); } }, 250);
 }
 function fecharFichaPaciente() {
   document.getElementById('pcModal').classList.remove('open');
@@ -11112,6 +12237,7 @@ document.getElementById('agPrev').addEventListener('click', () => navegarAgenda(
 document.getElementById('agNext').addEventListener('click', () => navegarAgenda(1));
 document.getElementById('agHoje').addEventListener('click', () => selecionarDiaAgenda(todayISO()));
 document.getElementById('agFiltroTipo').addEventListener('change', (e) => { agendaUI.filtroTipo = e.target.value; renderAgenda(); });
+document.getElementById('agBusca').addEventListener('input', () => renderAgenda());
 document.getElementById('agFiltroProf').addEventListener('change', (e) => { agendaUI.filtroProf = e.target.value; renderAgenda(); });
 document.getElementById('agNovo').addEventListener('click', () => abrirModalAgenda(null));
 document.getElementById('agTipo').addEventListener('change', agAplicarTipo);
@@ -11655,7 +12781,10 @@ function syncBarraSelecao() {
   document.getElementById('tSelecionar').style.display = on ? 'none' : '';
   if (!on) return;
   const n = tarefasUI.selecionadas.size;
-  document.getElementById('tSelQtd').textContent = n ? `${n} tarefa${n === 1 ? '' : 's'} marcada${n === 1 ? '' : 's'}` : 'Marque as tarefas que foram feitas';
+  document.getElementById('tSelQtd').textContent = n ? `${n} tarefa${n === 1 ? '' : 's'} marcada${n === 1 ? '' : 's'}` : 'Marque as tarefas';
+  const bx = document.getElementById('tSelExcluir'); /* 3.11.2 */
+  bx.disabled = !n;
+  bx.textContent = n ? `Excluir ${n}` : 'Excluir';
   const btn = document.getElementById('tSelConcluir');
   btn.disabled = !n;
   btn.textContent = n ? `Concluir ${n}` : 'Concluir';
@@ -12069,7 +13198,7 @@ const AJUDA = [
     </ul>
     <h3>3. Como será o pagamento?</h3>
     <ul>
-      <li>A parte 3 fica numa linha, como no Orçamento: <strong>Forma de pagamento</strong>, <strong>Condição</strong>, <strong>Vencimento</strong> e <strong>Já foi pago?</strong>, todas em listas.</li>
+      <li>A parte 3 fica numa linha, como no Orçamento: <strong>Condição</strong> (como será pago), depois <strong>Forma de pagamento</strong>, <strong>Vencimento</strong> e <strong>Já foi pago?</strong>, todas em listas.</li>
       <li>Escolha a <strong>forma de pagamento</strong>. Depois disso aparecem só os campos daquela forma: a <strong>conta</strong> que recebe ou paga (no cartão, a máquina), o <strong>convênio</strong> e a <strong>data do atendimento</strong>, e assim por diante.</li>
       <li><strong>Condição:</strong> <strong>Uma vez</strong>, <strong>Parcelado</strong>, <strong>Repete todo mês</strong> ou <strong>Mais de um jeito</strong>.</li>
       <li><strong>Já foi pago / recebido?</strong> <strong>Sim</strong> grava como pago na data do vencimento. <strong>Não</strong> deixa o lançamento no Caixa, para confirmar depois. Em Pix e Dinheiro já vem <strong>Sim</strong>; dá para trocar.</li>
@@ -12081,6 +13210,7 @@ const AJUDA = [
       <li><strong>Cartão:</strong> aparece a taxa e quanto <strong>fica para nós</strong>. A receita entra cheia e a taxa entra sozinha como despesa (categoria <em>Taxas de cartão</em>, em Deduções), ligada à receita: tem a mesma data, é baixada junto e some se a receita for excluída. No parcelado, cada parcela tem a sua taxa. As taxas ficam em Configurações › Financeiro › <strong>Taxas do cartão</strong>.</li>
       <li><strong>Convênio:</strong> há um campo de valor só. Digite no <strong>Valor</strong> o total que o relatório do convênio mostrou para aquele cliente e escolha o convênio. Ao sair do campo, o valor vira o total × o valor da chave (ex.: R$ 500,00 com chave 0,19 dá R$ 95,00), e o total do relatório fica registrado no <strong>histórico do lançamento</strong>. Para corrigir, clique no valor: ele mostra o total de novo para você digitar. Faça um lançamento para cada cliente atendido. O vencimento vem pela regra do convênio e a receita fica no mês do atendimento. Os convênios ficam em Configurações › Financeiro › <strong>Convênios</strong>.</li>
       <li><strong>Data de corte do convênio:</strong> em Configurações › Financeiro › Convênios, escolha em "Como paga" a opção <strong>Por data de corte</strong> e informe o dia de corte, quantos meses depois o convênio paga e se paga no último dia útil ou num dia fixo. Exemplo: corte no dia 20, paga 1 mês depois, no último dia útil: atendimentos de 21/09 a 20/10 são pagos no último dia útil de novembro. Feriados não entram na conta; se o pagamento cair num feriado, ajuste a data no lançamento.</li>
+      <li><strong>O convênio no Caixa:</strong> cada cliente atendido continua sendo um lançamento, mas no Caixa, em Lançamentos e nos relatórios A receber e Recebidos aparece uma linha só por convênio e ciclo, por exemplo "Recebimento convênio OdontoPrev · ciclo até 20/11, aberto". Depois do dia de corte, o ciclo aparece como <strong>fechado</strong>. Clique no <strong>▸</strong> para ver os clientes, a data de cada atendimento e o valor. Confirmar a linha baixa todos de uma vez. Se o convênio pagar menos, informe o valor e escolha <strong>Foi só uma parte</strong>: ele é dividido entre os clientes. Para tirar um cliente glosado, abra o ▸ e clique em <strong>editar</strong> ao lado dele. Para ver quanto falta receber de um convênio, busque pelo nome dele no Caixa (Tudo em aberto).</li>
     </ul>
     <p><strong>Conta pessoal do sócio</strong> (Pessoa Física), <strong>observação</strong>, <strong>centro de custo</strong> diferente e <strong>competência</strong>: salve o lançamento e clique em editar. Esses ajustes ficam em <strong>4. Outros dados</strong>, que só aparece na edição.</p>
     <p><strong>Lançados agora</strong>, abaixo do formulário, mostra só o que você lançou ou corrigiu desde que abriu o sistema, para conferir na hora. Começa vazio a cada abertura. Os lançamentos antigos ficam em <strong>Lançamentos</strong> (link <em>ver todos</em>).</p>` },
@@ -12092,6 +13222,8 @@ const AJUDA = [
       <li><strong>Outros dados:</strong> só aparecem ao editar. <strong>Pertence a outro mês?</strong> serve quando uma despesa é de um mês, mas foi paga em outro (por exemplo, a conta de luz de setembro paga em outubro). Ali ficam também a conta pessoal (Pessoa Física), a observação e o histórico do lançamento.</li>
       <li><strong>Excluir (lixeira):</strong> pede confirmação. Em parcelas e repetições, o sistema pergunta quais meses: só esta, esta e as próximas, ou todas.</li>
       <li><strong>desfazer:</strong> ao lado de “Liquidado”, faz o lançamento voltar a ficar em aberto.</li>
+      <li><strong>Alterar data ou valor (calendário):</strong> o ícone de calendário aparece em Lançamentos, no Caixa, na ficha do cliente e nas listas que abrem ao clicar num quadro de valor. Ele abre uma janela pequena com o vencimento, o valor e, se já foi pago, a data do pagamento. Numa linha que junta vários lançamentos (orçamento ou convênio), a data nova vale para todos e o valor novo é dividido na proporção de hoje. Numa parcela, muda só aquela.</li>
+      <li>Toda alteração fica no <strong>Registro de alterações</strong>, com a data, a hora e quem fez (veja Usuários e registro).</li>
     </ul>` },
   { id: 'baixa', titulo: 'Caixa: confirmar o que foi pago ou recebido', ir: 'pendencias', html: `
     <p class="aj-lead">O <strong>Caixa</strong> mostra as entradas e saídas de um período, já confirmadas ou não. Ele abre no dia de hoje. O número vermelho no menu conta o que vence hoje ou já venceu.</p>
@@ -12115,7 +13247,8 @@ const AJUDA = [
       <li><strong>Foi desconto:</strong> a conta é encerrada e a diferença vai para descontos.</li>
     </ul>
     <p>A conta mostra o histórico, por exemplo "Recebido R$ 100,00 em 05/10 (Pix) · Falta R$ 200,00". Para corrigir uma parte, clique em <strong>desfazer</strong> na linha dela: o valor volta para a conta. Excluir a conta exclui também as partes dela.</p>
-    <p>Para várias contas de uma vez, marque as caixinhas à esquerda e clique em <strong>Confirmar selecionados</strong>. Elas são confirmadas pelo valor inteiro.</p>` },
+    <p>Para várias contas de uma vez, marque as caixinhas à esquerda (a do cabeçalho marca todas as que estão na tela) e clique em <strong>Confirmar selecionados</strong> ou <strong>Excluir selecionados</strong>. Elas são confirmadas pelo valor inteiro. Em Lançamentos dá para fazer o mesmo.</p>
+    <p><strong>Marcar vários em qualquer lista:</strong> Clientes, Fornecedores, Prestadores, Serviços e Orçamentos têm a caixinha em cada linha e, no cabeçalho, a que marca todos os da tela; a barra que aparece em cima faz a ação em todos de uma vez, com uma pergunta só. O que não pode ser excluído (por exemplo, prestador com repasse a pagar) fica, e o aviso diz o motivo. Na Agenda, a lista do dia tem <em>Todos do dia</em>, Confirmar, Cancelar e Excluir. Em Tarefas, use <strong>Marcar várias</strong> para concluir ou excluir.</p>` },
   { id: 'prestadores', titulo: 'Prestadores e repasse', ir: 'prestadores', html: `
     <p class="aj-lead">Prestadores são os profissionais que atendem no consultório e recebem uma parte do que o cliente paga (o repasse). Ficam em <strong>Cadastros › Prestadores</strong>.</p>
     <h3>Cadastrar</h3>
@@ -12145,7 +13278,8 @@ const AJUDA = [
     <ul>
       <li>Em Negócio › <strong>Orçamentos</strong>, clique em <strong>+ Novo orçamento</strong> (ou no botão <strong>Orçamento</strong> na lista de clientes, ou em + Novo › Orçamento).</li>
       <li>Escolha o cliente e adicione os serviços. Em cada serviço, escolha quem vai atender (o prestador, para o repasse) e ajuste o valor se precisar. Dá para cadastrar um serviço novo sem sair do orçamento.</li>
-      <li>Informe desconto (se houver), forma de pagamento e condição: <strong>à vista</strong>, <strong>parcelado</strong>, <strong>entrada + parcelas</strong> ou <strong>mais de um jeito</strong>. O total e as parcelas aparecem embaixo.</li>
+      <li>Informe desconto (se houver), a condição (<strong>à vista</strong>, <strong>parcelado</strong>, <strong>entrada + parcelas</strong> ou <strong>mais de um jeito</strong>) e depois a forma de pagamento. O total e as parcelas aparecem embaixo.</li>
+      <li>Ao lado de cada serviço aparece a <strong>categoria</strong> dele, só para conferir. Se estiver errada, troque em Cadastros › Serviços.</li>
       <li><strong>Mais de um jeito:</strong> divide o total em partes com formas diferentes, por exemplo R$ 500,00 no cartão na aprovação e R$ 500,00 no Pix em 5 vezes. Deixe o 1º vencimento em branco para vencer no dia da aprovação. Ao aprovar, cada serviço recebe a sua parte de cada pagamento, com a forma certa, e a taxa do cartão sai só da parte no cartão.</li>
       <li><strong>Salvar</strong> guarda o orçamento em aberto, esperando o cliente. <strong>Imprimir ou PDF</strong> abre a impressão com o logo, os serviços, o total e as parcelas; para PDF, escolha "Salvar como PDF" na impressora.</li>
     </ul>
@@ -12155,6 +13289,14 @@ const AJUDA = [
       <li>O desconto e as parcelas são divididos entre os serviços na proporção do valor de cada um. A taxa do cartão e o repasse do prestador seguem as regras de sempre.</li>
       <li>Se o cliente não aceitar, clique em <strong>Cliente recusou</strong>. Para usar de novo, <strong>Reabrir</strong>.</li>
       <li>Errou algo depois de aprovar? Enquanto nada foi recebido, <strong>Desfazer aprovação</strong> apaga as receitas lançadas e o orçamento volta a ficar em aberto.</li>
+    </ul>
+    <h3>Ajustar um orçamento aprovado</h3>
+    <ul>
+      <li>O cliente fez só parte do tratamento, trocou um serviço ou acrescentou outro? Abra o orçamento e clique em <strong>Ajustar orçamento</strong>, no pé da janela. Tire, troque ou acrescente serviços e mude o desconto, se precisar. Embaixo aparecem o <strong>novo total</strong>, o que <strong>já foi recebido</strong> e o que <strong>falta</strong>. Clique em <strong>Salvar ajuste</strong>.</li>
+      <li>O que já foi recebido não muda. O que falta é refeito nas mesmas datas que ainda estavam em aberto, com a mesma forma de pagamento, e dividido entre os serviços pelo que falta a cada um. Um vencimento que já tinha uma parte recebida fica encerrado no que foi pago.</li>
+      <li>Se o cliente já pagou mais que o novo total, o sistema pergunta o que fazer com a sobra: <strong>Lançar devolução</strong> (vira uma conta a pagar ao cliente no Caixa, na categoria Devoluções a clientes) ou <strong>Guardar como crédito</strong>.</li>
+      <li>O crédito aparece no próximo orçamento do mesmo cliente, com o botão <strong>Usar como desconto</strong>. Ele é baixado quando esse orçamento for aprovado e volta se a aprovação for desfeita.</li>
+      <li>Cada ajuste fica anotado no orçamento, com a data e o que mudou. Na impressão de um orçamento ajustado, saem os serviços que ficaram e os vencimentos como estão lançados.</li>
     </ul>
     <h3>Receber</h3>
     <ul>
@@ -12176,6 +13318,9 @@ const AJUDA = [
       <li><strong>Buscar:</strong> pelo nome, celular, CPF ou cidade.</li>
       <li><strong>Agendar:</strong> o botão da linha abre um compromisso já com o nome preenchido.</li>
       <li><strong>Recebido:</strong> soma o que cada cliente já pagou (receitas marcadas como recebidas).</li>
+      <li><strong>Ficha com Financeiro:</strong> clique no <strong>nome</strong> do cliente. A ficha abre na aba <strong>Financeiro</strong>; a aba <strong>Cadastro</strong> tem os dados de sempre. No Painel, o campo <strong>Cliente</strong> abre a mesma ficha: digite o nome, escolha na lista e clique em Cliente.</li>
+      <li>No Financeiro aparecem os quadros <strong>Em aberto</strong> (vencido e a vencer), <strong>Recebido</strong> (este ano ou tudo) e <strong>Crédito</strong>; clique num quadro para ver os lançamentos. Embaixo, a lista do que está em aberto, uma linha por vencimento, como no Caixa: informe o valor e a data e clique em <strong>Receber</strong>. Valor menor pergunta se foi só uma parte. Para receber vários de uma vez, marque as linhas (ou todas, no alto) e clique em <strong>Receber os marcados</strong>.</li>
+      <li>Ainda no Financeiro: o histórico do que foi recebido (com <strong>desfazer</strong>), os orçamentos do cliente com total, pago e falta, e os botões <strong>Lembrar no WhatsApp</strong> (quando há valor vencido), <strong>Imprimir extrato</strong> (uma folha com o que está em aberto e o que foi pago, para entregar ao cliente) e <strong>+ Novo orçamento</strong>.</li>
       <li>Nomes digitados num lançamento ou na agenda entram aqui sozinhos, só com o nome. Use <strong>Editar</strong> para completar.</li>
     </ul>
     <h3>Fornecedores</h3>
@@ -12186,6 +13331,21 @@ const AJUDA = [
       <li><strong>Excluir:</strong> tira o nome da lista; lançamentos já feitos não são apagados.</li>
     </ul>
     <p><strong>Exportar Excel</strong>, no alto de cada lista, baixa a lista completa numa planilha.</p>` },
+  { id: 'usuarios', titulo: 'Usuários, senhas e registro de alterações', ir: 'config', html: `
+    <p class="aj-lead">Em <strong>Configurações › Usuários e registro</strong> ficam as pessoas que podem entrar no sistema, com senha, e o registro de tudo o que foi alterado.</p>
+    <h3>Usuários</h3>
+    <ul>
+      <li>Sem usuário cadastrado, o sistema abre direto, como sempre. Clique em <strong>Criar o primeiro usuário (Master)</strong>, informe o nome e a senha (pelo menos 4 caracteres). Daí em diante, o sistema pede usuário e senha ao abrir, neste computador e em qualquer outro que receber o backup.</li>
+      <li>Ao criar o primeiro usuário, aparece uma <strong>chave de recuperação</strong> (por exemplo ABCD-EFGH-JKLM). Anote e guarde fora do computador. Com ela, na tela de entrada, <strong>Esqueci a senha</strong> troca a senha de qualquer usuário. O Master pode gerar outra chave; a anterior deixa de valer.</li>
+      <li><strong>Master</strong> e <strong>Gerencial</strong> veem as mesmas telas, por enquanto. Só o Master cria usuários, troca a senha dos outros, muda o perfil, desativa ou exclui. Precisa ficar sempre pelo menos um Master ativo. Cada pessoa troca a própria senha em <strong>trocar minha senha</strong>.</li>
+      <li>O nome de quem entrou aparece no alto da tela. Clique nele para <strong>Sair</strong>. A entrada vale até fechar o navegador.</li>
+      <li>A senha é guardada embaralhada, nunca como foi digitada. É uma proteção simples: os dados continuam no navegador deste computador, e o backup .dat leva os usuários junto. Um backup antigo, sem usuários, não tira as senhas ao ser restaurado.</li>
+    </ul>
+    <h3>Registro de alterações</h3>
+    <ul>
+      <li>Clique em <strong>Abrir o registro</strong>. Ali aparece, com a data, a hora e quem estava no sistema, tudo o que foi lançado, alterado (vencimento, valor, data do pagamento, categoria, nome, descrição, forma), recebido, pago, desfeito ou excluído, além de orçamentos aprovados, ajustados ou excluídos, cadastros de clientes, usuários e backups restaurados.</li>
+      <li>Busque por nome, valor ou número do orçamento, filtre por pessoa e por datas. Os mais recentes vêm primeiro. O registro começa a valer a partir da versão 3.14.0 e guarda os 3.000 mais recentes, no backup também.</li>
+    </ul>` },
   { id: 'configuracoes', titulo: 'Configurações e ramo de atividade', ir: 'config', html: `
     <p class="aj-lead">Abra <strong>Configurações</strong> no menu. Elas ficam em tópicos, nos botões do alto da janela.</p>
     <ul>
@@ -12194,6 +13354,7 @@ const AJUDA = [
       <li><strong>Plano de contas:</strong> operações, categorias, linha da DRE e centros de custo.</li>
       <li><strong>Agenda e tarefas:</strong> mensagem do WhatsApp, lembretes, profissionais e responsáveis.</li>
       <li><strong>Planilhas e dados:</strong> pasta do backup na nuvem, modelos do Excel, importar, exportar e a Zona de risco.</li>
+      <li><strong>Usuários e registro:</strong> quem entra no sistema, com senha, e o registro de alterações.</li>
     </ul>
     <h3>Renomear, excluir e desfazer</h3>
     <ul>
@@ -12213,6 +13374,7 @@ const AJUDA = [
   { id: 'agenda', titulo: 'Agenda e lembretes', ir: 'agenda', html: `
     <p class="aj-lead">Em <strong>Agenda</strong> ficam os atendimentos, os compromissos e os horários bloqueados.</p>
     <ul>
+      <li><strong>Buscar:</strong> digite no campo de busca, no alto do calendário, o nome do cliente, do profissional ou o assunto. O calendário mostra só o que bate.</li>
       <li><strong>Novo compromisso:</strong> clique em <strong>+ Novo</strong>, no alto da tela, e escolha <strong>Compromisso na agenda</strong>. No campo Cliente, escolha da lista, ou use o link <strong>+ Novo</strong> acima do campo para fazer a ficha na hora. O WhatsApp é preenchido sozinho.</li>
       <li><strong>Lembrete por WhatsApp:</strong> o botão <strong>WhatsApp</strong> do compromisso abre a conversa com o cliente e a mensagem pronta. É só conferir e enviar.</li>
       <li><strong>Mensagem do lembrete:</strong> pode ser mudada em Configurações › Agenda e tarefas.</li>
@@ -12224,7 +13386,7 @@ const AJUDA = [
     <h3>Concluir</h3>
     <ul>
       <li>Marque a caixinha da tarefa. Por alguns segundos aparece <strong>Desfazer</strong>, caso tenha sido sem querer.</li>
-      <li><strong>Concluir várias:</strong> marque as tarefas e clique em <strong>Concluir</strong>.</li>
+      <li><strong>Várias de uma vez:</strong> clique em <strong>Marcar várias</strong>, marque as tarefas e clique em <strong>Concluir</strong> ou <strong>Excluir</strong>.</li>
       <li>Para reabrir depois, filtre <strong>Concluídas</strong> e clique em <strong>Voltar para pendente</strong>.</li>
     </ul>
     <h3>Quadro</h3>
@@ -12233,7 +13395,7 @@ const AJUDA = [
     <h3>Relatório</h3>
     <p>O botão <strong>Relatório</strong> mostra as tarefas pendentes, atrasadas ou concluídas por período e responsável. Dá para imprimir, salvar em PDF, baixar em Excel ou <strong>enviar por WhatsApp</strong>. A opção <strong>Cumprimento de prazos</strong> mostra quanto cada pessoa concluiu no prazo combinado e quantas vezes adiou.</p>` },
   { id: 'relatorios', titulo: 'Relatórios, previsão orçamentária e planilhas', ir: 'relatorios', html: `
-    <p class="aj-lead">Em <strong>Relatórios</strong> há duas abas. Todos usam o período e a empresa escolhidos na barra do alto.</p>
+    <p class="aj-lead">Em <strong>Relatórios</strong> há duas abas. Todos usam o período e a empresa escolhidos na barra do alto. Nos relatórios do dia a dia há um campo de <strong>busca</strong> (cliente, categoria, descrição...), e os totais passam a contar só o que aparece.</p>
     <h3>Dia a dia</h3>
     <p>Simples, para a rotina. Contam pelo que entrou, saiu ou vence; não é preciso escolher regime.</p>
     <ul>
@@ -12434,9 +13596,31 @@ function updateTabBadges() {
    PAINEL (tela de abertura do dia) — 3.5
    ========================================================================= */
 let painelEmpresa = '';
+function nomesDeClientes() {
+  const m = new Map();
+  (state.pacientes || []).forEach(p => m.set(normNome(p.nome), p.nome));
+  state.lancamentos.forEach(l => { if (l.quem && tipoFluxo(l.origem) === 'receita' && !l.taxaDe && !m.has(normNome(l.quem))) m.set(normNome(l.quem), l.quem); });
+  return [...m.values()].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+}
+function abrirClienteDoPainel() {
+  const inp = document.getElementById('pnClienteBusca');
+  const v = inp.value.trim();
+  if (!v) { toast('Digite o nome do cliente e escolha na lista.'); inp.focus(); return; }
+  const nomes = nomesDeClientes();
+  const exato = nomes.find(n => normNome(n) === normNome(v));
+  const parecidos = nomes.filter(n => normNome(n).includes(normNome(v)));
+  const nome = exato || (parecidos.length === 1 ? parecidos[0] : null);
+  if (!nome) { toast(parecidos.length ? `Há ${parecidos.length} clientes com esse nome. Escolha um na lista.` : 'Nenhum cliente com esse nome.'); inp.focus(); return; }
+  inp.value = '';
+  abrirFichaCliente(nome, 'fin');
+}
+document.getElementById('pnClienteBtn').addEventListener('click', abrirClienteDoPainel);
+document.getElementById('pnClienteBusca').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); abrirClienteDoPainel(); } });
+document.getElementById('pnClienteBusca').addEventListener('change', (e) => { if (nomesDeClientes().some(n => n === e.target.value)) abrirClienteDoPainel(); });
 function renderPainel() {
   const emps = state.config.empresas;
-  document.getElementById('pnTopo').style.display = emps.length > 1 ? '' : 'none';
+  document.getElementById('pnEmpresa').style.display = emps.length > 1 ? '' : 'none'; /* 3.14.0: o topo sempre aparece, por causa do botão Cliente */
+  document.getElementById('pnClientesLista').innerHTML = nomesDeClientes().map(n => `<option value="${escapeHtml(n)}"></option>`).join('');
   const selEmp = document.getElementById('pnEmpresa');
   if (!emps.includes(painelEmpresa)) painelEmpresa = '';
   selEmp.innerHTML = '<option value="">Todas as empresas</option>' + emps.map(e => `<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
@@ -13916,7 +15100,194 @@ function bindMarcaELicenca() {
 }
 
 /* 3.7.6: a versão aparece no pé do menu, no rodapé e na Licença. Mudar só aqui a cada versão. */
-const APP_VERSAO = '3.11.0';
+/* =========================================================================
+   3.11.2: MARCAR VÁRIOS E AGIR DE UMA VEZ
+   Toda lista com registros ganha a caixinha em cada linha, "marcar todos"
+   no cabeçalho e uma barra com as ações. A ação em lote usa as mesmas regras
+   da ação de um registro só (o que não pode ser excluído continua não podendo),
+   com uma pergunta só no começo e um aviso só no fim.
+   ========================================================================= */
+var loteAvisos = null; /* var: o toast pode ser chamado antes desta linha rodar */
+var loteAtivo = false;
+const confirmDoNavegador = window.confirm.bind(window);
+window.confirm = (msg) => (loteAtivo ? true : confirmDoNavegador(msg));
+async function executarEmLote(ids, pergunta, fn, existe, rot) { /* rot: ['excluído', 'excluídos'] */
+  if (!ids.length) return;
+  if (pergunta && !confirmDoNavegador(pergunta)) return;
+  loteAvisos = []; loteAtivo = true;
+  let feitos = 0;
+  const avisos = [];
+  try {
+    for (const id of ids) {
+      loteAvisos = [];
+      await fn(id);
+      if (existe && existe(id)) avisos.push(...loteAvisos);
+      else feitos++;
+    }
+  } finally { loteAvisos = null; loteAtivo = false; }
+  const ficaram = ids.length - feitos;
+  toast(((feitos ? `${feitos} ${feitos === 1 ? rot[0] : rot[1]}. ` : '') + (ficaram ? `${ficaram} não ${ficaram === 1 ? 'pôde' : 'puderam'}: ${[...new Set(avisos)].join(' ')}` : '')).trim());
+}
+const selecoesTabela = {};
+function ligarSelecao(cfg) {
+  const tbody = document.getElementById(cfg.tbody);
+  if (!tbody) return;
+  const est = selecoesTabela[cfg.tbody] || (selecoesTabela[cfg.tbody] = { sel: new Set() });
+  const sel = est.sel; /* o cabeçalho e a barra são criados uma vez e usam est.barra, refeita a cada desenho */
+  const tabela = tbody.closest('table');
+  const idDe = tr => { const b = tr.querySelector(`[${cfg.attr}]`); return b ? b.getAttribute(cfg.attr) : null; };
+  const vis = [];
+  [...tbody.rows].forEach(tr => {
+    if (tr.querySelector('.sel-col')) return;
+    const id = idDe(tr);
+    const td = document.createElement('td');
+    td.className = 'sel-col';
+    if (id) { vis.push(id); td.innerHTML = `<input type="checkbox" data-sel-lote="${escapeHtml(id)}"${sel.has(id) ? ' checked' : ''} aria-label="Marcar">`; tr.prepend(td); }
+    else if (tr.cells.length === 1 && tr.cells[0].colSpan > 1) tr.cells[0].colSpan += 1;
+    else tr.prepend(td);
+  });
+  [...sel].forEach(id => { if (!vis.includes(id)) sel.delete(id); });
+  if (tabela.tFoot) [...tabela.tFoot.rows].forEach(tr => { if (!tr.querySelector('.sel-col')) { const td = document.createElement('td'); td.className = 'sel-col'; tr.prepend(td); } });
+  const head = tabela.tHead && tabela.tHead.rows[0];
+  if (head && !head.querySelector('.sel-col')) {
+    const th = document.createElement('th'); th.className = 'sel-col';
+    th.innerHTML = '<input type="checkbox" data-sel-todos aria-label="Marcar todos os que estão na tela">';
+    head.prepend(th);
+    th.querySelector('input').addEventListener('change', (e) => {
+      tbody.querySelectorAll('[data-sel-lote]').forEach(cb => { cb.checked = e.target.checked; if (cb.checked) sel.add(cb.dataset.selLote); else sel.delete(cb.dataset.selLote); });
+      est.barra();
+    });
+  }
+  let bar = document.getElementById('lote-' + cfg.tbody);
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.className = 'bulkbar'; bar.id = 'lote-' + cfg.tbody; bar.style.display = 'none';
+    bar.innerHTML = '<span class="lote-qtd" style="font-weight:600"></span>' + cfg.acoes.map((a, i) => `<button type="button" class="btn ${a.perigo ? 'btn-danger-text' : 'btn-brass'} btn-sm" data-lote-acao="${i}">${a.rot}</button>`).join('')
+      + '<button class="link-btn" type="button" data-lote-limpar>limpar seleção</button>';
+    (tabela.closest('.table-wrap') || tabela).before(bar);
+    bar.addEventListener('click', async (e) => {
+      if (e.target.closest('[data-lote-limpar]')) { sel.clear(); cfg.render(); return; }
+      const b = e.target.closest('[data-lote-acao]');
+      if (!b) return;
+      const ids = [...sel];
+      await cfg.acoes[Number(b.dataset.loteAcao)].fn(ids);
+      sel.clear();
+      cfg.render();
+    });
+  }
+  est.barra = barra;
+  function barra() {
+    const n = sel.size;
+    bar.style.display = n ? 'flex' : 'none';
+    bar.querySelector('.lote-qtd').textContent = `${n} marcado${n === 1 ? '' : 's'}`;
+    const todos = tabela.querySelector('[data-sel-todos]');
+    if (todos) { todos.checked = vis.length > 0 && n === vis.length; todos.indeterminate = n > 0 && n < vis.length; }
+  }
+  tbody.querySelectorAll('[data-sel-lote]').forEach(cb => cb.addEventListener('change', () => { if (cb.checked) sel.add(cb.dataset.selLote); else sel.delete(cb.dataset.selLote); barra(); }));
+  barra();
+}
+const SELECAO_CADASTROS = [
+  { tbody: 'pcTbody', attr: 'data-pc-edit', fn: 'renderPacientes', nome: ['cadastro', 'cadastros'], existe: id => state.pacientes.some(x => x.id === id), excluir: id => excluirPaciente(id) },
+  { tbody: 'fnTbody', attr: 'data-fn-edit', fn: 'renderFornecedores', nome: ['cadastro', 'cadastros'], existe: id => state.fornecedores.some(x => x.id === id), excluir: id => excluirFornecedor(id) },
+  { tbody: 'prTbody', attr: 'data-pr-edit', fn: 'renderPrestadores', nome: ['cadastro', 'cadastros'], existe: id => !!prestadorPorId(id), excluir: id => excluirPrestador(id) },
+  { tbody: 'svTbody', attr: 'data-sv-edit', fn: 'renderServicos', nome: ['serviço', 'serviços'], existe: id => !!servicoPorId(id), excluir: id => excluirServico(id) },
+  { tbody: 'ocTbody', attr: 'data-oc-abrir', fn: 'renderOrcClientes', nome: ['orçamento', 'orçamentos'], existe: id => !!orcamentoPorId(id), excluir: id => excluirOrcamento(id) },
+];
+SELECAO_CADASTROS.forEach(c => {
+  const cfg = { tbody: c.tbody, attr: c.attr, render: () => window[c.fn](),
+    acoes: [{ rot: 'Excluir marcados', perigo: true, fn: ids => executarEmLote(ids,
+      `Excluir ${ids.length} ${ids.length === 1 ? c.nome[0] : c.nome[1]}? Essa ação não pode ser desfeita.`, c.excluir, c.existe, [`${c.nome[0]} excluído`, `${c.nome[1]} excluídos`]) }] };
+  /* a tabela é redesenhada por vários caminhos (busca, filtros, gravação): observar o tbody pega todos */
+  const tb = document.getElementById(c.tbody);
+  if (tb) { new MutationObserver(() => ligarSelecao(cfg)).observe(tb, { childList: true }); ligarSelecao(cfg); }
+});
+
+/* Lançamentos: confirmar os marcados */
+document.getElementById('btnBulkLancSettle').addEventListener('click', () => {
+  const ids = [...selectedIds].flatMap(idsDe);
+  const abertos = ids.map(id => state.lancamentos.find(x => x.id === id)).filter(l => l && !l.efetivado && !l.taxaDe);
+  if (!abertos.length) { toast('Os marcados já estão pagos ou recebidos.'); return; }
+  const data = document.getElementById('bulkLancData').value || todayISO();
+  if (!confirm(`Marcar ${abertos.length} lançamento${abertos.length === 1 ? '' : 's'} como pago${abertos.length === 1 ? '' : 's'}/recebido${abertos.length === 1 ? '' : 's'} em ${formatDateBR(data)}, pelo valor integral?`)) return;
+  abertos.forEach(l => { l.efetivado = data; });
+  selectedIds.clear();
+  markDirty(); renderTable(); renderPendencias(); renderKpis();
+  toast(`${abertos.length} lançamento${abertos.length === 1 ? '' : 's'} confirmado${abertos.length === 1 ? '' : 's'}.`);
+});
+/* Caixa: excluir os marcados */
+document.getElementById('btnBulkPendDelete').addEventListener('click', () => {
+  const alvo = new Set([...selectedPend].flatMap(idsDe));
+  const n = selectedPend.size;
+  if (!n) return;
+  if (!confirm(`Excluir ${n} lançamento${n === 1 ? '' : 's'} marcado${n === 1 ? '' : 's'}? Essa ação não pode ser desfeita.`)) return;
+  state.lancamentos = state.lancamentos.filter(l => !alvo.has(l.id) && !(l.ajusteDe && alvo.has(l.ajusteDe)) && !(l.parcialDe && alvo.has(l.parcialDe)));
+  if (editingId && alvo.has(editingId)) clearForm();
+  selectedPend.clear();
+  markDirty(); renderPendencias(); renderTable(); renderKpis();
+  toast(`${n} lançamento${n === 1 ? '' : 's'} excluído${n === 1 ? '' : 's'}.`);
+});
+/* Tarefas: excluir as marcadas */
+document.getElementById('tSelExcluir').addEventListener('click', async () => {
+  const ids = [...tarefasUI.selecionadas];
+  await executarEmLote(ids, `Excluir ${ids.length} tarefa${ids.length === 1 ? '' : 's'}? Essa ação não pode ser desfeita.`,
+    id => excluirTarefa(id), id => state.tarefas.some(x => x.id === id), ['tarefa excluída', 'tarefas excluídas']);
+  sairDaSelecao();
+});
+/* Agenda: na lista do dia, marcar e confirmar, cancelar ou excluir */
+const agSelecao = new Set();
+const agSelEst = {};
+function ligarSelecaoAgenda() {
+  const box = document.getElementById('agDiaLista');
+  const itens = [...box.querySelectorAll('.appt[data-id]')];
+  const vis = itens.map(el => el.dataset.id);
+  [...agSelecao].forEach(id => { if (!vis.includes(id)) agSelecao.delete(id); });
+  let bar = document.getElementById('agSelBar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'agSelBar'; bar.className = 'bulkbar ag-selbar';
+    bar.innerHTML = '<label style="display:inline-flex; gap:6px; align-items:center"><input type="checkbox" id="agSelTodos" style="width:auto"> <span id="agSelQtd" style="white-space:nowrap">Todos do dia</span></label>'
+      + '<button type="button" class="btn btn-brass btn-sm" data-ag-lote="confirmado">Confirmar</button>'
+      + '<button type="button" class="btn btn-outline btn-sm" data-ag-lote="cancelado">Cancelar</button>'
+      + '<button type="button" class="btn btn-danger-text btn-sm" data-ag-lote="excluir">Excluir</button>';
+    box.before(bar);
+    bar.querySelector('#agSelTodos').addEventListener('change', (e) => {
+      document.querySelectorAll('#agDiaLista [data-ag-sel]').forEach(cb => { cb.checked = e.target.checked; if (cb.checked) agSelecao.add(cb.dataset.agSel); else agSelecao.delete(cb.dataset.agSel); });
+      agSelEst.barra();
+    });
+    bar.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-ag-lote]');
+      if (!b || !agSelecao.size) return;
+      const ids = new Set(agSelecao), n = ids.size, acao = b.dataset.agLote;
+      if (acao === 'excluir') {
+        if (!confirm(`Excluir ${n} compromisso${n === 1 ? '' : 's'}? Nos que se repetem, sai só o deste dia.`)) return;
+        state.agenda = state.agenda.filter(a => !ids.has(a.id));
+      } else state.agenda.forEach(a => { if (ids.has(a.id) && a.tipo !== 'bloqueio') a.status = acao; });
+      agSelecao.clear();
+      markDirty(); renderAgenda();
+      toast(`${n} compromisso${n === 1 ? '' : 's'} ${acao === 'excluir' ? 'excluído' : acao}${n === 1 ? '' : 's'}.`);
+    });
+  }
+  bar.style.display = itens.length ? 'flex' : 'none';
+  itens.forEach(el => {
+    if (el.querySelector('[data-ag-sel]')) return;
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.className = 'appt-sel'; cb.dataset.agSel = el.dataset.id; cb.checked = agSelecao.has(el.dataset.id);
+    cb.setAttribute('aria-label', 'Marcar este compromisso');
+    cb.addEventListener('change', () => { if (cb.checked) agSelecao.add(cb.dataset.agSel); else agSelecao.delete(cb.dataset.agSel); barraAgenda(); });
+    el.prepend(cb);
+  });
+  agSelEst.barra = barraAgenda;
+  function barraAgenda() {
+    const n = agSelecao.size;
+    document.getElementById('agSelQtd').textContent = n ? `${n} marcado${n === 1 ? '' : 's'}` : 'Todos do dia';
+    const t = document.getElementById('agSelTodos');
+    t.checked = vis.length > 0 && n === vis.length; t.indeterminate = n > 0 && n < vis.length;
+    bar.querySelectorAll('[data-ag-lote]').forEach(x => { x.disabled = !n; });
+  }
+  barraAgenda();
+}
+new MutationObserver(() => ligarSelecaoAgenda()).observe(document.getElementById('agDiaLista'), { childList: true });
+const APP_VERSAO = '3.14.0';
 document.querySelectorAll('[data-versao]').forEach(el => { el.textContent = 'Versão ' + APP_VERSAO; });
 function abrirLicenca() { aplicarMarca(); document.getElementById('licModal').classList.add('open'); }
 function fecharLicenca() { document.getElementById('licModal').classList.remove('open'); }
@@ -14021,6 +15392,7 @@ function init() {
   startReminderEngine();
 }
 init();
+iniciarUsuariosERegistro(); /* 3.14.0 */
 </script>
 <!-- ExcelJS 4.4.0 · licença MIT · Copyright (c) 2014-2019 Guyon Roche · https://github.com/exceljs/exceljs
      Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
