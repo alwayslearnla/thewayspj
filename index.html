@@ -3452,6 +3452,7 @@ const SEED_CONFIG = {"origem": ["RECEITAS", "DESPESAS"], "operacaoPorOrigem": {"
 const SEED_LANCAMENTOS_RAW = [];
 
 const STORAGE_KEY = 'fcpj_dashboard_v1';
+var alterouNestaVisita = false; /* 3.15.0: o aviso ao sair só vale para o que mudou nesta visita */
 // A Origem é a única camada não editável: é ela que define se o lançamento é
 // despesa ou receita. Operação/Categoria/Quem/Centro de Custo/Local/Forma de
 // Pagamento/Empresas são todos totalmente editáveis nas Configurações, sem
@@ -3856,6 +3857,7 @@ function markDirty(n = 1) {
   if (!mudou) { updateBackupBanner(); return; }
   try { registrarAlteracoes(); } catch (e) { console.error(e); } /* 3.14.0 */
   state.dirtyCount += n;
+  alterouNestaVisita = true;
   persist();
   try { mostrarBarraDesfazer(); } catch (e) {} /* 3.6.11: outra alteração tira o Desfazer da tela */
 }
@@ -10251,6 +10253,7 @@ function downloadBackup() {
   const nome = nomeArquivoBackup();
   const marcarFeito = (msg) => {
     state.dirtyCount = 0;
+    alterouNestaVisita = false;
     state.lastBackupAt = new Date().toISOString();
     persist();
     toast(msg);
@@ -10438,7 +10441,7 @@ document.getElementById('fileRestore').addEventListener('change', (e) => {
 });
 
 window.addEventListener('beforeunload', (e) => {
-  if (state && state.dirtyCount > 0) {
+  if (state && state.dirtyCount > 0 && alterouNestaVisita) { /* 3.15.0: só consultar não pergunta nada */
     e.preventDefault();
     e.returnValue = '';
     return '';
@@ -13687,6 +13690,7 @@ const AJUDA = [
       <li>Clique em <strong>⬇ Baixar backup</strong>, no alto da tela. O sistema salva um arquivo <code>.dat</code> com a data e a hora no nome; cada backup é um arquivo novo e nenhum apaga o anterior.</li>
       <li>Guarde esse arquivo num lugar seguro: Google Drive, OneDrive ou pen drive. Ou deixe o sistema gravar direto no Drive (veja abaixo).</li>
       <li>O aviso ao lado do botão mostra quantas alterações existem desde o último backup. Só conta o que de fato mudou nos dados: abrir telas, entrar e sair de campos ou consultar não conta. Quando aparecer “Tudo salvo neste backup”, está em dia.</li>
+      <li>Ao fechar o sistema, o navegador pergunta “Sair do app?” só se algo foi alterado nesta visita e o backup ainda não foi baixado. Quem só entrou para consultar sai sem pergunta. O que foi lançado já está gravado no navegador; a pergunta é um lembrete do backup.</li>
     </ol>
     <h3>Backup direto no Google Drive ou OneDrive</h3>
     <ol>
