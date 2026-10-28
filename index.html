@@ -1425,6 +1425,9 @@
   .conta-saldo-cfg input { padding: 5px 7px; font-size: 12.5px; }
   .conta-saldo-cfg .cab { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .05em; }
   .settle-row input.settle-valor { width: 96px; padding: 5px 7px; font-size: 12px; text-align: right; }
+  .settle-row select.settle-forma { width: 118px; padding: 5px 7px; font-size: 12px; height: auto; }
+  .pg-partes { margin-top: 12px; }
+  .pg-partes .parte-linha .p-valor[readonly] { background: var(--paper-2, transparent); color: var(--ink-soft); }
   .tag-rec { color: var(--ink-soft); font-size: 11.5px; }
   .tipo-btn { font-family: var(--sans); cursor: pointer; }
   .tipo-btn.receita:hover { color: var(--receita); }
@@ -3285,6 +3288,34 @@
       </div>
     </div>
   </div>
+  <div class="modal-overlay" id="pgModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pgTitulo" style="width:min(560px,100%)">
+      <div class="card-head">
+        <h2 id="pgTitulo">Pagar de mais de um jeito</h2>
+        <button class="icon-btn" id="pgFechar" type="button" aria-label="Fechar">✕</button>
+      </div>
+      <div class="card-body">
+        <p id="pgInfo" style="margin:0 0 12px"></p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="pgTotal" id="pgTotalLabel">Valor pago (R$)</label>
+            <input type="text" inputmode="decimal" id="pgTotal" placeholder="0,00">
+          </div>
+          <div class="field">
+            <label for="pgData" id="pgDataLabel">Pago em</label>
+            <input type="date" id="pgData">
+          </div>
+        </div>
+        <div class="partes pg-partes" id="pgPartes"></div>
+        <div class="partes-acoes"><button type="button" class="link-btn" id="pgMais">+ outra forma</button></div>
+        <div class="partes-conf" id="pgConf"></div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" id="pgCancelar">Cancelar</button>
+          <button type="button" class="btn btn-brass" id="pgConfirmar">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal-overlay" id="parcialModal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="parcialTitulo" style="width:min(500px,100%)">
       <div class="card-head">
@@ -3292,7 +3323,7 @@
       </div>
       <div class="card-body">
         <p id="parcialTexto" style="margin:0"></p>
-        <div class="field" style="margin-top:12px">
+        <div class="field" style="margin-top:12px" id="parcialCampoForma">
           <label for="parcialForma" id="parcialFormaLabel">Forma de pagamento desta parte</label>
           <select id="parcialForma"></select>
         </div>
@@ -6448,8 +6479,10 @@ function abrirReceberOrcamento(id) {
   document.getElementById('orValor').value = numberToCurrencyDisplay(Math.round(prox * 100) / 100);
   document.getElementById('orData').value = todayISO();
   const formas = state.config.formaPagamento || [];
-  document.getElementById('orForma').innerHTML = formas.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+  document.getElementById('orForma').innerHTML = formas.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('')
+    + `<option value="${FORMA_VARIAS}">Receber de mais de um jeito…</option>`; /* 3.15.0 */
   document.getElementById('orForma').value = o.forma && formas.includes(o.forma) ? o.forma : formas[0] || '';
+  document.getElementById('orForma').dataset.formaAntes = document.getElementById('orForma').value;
   document.getElementById('orModal').classList.add('open');
   setTimeout(() => { try { document.getElementById('orValor').select(); } catch (e) {} }, 30);
 }
@@ -6463,6 +6496,7 @@ document.getElementById('orForm').addEventListener('submit', (e) => {
   if (!(valor > 0)) { toast('Informe o valor recebido.'); return; }
   if (valor > t.falta + 0.004) { toast(`O valor passa do que falta (${formatCurrency(t.falta)}).`); return; }
   const data = document.getElementById('orData').value || todayISO();
+  if (document.getElementById('orForma').value === FORMA_VARIAS) { document.getElementById('orForma').dispatchEvent(new Event('change')); return; }
   const r = receberOrcamento(o, valor, data, document.getElementById('orForma').value);
   markDirty();
   fecharReceberOrcamento();
@@ -6470,6 +6504,30 @@ document.getElementById('orForm').addEventListener('submit', (e) => {
   const depois = totaisOrcamento(o);
   toast(`Recebido ${formatCurrency(valor)}, dividido entre os serviços. ${depois.falta > 0.004 ? `Falta ${formatCurrency(depois.falta)}.` : 'Orçamento quitado.'}`);
   void r;
+});
+document.getElementById('orForma').addEventListener('change', (e) => {
+  const sel = e.target;
+  if (sel.value !== FORMA_VARIAS) { sel.dataset.formaAntes = sel.value; return; }
+  const o = orcamentoPorId(ocUI.recebendoId);
+  if (!o) return;
+  const falta = totaisOrcamento(o).falta;
+  const v = currencyDisplayToNumber(document.getElementById('orValor').value || '0');
+  abrirBaixaPartes({
+    desp: false, total: v > 0 ? v : falta, data: document.getElementById('orData').value || todayISO(),
+    forma: sel.dataset.formaAntes || '', conta: null,
+    info: `Orçamento nº ${o.numero} · ${o.cliente} · Falta ${formatCurrency(falta)}`,
+    cancelar: () => { sel.value = sel.dataset.formaAntes || ''; },
+    validar: (t) => t > falta + 0.004 ? `O valor passa do que falta (${formatCurrency(falta)}).` : '',
+    confirmar: (data, partes) => {
+      partes.forEach(p => receberOrcamento(o, p.valor, data, p.forma));
+      markDirty();
+      fecharReceberOrcamento();
+      renderOrcClientes(); renderTable(); renderPendencias(); renderKpis();
+      const depois = totaisOrcamento(o);
+      const soma = partes.reduce((a, p) => a + centavos(p.valor), 0) / 100;
+      toast(`Recebido ${formatCurrency(soma)} (${resumoPartes(partes)}), dividido entre os serviços. ${depois.falta > 0.004 ? `Falta ${formatCurrency(depois.falta)}.` : 'Orçamento quitado.'}`);
+    },
+  });
 });
 document.getElementById('orValor').addEventListener('blur', (e) => { if (e.target.value.trim()) e.target.value = numberToCurrencyDisplay(currencyDisplayToNumber(e.target.value)); });
 document.getElementById('orCancelar').addEventListener('click', fecharReceberOrcamento);
@@ -6692,7 +6750,7 @@ function desfazerGrupoOrc(id) {
   const ajustes = state.lancamentos.filter(x => x.ajusteDe && ids.has(x.ajusteDe));
   if (!confirm(`Desfazer a baixa deste valor de ${formatCurrency(total)}? Ele volta a ficar em aberto no Caixa.`
     + (ajustes.length ? ` A diferença lançada na baixa (${formatCurrency(somaValores(ajustes))}) também será excluída.` : ''))) return;
-  itens.forEach(l => { l.efetivado = null; });
+  itens.forEach(l => { l.efetivado = null; voltarFormaAntesBaixa(l); });
   if (ajustes.length) state.lancamentos = state.lancamentos.filter(x => !(x.ajusteDe && ids.has(x.ajusteDe)));
   depoisDeMudarGrupo();
   toast('Baixa desfeita.');
@@ -7066,11 +7124,11 @@ function historicoParcialHtml(l) {
   const partes = partesDe(l.id);
   if (!partes.length) return '';
   const itens = partes.map(x => `<strong>${formatCurrency(x.valor)}</strong> em ${formatDateBR(x.efetivado).slice(0, 5)}${x.formaPagamento ? ` (${escapeHtml(x.formaPagamento)})` : ''}`);
-  const fim = l.efetivado ? `${desp ? 'quitada' : 'quitado'} em ${formatDateBR(l.efetivado).slice(0, 5)} com <strong>${formatCurrency(l.valor)}</strong>` : `Falta <strong>${formatCurrency(l.valor)}</strong>`;
+  const fim = l.efetivado ? `${desp ? 'quitada' : 'quitado'} em ${formatDateBR(l.efetivado).slice(0, 5)} com <strong>${formatCurrency(l.valor)}</strong>${l.formaPagamento ? ` (${escapeHtml(l.formaPagamento)})` : ''}` : `Falta <strong>${formatCurrency(l.valor)}</strong>`;
   return `<div class="hist-parcial">${desp ? 'Pago' : 'Recebido'} ${itens.join(' · ')} · ${fim}</div>`;
 }
 let parcialResolver = null;
-function perguntarParcial(l, valor) {
+function perguntarParcial(l, valor, opc) {
   const desp = tipoFluxo(l.origem) === 'despesa';
   const falta = Math.round(((Number(l.valor) || 0) - valor) * 100) / 100;
   document.getElementById('parcialTexto').textContent = `A conta é de ${formatCurrency(l.valor)} e você informou ${formatCurrency(valor)} ${desp ? 'pagos' : 'recebidos'}. `
@@ -7079,7 +7137,10 @@ function perguntarParcial(l, valor) {
     + `Desconto: a conta é encerrada e ${formatCurrency(falta)} vão para "${desp ? 'Descontos obtidos' : 'Descontos concedidos'}".`;
   const sel = document.getElementById('parcialForma');
   fillSelect(sel, state.config.formaPagamento || [], { placeholder: '—' });
-  sel.value = l.formaPagamento || '';
+  const fPadrao = opc && opc.forma ? opc.forma : l.formaPagamento || '';
+  if (fPadrao && ![...sel.options].some(o => o.value === fPadrao)) sel.add(new Option(fPadrao, fPadrao));
+  sel.value = fPadrao;
+  document.getElementById('parcialCampoForma').hidden = !!(opc && opc.semForma); /* 3.15.0: as formas já vêm das partes */
   document.getElementById('parcialModal').classList.add('open');
   return new Promise(res => { parcialResolver = res; });
 }
@@ -7142,6 +7203,7 @@ function renderPendencias() {
           ${conf ? `<div class="caixa-ok"><span>${tipo === 'despesa' ? 'Pago' : 'Recebido'} em ${formatDateBR(l.efetivado)}</span>${botaoAlterar(l.id)}<button type="button" class="link-btn" data-undo-caixa="${l.id}">desfazer</button></div>` : `
           <div class="settle-row">
             <input type="text" inputmode="decimal" class="settle-valor" value="${numberToCurrencyDisplay(l.valor)}" data-settle-valor="${l.id}" title="${tipo === 'despesa' ? 'Valor pago' : 'Valor recebido'}" aria-label="${tipo === 'despesa' ? 'Valor pago' : 'Valor recebido'}">
+            ${seletorFormaBaixa(l, 'data-settle-forma')}
             <input type="date" value="${dataBaixaPadrao(l, hoje)}" data-settle-date="${l.id}">
             <button class="btn btn-brass btn-sm" data-settle="${l.id}" title="${tipo === 'despesa' ? 'Confirmar que foi pago' : 'Confirmar que foi recebido'}">Confirmar</button>
             ${botaoAlterar(l.id)}
@@ -7156,9 +7218,11 @@ function renderPendencias() {
       const dateInput = tbody.querySelector(`[data-settle-date="${id}"]`);
       const valInput = tbody.querySelector(`[data-settle-valor="${id}"]`);
       const valor = valInput && valInput.value.trim() ? currencyDisplayToNumber(finalizeCurrencyDisplay(valInput.value, false)) : undefined;
-      settleLancamento(id, dateInput.value || todayISO(), valor);
+      const fSel = tbody.querySelector(`[data-settle-forma="${id}"]`);
+      confirmarBaixa(id, dateInput.value || todayISO(), [{ valor, forma: fSel && fSel.value !== FORMA_VARIAS ? fSel.value : null }]);
     });
   });
+  ligarFormaBaixa(tbody, 'data-settle-forma', 'data-settle-valor', 'data-settle-date');
   tbody.querySelectorAll('[data-undo-caixa]').forEach(b => b.addEventListener('click', () => undoBaixa(b.dataset.undoCaixa)));
   tbody.querySelectorAll('[data-settle-valor]').forEach(inp => {
     inp.addEventListener('input', () => { inp.value = liveFormatCurrencyTyping(inp.value, false); });
@@ -7664,32 +7728,214 @@ document.getElementById('fFormaPagamento').addEventListener('change', (e) => {
   }
 });
 
-async function settleLancamento(id, dataEfetivado, valorPago) {
-  if (ehGrupoId(id)) { await receberGrupoOrc(id, dataEfetivado, valorPago); return; } /* 3.11.0 */
-  const l = state.lancamentos.find(x => x.id === id);
-  if (!l) return;
-  /* 3.7.1: valor menor pode ser só uma parte; a pessoa escolhe */
-  if (valorPago !== undefined && valorPago > 0.004 && valorPago < (Number(l.valor) || 0) - 0.004) {
-    const resp = await perguntarParcial(l, valorPago);
-    if (!resp) return;
-    if (resp.tipo === 'parte') {
-      registrarParcial(l, valorPago, dataEfetivado, resp.forma);
-      markDirty();
-      renderPendencias();
-      renderTable();
-      renderKpis();
-      toast(`${tipoFluxo(l.origem) === 'despesa' ? 'Pago' : 'Recebido'} ${formatCurrency(valorPago)}. Falta ${formatCurrency(l.valor)}, que continua em aberto.`);
-      return;
-    }
-  }
-  l.efetivado = dataEfetivado;
-  const aj = valorPago !== undefined ? criarAjusteBaixa(l, valorPago, dataEfetivado) : null;
-  markDirty();
-  renderPendencias();
-  renderTable();
-  renderKpis();
-  toast(aj ? `Baixa feita. A diferença de ${formatCurrency(aj.valor)} foi lançada em "${aj.categoria}".` : 'Lançamento marcado como liquidado.');
+function settleLancamento(id, dataEfetivado, valorPago) { return confirmarBaixa(id, dataEfetivado, [{ valor: valorPago, forma: null }]); }
+
+/* =========================================================================
+   3.15.0: CONFIRMAR COM A FORMA E PAGAR DE MAIS DE UM JEITO
+   A linha do Caixa e da ficha do cliente traz a forma do lançamento; dá para
+   trocar ou dividir em partes (ex.: Pix + dinheiro). Cada parte, menos a
+   última, vira um pagamento parcial (3.7.1) com a sua forma; a última quita a
+   conta e a conta fica com a forma dela (a anterior volta no desfazer).
+   ========================================================================= */
+const FORMA_VARIAS = '__varias__';
+function seletorFormaBaixa(l, attr) {
+  if (l.conv || l.convenio || ehFormaConvenio(l.formaPagamento)) return ''; /* convênio: segue como antes */
+  const atual = l.formaPagamento || '';
+  const formas = formasSemConvenio();
+  if (atual && !formas.includes(atual)) formas.unshift(atual);
+  const desp = tipoFluxo(l.origem) === 'despesa';
+  return `<select class="settle-forma" ${attr}="${l.id}" data-forma-antes="${escapeHtml(atual)}" title="Forma de pagamento" aria-label="Forma de pagamento">`
+    + (atual ? '' : '<option value="">Forma</option>')
+    + formas.map(f => `<option value="${escapeHtml(f)}"${f === atual ? ' selected' : ''}>${escapeHtml(f)}</option>`).join('')
+    + `<option value="${FORMA_VARIAS}">${desp ? 'Pagar' : 'Receber'} de mais de um jeito…</option></select>`;
 }
+function ligarFormaBaixa(box, attrForma, attrValor, attrData) {
+  box.querySelectorAll(`[${attrForma}]`).forEach(sel => sel.addEventListener('change', () => {
+    if (sel.value !== FORMA_VARIAS) { sel.dataset.formaAntes = sel.value; return; }
+    const id = sel.getAttribute(attrForma);
+    const itens = itensDaLinha(id).filter(l => !l.efetivado);
+    if (!itens.length) { sel.value = sel.dataset.formaAntes || ''; return; }
+    const vi = box.querySelector(`[${attrValor}="${id}"]`), di = box.querySelector(`[${attrData}="${id}"]`);
+    const total = vi && vi.value.trim() ? currencyDisplayToNumber(finalizeCurrencyDisplay(vi.value, false)) : somaValores(itens);
+    const linha = itens.length > 1 ? (agruparOrcamento(itens)[0] || itens[0]) : itens[0];
+    abrirBaixaPartes({
+      desp: tipoFluxo(itens[0].origem) === 'despesa', total, data: di && di.value ? di.value : todayISO(),
+      forma: sel.dataset.formaAntes || '', conta: somaValores(itens),
+      info: [linha.descricao || linha.categoria, linha.quem].filter(Boolean).join(' · '),
+      cancelar: () => { sel.value = sel.dataset.formaAntes || ''; },
+      confirmar: (data, partes) => confirmarBaixa(id, data, partes),
+    });
+  }));
+}
+function resumoPartes(partes) { return partes.map(p => `${p.forma || 'sem forma'} ${formatCurrency(p.valor)}`).join(' + '); }
+async function confirmarBaixa(id, data, partes) {
+  const grupo = ehGrupoId(id);
+  const itens = grupo ? itensDoGrupo(id).filter(l => !l.efetivado) : [state.lancamentos.find(x => x.id === id)].filter(l => l && !l.efetivado);
+  if (!itens.length) return;
+  const desp = tipoFluxo(itens[0].origem) === 'despesa';
+  const quem = itens.some(l => l.orcamentoId) ? 'serviços' : 'clientes';
+  const total = somaValores(itens);
+  partes = (partes && partes.length ? partes : [{}]).map(p => ({ valor: p.valor, forma: p.forma || null }));
+  if (partes.length > 1) partes = partes.filter(p => p.valor > 0.004);
+  const informado = partes.some(p => p.valor !== undefined && p.valor > 0.004) ? partes.reduce((a, p) => a + centavos(p.valor), 0) / 100 : undefined;
+  const varias = partes.length > 1;
+  /* valor menor: só uma parte ou desconto (pergunta uma vez só) */
+  let soParte = false;
+  if (informado !== undefined && informado < total - 0.004) {
+    const formaLinha = valorUnico(itens.map(l => l.formaPagamento));
+    const resp = await perguntarParcial({ valor: total, origem: itens[0].origem, formaPagamento: formaLinha }, informado, { forma: partes[0].forma, semForma: varias });
+    if (!resp) return;
+    soParte = resp.tipo === 'parte';
+    if (!varias) partes[0].forma = resp.forma || partes[0].forma;
+  }
+  const pagarParte = (p) => {
+    const v = ratear(p.valor, itens.map(l => Number(l.valor) || 0));
+    itens.forEach((l, i) => { if (v[i] > 0) registrarParcial(l, v[i], data, p.forma); });
+  };
+  (soParte ? partes : partes.slice(0, -1)).forEach(pagarParte);
+  let dif = 0;
+  if (!soParte) {
+    const ult = partes[partes.length - 1];
+    const resto = somaValores(itens);
+    const vals = informado !== undefined ? ratear(ult.valor, itens.map(l => Number(l.valor) || 0)) : null;
+    itens.forEach((l, i) => {
+      l.efetivado = data;
+      if (ult.forma && ult.forma !== (l.formaPagamento || '')) {
+        if (l.formaAntesBaixa === undefined) l.formaAntesBaixa = l.formaPagamento || null;
+        l.formaPagamento = ult.forma;
+        aplicarTaxaCartao(l);
+      }
+      if (vals) criarAjusteBaixa(l, vals[i], data);
+    });
+    if (vals) dif = Math.round((ult.valor - resto) * 100) / 100;
+  }
+  if (grupo) depoisDeMudarGrupo();
+  else { markDirty(); renderPendencias(); renderTable(); renderKpis(); }
+  const como = varias ? ` (${resumoPartes(partes)})` : '';
+  if (soParte) toast(`${desp ? 'Pago' : 'Recebido'} ${formatCurrency(informado)}${como}${grupo ? `, dividido entre os ${quem}` : ''}. Falta ${formatCurrency(somaValores(itens))}, que continua em aberto.`);
+  else if (Math.abs(dif) > 0.004) toast(`Baixa feita${como}. A diferença de ${formatCurrency(Math.abs(dif))} foi lançada${grupo ? `, dividida entre os ${quem}` : ` em "${dif > 0 ? (desp ? 'Juros e Multas' : 'Juros recebidos') : (desp ? 'Descontos obtidos' : 'Descontos concedidos')}"`}.`);
+  else toast(`${desp ? 'Pagamento' : 'Recebimento'} de ${formatCurrency(informado !== undefined ? informado : total)} confirmado${como}.`);
+}
+/* desfazer a baixa devolve a forma que o lançamento tinha */
+function voltarFormaAntesBaixa(l) {
+  if (l.formaAntesBaixa === undefined) return;
+  l.formaPagamento = l.formaAntesBaixa || null;
+  delete l.formaAntesBaixa;
+  aplicarTaxaCartao(l);
+}
+
+/* ---- janela "de mais de um jeito": total, data e as partes (a última pega a sobra) ---- */
+const pgUI = { partes: [], opc: null };
+function abrirBaixaPartes(opc) {
+  pgUI.opc = opc;
+  const formas = formasSemConvenio();
+  const f = opc.forma && formas.includes(opc.forma) ? opc.forma : '';
+  pgUI.partes = [{ valor: 0, forma: f, auto: false }, { valor: Math.round((opc.total || 0) * 100) / 100, forma: '', auto: true }];
+  document.getElementById('pgTitulo').textContent = opc.desp ? 'Pagar de mais de um jeito' : 'Receber de mais de um jeito';
+  document.getElementById('pgInfo').innerHTML = `${escapeHtml(opc.info || '')}${opc.conta != null ? `${opc.info ? ' · ' : ''}${opc.desp ? 'Conta de' : 'Valor de'} <strong>${formatCurrency(opc.conta)}</strong>` : ''}`;
+  document.getElementById('pgTotalLabel').textContent = opc.desp ? 'Valor pago (R$)' : 'Valor recebido (R$)';
+  document.getElementById('pgDataLabel').textContent = opc.desp ? 'Pago em' : 'Recebido em';
+  document.getElementById('pgTotal').value = numberToCurrencyDisplay(opc.total || 0);
+  document.getElementById('pgData').value = opc.data || todayISO();
+  document.getElementById('pgConfirmar').textContent = opc.desp ? 'Confirmar pagamento' : 'Confirmar recebimento';
+  renderPgPartes();
+  document.getElementById('pgModal').classList.add('open');
+  setTimeout(() => { try { document.querySelector('#pgPartes [data-pg="valor"]').focus(); } catch (e) {} }, 30);
+}
+function pgTotal() { const t = document.getElementById('pgTotal').value.trim(); return t ? currencyDisplayToNumber(finalizeCurrencyDisplay(t, false)) : 0; }
+function pgRecalcular() {
+  const ps = pgUI.partes, auto = ps.find(p => p.auto);
+  if (auto) auto.valor = Math.max(0, (centavos(pgTotal()) - ps.filter(p => p !== auto).reduce((a, p) => a + centavos(p.valor), 0)) / 100);
+}
+function renderPgPartes() {
+  pgRecalcular();
+  const formas = formasSemConvenio();
+  const ps = pgUI.partes;
+  document.getElementById('pgPartes').innerHTML = ps.map((p, i) => `<div class="parte-linha" data-pg-i="${i}">
+      <span class="parte-letra" aria-label="Parte ${LETRAS_PARTE[i]}">${LETRAS_PARTE[i]}</span>
+      <label>Valor (R$)<input type="text" inputmode="decimal" class="p-valor" data-pg="valor" value="${p.valor > 0 ? numberToCurrencyDisplay(p.valor) : ''}" placeholder="0,00"${p.auto ? ' title="Preenchido sozinho com o que falta"' : ''}></label>
+      <label>Forma<select class="p-forma" data-pg="forma"><option value="">— escolha —</option>${formas.map(f => `<option value="${escapeHtml(f)}"${f === p.forma ? ' selected' : ''}>${escapeHtml(f)}</option>`).join('')}</select></label>
+      ${p.auto ? '<span class="parte-info">o que falta</span>' : ''}
+      ${ps.length > 2 ? `<button type="button" class="parte-x" data-pg-x title="Tirar a parte ${LETRAS_PARTE[i]}" aria-label="Tirar a parte ${LETRAS_PARTE[i]}">×</button>` : ''}
+    </div>`).join('');
+  document.getElementById('pgMais').hidden = ps.length >= LETRAS_PARTE.length;
+  pgConferir();
+}
+function pgProblema() {
+  const t = pgTotal(), ps = pgUI.partes;
+  if (!(t > 0)) return 'Informe o valor.';
+  const i = ps.findIndex(p => !(p.valor > 0));
+  if (i >= 0) return `Falta o valor da parte ${LETRAS_PARTE[i]}.`;
+  const k = ps.findIndex(p => !p.forma);
+  if (k >= 0) return `Escolha a forma da parte ${LETRAS_PARTE[k]}.`;
+  const soma = ps.reduce((a, p) => a + centavos(p.valor), 0);
+  if (soma !== centavos(t)) return `As partes somam ${formatCurrency(soma / 100)} e o valor é ${formatCurrency(t)}.`;
+  return '';
+}
+function pgConferir() {
+  pgRecalcular();
+  document.querySelectorAll('#pgPartes [data-pg-i]').forEach(row => {
+    const p = pgUI.partes[Number(row.dataset.pgI)];
+    const v = row.querySelector('[data-pg="valor"]');
+    if (p.auto && v !== document.activeElement) v.value = p.valor > 0 ? numberToCurrencyDisplay(p.valor) : '';
+  });
+  const erro = pgProblema();
+  const conf = document.getElementById('pgConf');
+  conf.className = 'partes-conf ' + (erro ? 'erro' : 'ok');
+  conf.textContent = erro || `${resumoPartes(pgUI.partes)} = ${formatCurrency(pgTotal())}. A soma bate.`;
+}
+function fecharBaixaPartes(ok) {
+  document.getElementById('pgModal').classList.remove('open');
+  const opc = pgUI.opc; pgUI.opc = null;
+  if (!opc) return;
+  if (!ok && opc.cancelar) opc.cancelar();
+}
+document.getElementById('pgPartes').addEventListener('input', (e) => {
+  const row = e.target.closest('[data-pg-i]'); if (!row) return;
+  const p = pgUI.partes[Number(row.dataset.pgI)];
+  if (e.target.dataset.pg === 'valor') {
+    e.target.value = liveFormatCurrencyTyping(e.target.value, false);
+    p.valor = e.target.value.trim() ? currencyDisplayToNumber(e.target.value) : 0;
+    if (p.auto) { p.auto = false; const outra = pgUI.partes.find((x, k) => k > pgUI.partes.indexOf(p) && !x.valor); if (outra) outra.auto = true; }
+  }
+  pgConferir();
+});
+document.getElementById('pgPartes').addEventListener('change', (e) => {
+  const row = e.target.closest('[data-pg-i]'); if (!row) return;
+  const p = pgUI.partes[Number(row.dataset.pgI)];
+  if (e.target.dataset.pg === 'forma') p.forma = e.target.value;
+  if (e.target.dataset.pg === 'valor' && e.target.value.trim()) e.target.value = finalizeCurrencyDisplay(e.target.value, false);
+  pgConferir();
+});
+document.getElementById('pgPartes').addEventListener('focusin', (e) => { if (e.target.dataset.pg === 'valor') setTimeout(() => { try { e.target.select(); } catch (x) {} }, 0); });
+document.getElementById('pgPartes').addEventListener('click', (e) => {
+  if (!e.target.closest('[data-pg-x]')) return;
+  const i = Number(e.target.closest('[data-pg-i]').dataset.pgI);
+  const tirada = pgUI.partes.splice(i, 1)[0];
+  if (tirada.auto || !pgUI.partes.some(p => p.auto)) { pgUI.partes.forEach(p => { p.auto = false; }); pgUI.partes[pgUI.partes.length - 1].auto = true; }
+  renderPgPartes();
+});
+document.getElementById('pgMais').addEventListener('click', () => {
+  pgUI.partes.forEach(p => { if (p.auto) { p.auto = false; p.valor = 0; } }); /* a sobra passa para a parte nova */
+  pgUI.partes.push({ valor: 0, forma: '', auto: true });
+  renderPgPartes();
+});
+document.getElementById('pgTotal').addEventListener('input', (e) => { e.target.value = liveFormatCurrencyTyping(e.target.value, false); pgConferir(); });
+document.getElementById('pgTotal').addEventListener('blur', (e) => { if (e.target.value.trim()) e.target.value = finalizeCurrencyDisplay(e.target.value, false); pgConferir(); });
+document.getElementById('pgConfirmar').addEventListener('click', () => {
+  const erro = pgProblema();
+  if (erro) { toast(erro); return; }
+  const opc = pgUI.opc;
+  const data = document.getElementById('pgData').value || todayISO();
+  const partes = pgUI.partes.map(p => ({ valor: Math.round(p.valor * 100) / 100, forma: p.forma }));
+  if (opc && opc.validar) { const e2 = opc.validar(pgTotal()); if (e2) { toast(e2); return; } }
+  fecharBaixaPartes(true);
+  if (opc && opc.confirmar) opc.confirmar(data, partes);
+});
+document.getElementById('pgCancelar').addEventListener('click', () => fecharBaixaPartes(false));
+document.getElementById('pgFechar').addEventListener('click', () => fecharBaixaPartes(false));
+document.getElementById('pgModal').addEventListener('click', (e) => { if (e.target.id === 'pgModal') fecharBaixaPartes(false); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.getElementById('pgModal').classList.contains('open')) fecharBaixaPartes(false); });
 
 /* =========================================================================
    3.14.0: ALTERAR DATA OU VALOR
@@ -8158,6 +8404,7 @@ function undoBaixa(id) {
   if (!confirm('Desfazer a baixa deste lançamento? Ele volta a ficar em aberto no Caixa.'
     + (ajustes.length ? ` A diferença lançada na baixa (${formatCurrency(ajustes.reduce((a, x) => a + (Number(x.valor) || 0), 0))}) também será excluída.` : ''))) return;
   l.efetivado = null;
+  voltarFormaAntesBaixa(l); /* 3.15.0 */
   if (ajustes.length) state.lancamentos = state.lancamentos.filter(x => x.ajusteDe !== id);
   markDirty();
   renderTable();
@@ -11359,6 +11606,7 @@ function renderFichaFin() {
       <td>${desp ? '<span class="tag tag-pendente">a devolver</span>' : statusTag(computeStatus(l.data, null))}</td>
       <td class="col-actions"><div class="settle-row">
         <input type="text" inputmode="decimal" class="settle-valor" value="${numberToCurrencyDisplay(l.valor)}" data-fin-valor="${l.id}" aria-label="${desp ? 'Valor pago' : 'Valor recebido'}">
+        ${seletorFormaBaixa(l, 'data-fin-forma')}
         <input type="date" value="${todayISO()}" data-fin-data="${l.id}" aria-label="Data">
         <button class="btn btn-brass btn-sm" type="button" data-fin-receber="${l.id}">${desp ? 'Pagar' : 'Receber'}</button>
         ${botaoAlterar(l.id)}
@@ -11403,8 +11651,10 @@ function renderFichaFin() {
     const id = b.dataset.finReceber;
     const vi = box.querySelector(`[data-fin-valor="${id}"]`), di = box.querySelector(`[data-fin-data="${id}"]`);
     const valor = vi && vi.value.trim() ? currencyDisplayToNumber(finalizeCurrencyDisplay(vi.value, false)) : undefined;
-    settleLancamento(id, di.value || todayISO(), valor);
+    const fSel = box.querySelector(`[data-fin-forma="${id}"]`);
+    confirmarBaixa(id, di.value || todayISO(), [{ valor, forma: fSel && fSel.value !== FORMA_VARIAS ? fSel.value : null }]);
   }));
+  ligarFormaBaixa(box, 'data-fin-forma', 'data-fin-valor', 'data-fin-data');
   box.querySelectorAll('[data-fin-valor]').forEach(inp => {
     inp.addEventListener('input', () => { inp.value = liveFormatCurrencyTyping(inp.value, false); });
     inp.addEventListener('blur', () => { if (inp.value.trim()) inp.value = finalizeCurrencyDisplay(inp.value, false); });
@@ -13240,9 +13490,18 @@ const AJUDA = [
     </ul>
     <h3>Confirmar</h3>
     <ol>
-      <li>Na linha da conta, confira o valor e a data.</li>
+      <li>Na linha da conta, confira o valor, a forma e a data. A forma já vem a do lançamento; troque se foi pago de outro jeito.</li>
       <li>Clique em <strong>Confirmar</strong>.</li>
     </ol>
+    <h3>Pagar ou receber de mais de um jeito</h3>
+    <p>Quando a conta é paga em duas formas (por exemplo, parte no Pix e parte em dinheiro), escolha <strong>Pagar de mais de um jeito…</strong> (ou <strong>Receber de mais de um jeito…</strong>) no fim da lista da forma. Na janela:</p>
+    <ul>
+      <li>Confira o valor total e a data.</li>
+      <li>Em cada parte, informe o valor e a forma. A última parte fica sozinha com o que falta. Use <strong>+ outra forma</strong> para mais partes e o × para tirar uma.</li>
+      <li>Clique em <strong>Confirmar</strong>. Cada parte fica gravada com a sua forma, e a conta mostra o histórico, por exemplo "Pago R$ 300,00 em 28/10 (Pix) · quitada em 28/10 com R$ 200,00 (Dinheiro)". Na receita no cartão, a taxa é calculada só na parte do cartão.</li>
+      <li>Se a soma for menor que a conta, o sistema pergunta se foi só uma parte ou desconto, como no pagamento parcial.</li>
+    </ul>
+    <p>Vale também na ficha do cliente (aba Financeiro) e no <strong>Receber</strong> do orçamento. A linha do convênio continua sem a escolha da forma. Desfazer a baixa devolve a forma que o lançamento tinha.</p>
     <p>Se o valor for maior (juros ou multa), corrija o valor antes de confirmar. O sistema registra a diferença sozinho. Para desfazer, clique em <strong>desfazer</strong> na linha confirmada.</p>
     <h3>Pagamento parcial</h3>
     <p>Se o valor for menor que o da conta, o sistema pergunta:</p>
@@ -13304,7 +13563,7 @@ const AJUDA = [
     </ul>
     <h3>Receber</h3>
     <ul>
-      <li>Clique em <strong>Receber</strong> na linha do orçamento. Informe o valor, a data e a forma.</li>
+      <li>Clique em <strong>Receber</strong> na linha do orçamento. Informe o valor, a data e a forma. Se o cliente pagou em duas formas, escolha <strong>Receber de mais de um jeito…</strong> na lista da forma.</li>
       <li>O valor quita primeiro os vencimentos mais antigos. Se não cobrir um vencimento inteiro, é <strong>dividido entre os serviços</strong> em aberto, na proporção do valor de cada um; o resto continua em aberto, com o histórico do que foi pago.</li>
       <li>No <strong>Caixa</strong> e em <strong>Lançamentos</strong>, o que vence junto aparece numa linha: <strong>Recebimento orçamento nº X</strong>, com a parte ou parcela ao lado. Clique no <strong>número</strong> para abrir o orçamento e no <strong>▸</strong> para ver os serviços e quanto cabe a cada um.</li>
       <li>Confirmar, receber só uma parte, desfazer e excluir valem para a linha toda. A parte recebida é dividida entre os serviços sozinha. Para mudar um serviço só, abra o ▸ e clique em <strong>editar</strong> ao lado dele.</li>
@@ -15291,7 +15550,7 @@ function ligarSelecaoAgenda() {
   barraAgenda();
 }
 new MutationObserver(() => ligarSelecaoAgenda()).observe(document.getElementById('agDiaLista'), { childList: true });
-const APP_VERSAO = '3.14.0';
+const APP_VERSAO = '3.15.0';
 document.querySelectorAll('[data-versao]').forEach(el => { el.textContent = 'Versão ' + APP_VERSAO; });
 function abrirLicenca() { aplicarMarca(); document.getElementById('licModal').classList.add('open'); }
 function fecharLicenca() { document.getElementById('licModal').classList.remove('open'); }
